@@ -178,7 +178,7 @@ dependencies {
     implementation("org.eclipse.lmos:arc-agent-client:$arcVersion")
     implementation("org.eclipse.lmos:arc-api:$arcVersion")
 
-    val ktorVersion = "2.3.12"
+    val ktorVersion = "3.0.2"
     implementation("io.ktor:ktor-client-core:$ktorVersion")
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
