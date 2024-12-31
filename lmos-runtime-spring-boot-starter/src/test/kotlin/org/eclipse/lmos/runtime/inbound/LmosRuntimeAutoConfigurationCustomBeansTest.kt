@@ -5,6 +5,7 @@
  */
 package org.eclipse.lmos.runtime.inbound
 
+import kotlinx.coroutines.flow.Flow
 import org.eclipse.lmos.runtime.config.LmosRuntimeAutoConfiguration
 import org.eclipse.lmos.runtime.core.cache.LmosRuntimeTenantAwareCache
 import org.eclipse.lmos.runtime.core.cache.TenantAwareInMemoryCache
@@ -79,7 +80,7 @@ class LmosRuntimeAutoConfigurationCustomBeansTest {
                     agentName: String,
                     agentAddress: Address,
                     subset: String?,
-                ): AssistantMessage {
+                ): Flow<AssistantMessage> {
                     TODO("Not yet implemented")
                 }
             }
@@ -153,7 +154,7 @@ class LmosRuntimeAutoConfigurationCustomBeansTest {
                     conversationId: String,
                     tenantId: String,
                     turnId: String,
-                ): AssistantMessage {
+                ): Flow<AssistantMessage> {
                     TODO("Not yet implemented")
                 }
             }

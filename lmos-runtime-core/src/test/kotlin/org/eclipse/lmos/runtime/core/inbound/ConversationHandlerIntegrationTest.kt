@@ -7,6 +7,7 @@
 package org.eclipse.lmos.runtime.core.inbound
 
 import io.mockk.*
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
 import org.eclipse.lmos.arc.agent.client.graphql.GraphQlAgentClient
@@ -68,7 +69,7 @@ class ConversationHandlerIntegrationTest : BaseWireMockTest() {
                 }
 
             val assistantMessage =
-                conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId)
+                conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId).first()
 
             assertEquals("Dummy response from Agent", assistantMessage.content)
             coVerify(exactly = 1) { mockGraphQlAgentClient.callAgent(any(), any(), any()) }

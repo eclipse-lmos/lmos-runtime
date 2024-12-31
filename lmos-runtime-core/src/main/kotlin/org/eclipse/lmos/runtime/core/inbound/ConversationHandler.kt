@@ -6,6 +6,7 @@
 
 package org.eclipse.lmos.runtime.core.inbound
 
+import kotlinx.coroutines.flow.Flow
 import org.eclipse.lmos.runtime.core.LmosRuntimeConfig
 import org.eclipse.lmos.runtime.core.cache.LmosRuntimeTenantAwareCache
 import org.eclipse.lmos.runtime.core.constants.LmosRuntimeConstants.Cache.ROUTES
@@ -24,7 +25,7 @@ interface ConversationHandler {
         conversationId: String,
         tenantId: String,
         turnId: String,
-    ): AssistantMessage
+    ): Flow<AssistantMessage>
 }
 
 class DefaultConversationHandler(
@@ -41,7 +42,7 @@ class DefaultConversationHandler(
         conversationId: String,
         tenantId: String,
         turnId: String,
-    ): AssistantMessage {
+    ): Flow<AssistantMessage> {
         log.debug("Request Received, conversationId: $conversationId, turnId: $turnId")
         val routingInformation =
             lmosRuntimeTenantAwareCache.get(tenantId, ROUTES, conversationId)
