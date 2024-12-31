@@ -27,7 +27,7 @@ data class InputContext(
 @SerialName("systemContext")
 data class SystemContext(
     val channelId: String,
-    val contextParams: Map<String, String> = mapOf(),
+    val contextParams: List<KeyValuePair> = emptyList(),
 )
 
 @Serializable
@@ -35,7 +35,7 @@ data class SystemContext(
 data class UserContext(
     val userId: String,
     val userToken: String?,
-    val contextParams: Map<String, String> = mapOf(),
+    val contextParams: List<KeyValuePair> = emptyList(),
 )
 
 sealed class ChatMessage {
@@ -46,3 +46,9 @@ data class AssistantMessage(
     override val content: String,
     val anonymizationEntities: List<AnonymizationEntity>? = emptyList(),
 ) : ChatMessage()
+
+@Serializable
+data class KeyValuePair(
+    val key: String,
+    val value: String
+)
