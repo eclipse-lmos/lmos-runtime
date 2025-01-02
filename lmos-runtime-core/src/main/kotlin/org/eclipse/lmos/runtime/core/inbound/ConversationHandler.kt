@@ -6,10 +6,15 @@
 
 package org.eclipse.lmos.runtime.core.inbound
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import org.eclipse.lmos.runtime.core.LmosRuntimeConfig
 import org.eclipse.lmos.runtime.core.cache.LmosRuntimeTenantAwareCache
 import org.eclipse.lmos.runtime.core.constants.LmosRuntimeConstants.Cache.ROUTES
+import org.eclipse.lmos.runtime.core.model.Address
 import org.eclipse.lmos.runtime.core.model.Agent
 import org.eclipse.lmos.runtime.core.model.AssistantMessage
 import org.eclipse.lmos.runtime.core.model.Conversation
@@ -42,7 +47,8 @@ class DefaultConversationHandler(
         conversationId: String,
         tenantId: String,
         turnId: String,
-    ): Flow<AssistantMessage> {
+    ): Flow<AssistantMessage> = flow {
+        coroutineScope {
         log.debug("Request Received, conversationId: $conversationId, turnId: $turnId")
         val routingInformation =
             lmosRuntimeTenantAwareCache.get(tenantId, ROUTES, conversationId)
@@ -57,16 +63,19 @@ class DefaultConversationHandler(
         log.info("routingInformation: $routingInformation")
         val agent: Agent = agentRoutingService.resolveAgentForConversation(conversation, routingInformation.agentList)
         log.info("Resolved agent: $agent")
-        val agentResponse =
-            agentClientService.askAgent(
-                conversation,
-                conversationId,
-                turnId,
-                agent.name,
-                agent.addresses.random(),
-                routingInformation.subset,
-            )
-        log.info("Agent Response: $agentResponse")
-        return agentResponse
+            val agentResponse =
+                agentClientService.askAgent(
+                    conversation,
+                    conversationId,
+                    turnId,
+                    agent.name,
+                    agent.addresses.random(),
+                    routingInformation.subset,
+                )
+            log.info("Agent Response: $agentResponse")
+            agentResponse.collect { message ->
+                emit(message)
+            }
+        }
+        }.flowOn(Dispatchers.IO)
     }
-}
