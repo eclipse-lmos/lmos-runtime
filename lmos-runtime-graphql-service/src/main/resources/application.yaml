@@ -28,6 +28,8 @@ spring:
     name: lmos-runtime
   main:
     banner-mode: off
+  profiles:
+    active: local
 
 logging:
   level:
@@ -37,7 +39,7 @@ logging:
 
 management:
   server:
-    port: 9090
+    port: 9091
   endpoints:
     web:
       base-path: /

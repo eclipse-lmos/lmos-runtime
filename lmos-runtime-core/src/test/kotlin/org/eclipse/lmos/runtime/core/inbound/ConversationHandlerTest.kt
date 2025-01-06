@@ -321,7 +321,7 @@ class ConversationHandlerTest {
     private fun routingInformation(subset: String? = null): RoutingInformation {
         val routingInformation =
             RoutingInformation(
-                agentList = listOf(Agent("agent1", "v1", "desc", listOf(), setOf(Address(uri = "http://localhost:8080/")))),
+                agentList = listOf(Agent("agent1", "v1", "desc", listOf(), listOf(Address(uri = "http://localhost:8080/")))),
                 subset = subset,
             )
         return routingInformation
@@ -336,7 +336,9 @@ class ConversationHandlerTest {
         subset: String?,
         agentResponse: AssistantMessage,
     ) {
-        coEvery { agentClientService.askAgent(conversation, conversationId, turnId, agentName, address, subset) } returns flow { emit(agentResponse) }
+        coEvery {
+            agentClientService.askAgent(conversation, conversationId, turnId, agentName, address, subset)
+        } returns flow { emit(agentResponse) }
     }
 
     private fun mockAgentRegistry(

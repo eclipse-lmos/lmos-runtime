@@ -9,8 +9,8 @@ import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 plugins {
     id("org.springframework.boot")
     id("io.spring.dependency-management")
-    id("com.citi.helm")
-    id("com.citi.helm-publish")
+//    id("com.citi.helm")
+//    id("com.citi.helm-publish")
 }
 
 dependencies {
@@ -48,51 +48,51 @@ tasks.named<BootBuildImage>("bootBuildImage") {
     }
 }
 
-helm {
-    charts {
-        create("main") {
-            chartName.set("${rootProject.name}-graphql-chart")
-            chartVersion.set("${project.version}")
-            sourceDir.set(file("src/main/helm"))
-        }
-    }
-}
-
-tasks.register("replaceChartVersion") {
-    doLast {
-        val chartFile = file("src/main/helm/Chart.yaml")
-        val content = chartFile.readText()
-        val updatedContent = content.replace("\${chartVersion}", "${project.version}")
-        chartFile.writeText(updatedContent)
-    }
-}
-
-tasks.register("helmPush") {
-    description = "Push Helm chart to OCI registry"
-    group = "helm"
-    dependsOn(tasks.named("helmPackageMainChart"))
-
-    doLast {
-        val registryUrl = getProperty("REGISTRY_URL")
-        val registryUsername = getProperty("REGISTRY_USERNAME")
-        val registryPassword = getProperty("REGISTRY_PASSWORD")
-        val registryNamespace = getProperty("REGISTRY_NAMESPACE")
-
-        helm.execHelm("registry", "login") {
-            option("-u", registryUsername)
-            option("-p", registryPassword)
-            args(registryUrl)
-        }
-
-        helm.execHelm("push") {
-            args(tasks.named("helmPackageMainChart").get().outputs.files.singleFile.toString())
-            args("oci://$registryUrl/$registryNamespace")
-        }
-
-        helm.execHelm("registry", "logout") {
-            args(registryUrl)
-        }
-    }
-}
+// helm {
+//    charts {
+//        create("main") {
+//            chartName.set("${rootProject.name}-graphql-chart")
+//            chartVersion.set("${project.version}")
+//            sourceDir.set(file("src/main/helm"))
+//        }
+//    }
+// }
+//
+// tasks.register("replaceChartVersion") {
+//    doLast {
+//        val chartFile = file("src/main/helm/Chart.yaml")
+//        val content = chartFile.readText()
+//        val updatedContent = content.replace("\${chartVersion}", "${project.version}")
+//        chartFile.writeText(updatedContent)
+//    }
+// }
+//
+// tasks.register("helmPush") {
+//    description = "Push Helm chart to OCI registry"
+//    group = "helm"
+//    dependsOn(tasks.named("helmPackageMainChart"))
+//
+//    doLast {
+//        val registryUrl = getProperty("REGISTRY_URL")
+//        val registryUsername = getProperty("REGISTRY_USERNAME")
+//        val registryPassword = getProperty("REGISTRY_PASSWORD")
+//        val registryNamespace = getProperty("REGISTRY_NAMESPACE")
+//
+//        helm.execHelm("registry", "login") {
+//            option("-u", registryUsername)
+//            option("-p", registryPassword)
+//            args(registryUrl)
+//        }
+//
+//        helm.execHelm("push") {
+//            args(tasks.named("helmPackageMainChart").get().outputs.files.singleFile.toString())
+//            args("oci://$registryUrl/$registryNamespace")
+//        }
+//
+//        helm.execHelm("registry", "logout") {
+//            args(registryUrl)
+//        }
+//    }
+// }
 
 fun getProperty(propertyName: String) = System.getenv(propertyName) ?: project.findProperty(propertyName) as String

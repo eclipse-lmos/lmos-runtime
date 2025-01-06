@@ -92,7 +92,7 @@ class ConversationHandlerIntegrationTest : BaseWireMockTest() {
                     conversationId,
                     tenantId,
                     turnId,
-                )
+                ).first()
             }
             coVerify(exactly = 0) { mockGraphQlAgentClient.callAgent(any(), any(), any()) }
         }
@@ -108,7 +108,14 @@ class ConversationHandlerIntegrationTest : BaseWireMockTest() {
 
             val mockGraphQlAgentClient = mockk<GraphQlAgentClient>()
 
-            assertThrows<AgentNotFoundException> { conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId) }
+            assertThrows<AgentNotFoundException> {
+                conversationHandler.handleConversation(
+                    conversation,
+                    conversationId,
+                    tenantId,
+                    turnId,
+                ).first()
+            }
             coVerify(exactly = 0) { mockGraphQlAgentClient.callAgent(any(), any(), any()) }
         }
 
@@ -125,7 +132,14 @@ class ConversationHandlerIntegrationTest : BaseWireMockTest() {
             coEvery { agentClientService.createGraphQlAgentClient(any()) } returns mockGraphQlAgentClient
             coEvery { mockGraphQlAgentClient.callAgent(any(), any(), any()) } throws RuntimeException("Something went wrong")
 
-            assertThrows<AgentClientException> { conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId) }
+            assertThrows<AgentClientException> {
+                conversationHandler.handleConversation(
+                    conversation,
+                    conversationId,
+                    tenantId,
+                    turnId,
+                ).first()
+            }
             coVerify(exactly = 1) { mockGraphQlAgentClient.callAgent(any(), any(), any()) }
         }
 

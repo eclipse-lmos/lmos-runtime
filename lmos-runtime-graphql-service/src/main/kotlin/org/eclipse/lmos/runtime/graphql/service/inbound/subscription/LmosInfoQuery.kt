@@ -8,10 +8,11 @@ import org.springframework.stereotype.Component
 
 @Component
 class LmosInfoQuery(private val agentRegistryService: AgentRegistryService) : Query {
-
     @GraphQLDescription("Returns a greeting message")
-    suspend fun getAvailableAgents(tenantId: String, channelId: String) = coroutineScope {
+    suspend fun getAvailableAgents(
+        tenantId: String,
+        channelId: String,
+    ) = coroutineScope {
         agentRegistryService.getRoutingInformation(tenantId, channelId).agentList
     }
-
 }

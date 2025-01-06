@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.flowOn
 import org.eclipse.lmos.runtime.core.LmosRuntimeConfig
 import org.eclipse.lmos.runtime.core.cache.LmosRuntimeTenantAwareCache
 import org.eclipse.lmos.runtime.core.constants.LmosRuntimeConstants.Cache.ROUTES
-import org.eclipse.lmos.runtime.core.model.Address
 import org.eclipse.lmos.runtime.core.model.Agent
 import org.eclipse.lmos.runtime.core.model.AssistantMessage
 import org.eclipse.lmos.runtime.core.model.Conversation
@@ -47,35 +46,36 @@ class DefaultConversationHandler(
         conversationId: String,
         tenantId: String,
         turnId: String,
-    ): Flow<AssistantMessage> = flow {
-        coroutineScope {
-        log.debug("Request Received, conversationId: $conversationId, turnId: $turnId")
-        val routingInformation =
-            lmosRuntimeTenantAwareCache.get(tenantId, ROUTES, conversationId)
-                ?: agentRegistryService.getRoutingInformation(tenantId, conversation.systemContext.channelId)
-                    .also { result ->
-                        log.debug("Caching routing information: {}", result)
-                        lmosRuntimeTenantAwareCache.save(
-                            tenantId, ROUTES, conversationId,
-                            result, lmosRuntimeConfig.cache.ttl,
-                        )
-                    }
-        log.info("routingInformation: $routingInformation")
-        val agent: Agent = agentRoutingService.resolveAgentForConversation(conversation, routingInformation.agentList)
-        log.info("Resolved agent: $agent")
-            val agentResponse =
-                agentClientService.askAgent(
-                    conversation,
-                    conversationId,
-                    turnId,
-                    agent.name,
-                    agent.addresses.random(),
-                    routingInformation.subset,
-                )
-            log.info("Agent Response: $agentResponse")
-            agentResponse.collect { message ->
-                emit(message)
+    ): Flow<AssistantMessage> =
+        flow {
+            coroutineScope {
+                log.debug("Request Received, conversationId: $conversationId, turnId: $turnId")
+                val routingInformation =
+                    lmosRuntimeTenantAwareCache.get(tenantId, ROUTES, conversationId)
+                        ?: agentRegistryService.getRoutingInformation(tenantId, conversation.systemContext.channelId)
+                            .also { result ->
+                                log.debug("Caching routing information: {}", result)
+                                lmosRuntimeTenantAwareCache.save(
+                                    tenantId, ROUTES, conversationId,
+                                    result, lmosRuntimeConfig.cache.ttl,
+                                )
+                            }
+                log.info("routingInformation: $routingInformation")
+                val agent: Agent = agentRoutingService.resolveAgentForConversation(conversation, routingInformation.agentList)
+                log.info("Resolved agent: $agent")
+                val agentResponse =
+                    agentClientService.askAgent(
+                        conversation,
+                        conversationId,
+                        turnId,
+                        agent.name,
+                        agent.addresses.random(),
+                        routingInformation.subset,
+                    )
+                log.info("Agent Response: $agentResponse")
+                agentResponse.collect { message ->
+                    emit(message)
+                }
             }
-        }
         }.flowOn(Dispatchers.IO)
-    }
+}
