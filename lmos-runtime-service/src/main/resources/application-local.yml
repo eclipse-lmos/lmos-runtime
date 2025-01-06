@@ -22,3 +22,9 @@ lmos:
       patterns:
         - "/**"
       max-age: 8000
+
+server:
+  port: 8081
+management:
+  server:
+    port: 9091

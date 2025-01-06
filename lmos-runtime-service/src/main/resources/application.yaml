@@ -27,5 +27,21 @@ lmos:
       patterns: ${CORS_PATTERNS:/**}
       max-age: ${CORS_MAX_AGE:8000}
 
-server:
-  port: 8081
+management:
+  server:
+    port: 9090
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include: prometheus,metrics,info,health
+  endpoint:
+    metrics:
+      access: read_only
+    health:
+      probes:
+        enabled: true
+  prometheus:
+    metrics:
+      export:
+        enabled: true
