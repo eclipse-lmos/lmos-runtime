@@ -83,8 +83,7 @@ class ArcAgentClientService : AgentClientService {
 
     fun createGraphQlAgentClient(agentAddress: Address): GraphQlAgentClient {
         // TODO - remove hardcoded parts of agent url
-//        val agentUrl = "ws://${agentAddress.uri}:8080/subscriptions"
-        val agentUrl = "ws://localhost:8082/subscriptions"
+        val agentUrl = "ws://${agentAddress.uri}:8080/subscriptions"
 
         log.info("Creating GraphQlAgentClient with url $agentUrl")
         val graphQlAgentClient = GraphQlAgentClient(agentUrl)
