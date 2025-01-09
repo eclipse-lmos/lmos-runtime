@@ -1,3 +1,9 @@
+/*
+ * // SPDX-FileCopyrightText: 2024 Deutsche Telekom AG
+ * //
+ * // SPDX-License-Identifier: Apache-2.0
+ */
+
 package org.eclipse.lmos.runtime.graphql.service.inbound.subscription
 
 import com.expediagroup.graphql.generator.annotations.GraphQLDescription
