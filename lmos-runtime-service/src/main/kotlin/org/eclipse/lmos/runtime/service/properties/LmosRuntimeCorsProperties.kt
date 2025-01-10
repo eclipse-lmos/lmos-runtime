@@ -4,7 +4,7 @@
  * // SPDX-License-Identifier: Apache-2.0
  */
 
-package ai.ancf.lmos.runtime.service.properties
+package org.eclipse.lmos.runtime.service.properties
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 

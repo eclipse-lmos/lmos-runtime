@@ -4,9 +4,9 @@
  * // SPDX-License-Identifier: Apache-2.0
  */
 
-package ai.ancf.lmos.runtime.service.config
+package org.eclipse.lmos.runtime.service.config
 
-import ai.ancf.lmos.runtime.service.properties.LmosRuntimeCorsProperties
+import org.eclipse.lmos.runtime.service.properties.LmosRuntimeCorsProperties
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
