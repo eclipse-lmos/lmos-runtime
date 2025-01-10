@@ -6,8 +6,12 @@
 
 package org.eclipse.lmos.runtime.graphql.service.inbound.subscription
 
-import io.mockk.*
-import kotlinx.coroutines.flow.*
+import app.cash.turbine.test
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.mockk
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.eclipse.lmos.arc.api.Message
 import org.eclipse.lmos.runtime.core.inbound.ConversationHandler
@@ -35,7 +39,6 @@ class ConversationSubscriptionTest {
 
             val assistantMessage1 = AssistantMessage(content = "Hello, how can I assist you?")
             val assistantMessage2 = AssistantMessage(content = "Do you need help with anything else?")
-
             val assistantMessageFlow = flowOf(assistantMessage1, assistantMessage2)
 
             coEvery {
@@ -43,11 +46,12 @@ class ConversationSubscriptionTest {
             } returns assistantMessageFlow
 
             val resultFlow = conversationSubscription.chat(conversation, conversationId, tenantId, turnId)
-            val results = resultFlow.toList()
 
-            assertEquals(2, results.size)
-            assertEquals(assistantMessage1, results[0])
-            assertEquals(assistantMessage2, results[1])
+            resultFlow.test {
+                assertEquals(assistantMessage1, awaitItem())
+                assertEquals(assistantMessage2, awaitItem())
+                awaitComplete()
+            }
 
             coVerify(exactly = 1) {
                 conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId)
@@ -69,9 +73,10 @@ class ConversationSubscriptionTest {
             } returns assistantMessageFlow
 
             val resultFlow = conversationSubscription.chat(conversation, conversationId, tenantId, turnId)
-            val results = resultFlow.toList()
 
-            assertEquals(0, results.size)
+            resultFlow.test {
+                awaitComplete()
+            }
 
             coVerify(exactly = 1) {
                 conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId)
@@ -86,7 +91,8 @@ class ConversationSubscriptionTest {
             val tenantId = "tenantError"
             val turnId = "turnError"
 
-            val exception = RuntimeException("Test exception")
+            val exceptionMessage = "Test exception"
+            val exception = RuntimeException(exceptionMessage)
 
             coEvery {
                 conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId)
@@ -94,29 +100,23 @@ class ConversationSubscriptionTest {
 
             val resultFlow = conversationSubscription.chat(conversation, conversationId, tenantId, turnId)
 
-            val thrownException =
-                assertThrows<RuntimeException> {
-                    resultFlow.collect()
-                }
-
-            assertEquals(exception.message, thrownException.message)
+            resultFlow.test {
+                assertEquals(exceptionMessage, awaitError().message)
+            }
 
             coVerify(exactly = 1) {
                 conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId)
             }
         }
 
-    private fun conversation(): Conversation {
-        val conversation =
-            Conversation(
-                inputContext =
-                    InputContext(
-                        messages = listOf(Message("user", "Hello")),
-                        explicitAgent = "agent1",
-                    ),
-                systemContext = SystemContext(channelId = "channel1"),
-                userContext = UserContext(userId = "user1", userToken = "token1"),
-            )
-        return conversation
-    }
+    private fun conversation() =
+        Conversation(
+            inputContext =
+                InputContext(
+                    messages = listOf(Message("user", "Hello")),
+                    explicitAgent = "agent1",
+                ),
+            systemContext = SystemContext(channelId = "channel1"),
+            userContext = UserContext(userId = "user1", userToken = "token1"),
+        )
 }
