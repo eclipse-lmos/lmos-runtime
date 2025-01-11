@@ -11,7 +11,7 @@ data class Agent(
     val version: String,
     val description: String,
     val capabilities: List<AgentCapability>,
-    val addresses: Set<Address>,
+    val addresses: List<Address>,
 )
 
 data class Address(
@@ -31,7 +31,7 @@ class AgentBuilder {
     private var version: String = ""
     private var description: String = ""
     private var capabilities: MutableList<AgentCapability> = mutableListOf()
-    private var addresses: MutableSet<Address> = mutableSetOf()
+    private var addresses: MutableList<Address> = mutableListOf()
 
     fun name(name: String) = apply { this.name = name }
 
@@ -45,7 +45,7 @@ class AgentBuilder {
 
     fun addAddress(address: Address) = apply { this.addresses.add(address) }
 
-    fun addresses(addresses: Set<Address>) = apply { this.addresses.addAll(addresses) }
+    fun addresses(addresses: List<Address>) = apply { this.addresses.addAll(addresses) }
 
     fun build(): Agent {
         return Agent(
