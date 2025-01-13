@@ -149,7 +149,6 @@ data class Capability(
     val providedVersion: String,
     val description: String,
     val host: String,
-    val subset: String?,
 )
 
 fun ChannelRouting.toAgent(): List<Agent> {
