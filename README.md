@@ -64,7 +64,7 @@ graph TD
 
 ## Configuration
 
-LMOS Runtime can be configured using Kubernetes ConfigMaps and Secrets. 
+LMOS Runtime can be configured using Kubernetes ConfigMaps and Secrets.
 To customize the settings, create a ConfigMap or Secret and mount it to the LMOS Runtime deployment.
 
 You can adjust the following properties:
@@ -82,7 +82,7 @@ You can adjust the following properties:
 ## Setup and Installation
 ### How to install on a Kubernetes cluster:
 
-#### Follow steps to [install lmos-operator](https://github.com/eclipse-lmos/lmos-operator/blob/main/readme.md) on kubernetes cluster
+#### Follow steps to [install lmos-operator](https://github.com/eclipse-lmos/lmos-operator/blob/main/README.md) on kubernetes cluster
 
 Install lmos-runtime
 
@@ -92,7 +92,7 @@ helm install lmos-runtime oci://ghcr.io/eclipse-lmos/lmos-runtime-chart --versio
 
 ### How to test locally:
 
-#### Follow steps to [install lmos-operator](https://github.com/eclipse-lmos/lmos-operator/blob/main/readme.md) on Minikube
+#### Follow steps to [install lmos-operator](https://github.com/eclipse-lmos/lmos-operator/blob/main/README.md) on Minikube
 
 Clone and start the lmos-runtime:
 
@@ -131,6 +131,16 @@ curl -X POST "http://127.0.0.1:<port>/lmos/runtime/apis/v1/<tenant>/chat/<conver
            }
          }'
 ```
+
+## Modules
+### lmos-runtime-core
+Core module containing data models, interfaces, and exceptions.
+
+### lmos-runtime-spring-boot-starter
+Spring Boot starter for easy integration into Spring Boot applications. Provides auto-configuration and properties management.
+
+### lmos-runtime-service
+Service module containing the main application logic, controllers, and exception handlers.
 
 ## Code of Conduct
 
