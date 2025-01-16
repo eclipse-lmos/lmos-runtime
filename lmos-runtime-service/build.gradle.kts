@@ -32,19 +32,24 @@ dependencies {
 }
 
 tasks.named<BootBuildImage>("bootBuildImage") {
-    val registryUrl = getProperty("REGISTRY_URL")
-    val registryUsername = getProperty("REGISTRY_USERNAME")
-    val registryPassword = getProperty("REGISTRY_PASSWORD")
-    val registryNamespace = getProperty("REGISTRY_NAMESPACE")
+    if (project.hasProperty("REGISTRY_URL")) {
+        val registryUrl = getProperty("REGISTRY_URL")
+        val registryUsername = getProperty("REGISTRY_USERNAME")
+        val registryPassword = getProperty("REGISTRY_PASSWORD")
+        val registryNamespace = getProperty("REGISTRY_NAMESPACE")
 
-    imageName.set("$registryUrl/$registryNamespace/${rootProject.name}:${project.version}")
-    publish = true
-    docker {
-        publishRegistry {
-            url.set(registryUrl)
-            username.set(registryUsername)
-            password.set(registryPassword)
+        imageName.set("$registryUrl/$registryNamespace/${rootProject.name}:${project.version}")
+        publish = true
+        docker {
+            publishRegistry {
+                url.set(registryUrl)
+                username.set(registryUsername)
+                password.set(registryPassword)
+            }
         }
+    } else {
+        imageName.set("${rootProject.name}:${project.version}")
+        publish = false
     }
 }
 
