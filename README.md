@@ -112,7 +112,6 @@ To interact with LMOS Runtime, send a POST request to the chat endpoint:
 curl -X POST "http://127.0.0.1:<port>/lmos/runtime/apis/v1/<tenant>/chat/<conversationId>/message" \
      -H "Content-Type: application/json" \
      -H "x-turn-id: <turnId>" \
-     -H "x-subset: stable" \
      -d '{
            "inputContext": {
              "messages": [
