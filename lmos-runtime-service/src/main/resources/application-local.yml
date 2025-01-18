@@ -7,6 +7,7 @@
 lmos:
   runtime:
     agent-registry:
+      base-url: http://localhost:8080
     router:
       type: EXPLICIT
     cache:

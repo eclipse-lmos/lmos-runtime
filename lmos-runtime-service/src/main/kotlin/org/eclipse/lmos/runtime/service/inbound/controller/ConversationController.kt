@@ -6,6 +6,7 @@
 
 package org.eclipse.lmos.runtime.service.inbound.controller
 
+import kotlinx.coroutines.flow.first
 import org.eclipse.lmos.runtime.core.inbound.ConversationHandler
 import org.eclipse.lmos.runtime.core.model.AssistantMessage
 import org.eclipse.lmos.runtime.core.model.Conversation
@@ -28,7 +29,7 @@ class ConversationController(private val conversationHandler: ConversationHandle
         @PathVariable tenantId: String,
         @RequestHeader(TURN_ID) turnId: String,
     ): ResponseEntity<AssistantMessage> {
-        val assistantMessage = conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId)
+        val assistantMessage = conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId).first()
         log.info("Response generated: ${assistantMessage.content}")
         return ResponseEntity.ok(assistantMessage)
     }

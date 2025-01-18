@@ -6,6 +6,7 @@
 package org.eclipse.lmos.runtime.core.outbound
 
 import io.mockk.*
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
 import org.eclipse.lmos.arc.agent.client.graphql.GraphQlAgentClient
@@ -57,7 +58,7 @@ class ArcAgentClientServiceTest {
                     "agentName",
                     address,
                     null,
-                )
+                ).first()
 
             assertEquals("Response from agent", result.content)
         }

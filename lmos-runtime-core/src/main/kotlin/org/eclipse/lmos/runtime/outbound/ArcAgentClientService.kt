@@ -6,13 +6,12 @@
 
 package org.eclipse.lmos.runtime.outbound
 
-import kotlinx.coroutines.flow.toCollection
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import org.eclipse.lmos.arc.agent.client.graphql.GraphQlAgentClient
-import org.eclipse.lmos.arc.api.AgentRequest
-import org.eclipse.lmos.arc.api.ConversationContext
-import org.eclipse.lmos.arc.api.ProfileEntry
-import org.eclipse.lmos.arc.api.SystemContextEntry
-import org.eclipse.lmos.arc.api.UserContext
+import org.eclipse.lmos.arc.api.*
 import org.eclipse.lmos.runtime.core.constants.LmosRuntimeConstants
 import org.eclipse.lmos.runtime.core.exception.AgentClientException
 import org.eclipse.lmos.runtime.core.model.Address
@@ -31,51 +30,59 @@ class ArcAgentClientService : AgentClientService {
         agentName: String,
         agentAddress: Address,
         subset: String?,
-    ): AssistantMessage {
-        return createGraphQlAgentClient(agentAddress).use { graphQlAgentClient ->
+    ): Flow<AssistantMessage> =
+        flow {
+            createGraphQlAgentClient(agentAddress).use { graphQlAgentClient ->
 
-            val subsetHeader = subset?.let { mapOf(LmosRuntimeConstants.SUBSET to subset) } ?: emptyMap()
-            val agentResponse =
+                val subsetHeader = subset?.let { mapOf(LmosRuntimeConstants.SUBSET to subset) } ?: emptyMap()
+
+                val agentRequest =
+                    AgentRequest(
+                        conversationContext =
+                            ConversationContext(
+                                conversationId = conversationId,
+                                anonymizationEntities = conversation.inputContext.anonymizationEntities,
+                            ),
+                        systemContext =
+                            conversation.systemContext.contextParams.map { (key, value) ->
+                                SystemContextEntry(key, value)
+                            }.toList(),
+                        userContext =
+                            UserContext(
+                                userId = conversation.userContext.userId,
+                                userToken = conversation.userContext.userToken,
+                                profile =
+                                    conversation.userContext.contextParams.map { (key, value) ->
+                                        ProfileEntry(key, value)
+                                    }.toList(),
+                            ),
+                        messages = conversation.inputContext.messages,
+                    )
+
                 try {
                     graphQlAgentClient.callAgent(
-                        AgentRequest(
-                            conversationContext =
-                                ConversationContext(
-                                    conversationId = conversationId,
-                                    anonymizationEntities = conversation.inputContext.anonymizationEntities,
-                                ),
-                            systemContext =
-                                conversation.systemContext.contextParams.map { (key, value) ->
-                                    SystemContextEntry(key, value)
-                                }.toList(),
-                            userContext =
-                                UserContext(
-                                    userId = conversation.userContext.userId,
-                                    userToken = conversation.userContext.userToken,
-                                    profile =
-                                        conversation.userContext.contextParams.map { (key, value) ->
-                                            ProfileEntry(key, value)
-                                        }.toList(),
-                                ),
-                            messages = conversation.inputContext.messages,
-                        ),
+                        agentRequest,
                         requestHeaders = subsetHeader,
-                    ).toCollection(mutableListOf())
+                    ).collect { response ->
+                        log.info("Agent Response: $response")
+                        emit(
+                            AssistantMessage(
+                                response.messages[0].content,
+                                response.anonymizationEntities,
+                            ),
+                        )
+                    }
                 } catch (e: Exception) {
                     log.error("Error response from ArcAgentClient", e)
                     throw AgentClientException(e.message)
                 }
-
-            AssistantMessage(
-                agentResponse.first().messages[0].content,
-                agentResponse.first().anonymizationEntities,
-            )
-        }
-    }
+            }
+        }.flowOn(Dispatchers.IO)
 
     fun createGraphQlAgentClient(agentAddress: Address): GraphQlAgentClient {
         // TODO - remove hardcoded parts of agent url
         val agentUrl = "ws://${agentAddress.uri}:8080/subscriptions"
+
         log.info("Creating GraphQlAgentClient with url $agentUrl")
         val graphQlAgentClient = GraphQlAgentClient(agentUrl)
         return graphQlAgentClient

@@ -9,6 +9,7 @@ rootProject.name = "lmos-runtime"
 include("lmos-runtime-core")
 include("lmos-runtime-spring-boot-starter")
 include("lmos-runtime-service")
+include("lmos-runtime-graphql-service")
 
 pluginManagement {
     plugins {
