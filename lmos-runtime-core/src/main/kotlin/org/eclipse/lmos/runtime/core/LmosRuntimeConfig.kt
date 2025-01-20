@@ -16,6 +16,7 @@ open class LmosRuntimeConfig(
     )
 
     data class OpenAI(
+        val provider: String,
         val url: String,
         val key: String,
         val model: String,

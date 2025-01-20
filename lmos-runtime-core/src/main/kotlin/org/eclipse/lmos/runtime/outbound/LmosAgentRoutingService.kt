@@ -60,6 +60,7 @@ class LmosAgentRoutingService(private val lmosRuntimeConfig: LmosRuntimeConfig) 
         val openAIConfig = lmosRuntimeConfig.openAi ?: throw IllegalArgumentException("openAI configuration key is null")
         val defaultModelClientProperties =
             DefaultModelClientProperties(
+                provider = openAIConfig.provider,
                 openAiUrl = openAIConfig.url,
                 openAiApiKey = openAIConfig.key,
                 model = openAIConfig.model,
