@@ -6,7 +6,10 @@
 
 package org.eclipse.lmos.runtime.outbound
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.eclipse.lmos.router.core.*
+import org.eclipse.lmos.router.core.Capability
 import org.eclipse.lmos.router.llm.DefaultModelClient
 import org.eclipse.lmos.router.llm.DefaultModelClientProperties
 import org.eclipse.lmos.router.llm.LLMAgentRoutingSpecsResolver
@@ -29,7 +32,7 @@ class LmosAgentRoutingService(private val lmosRuntimeConfig: LmosRuntimeConfig) 
         val (context, input) = prepareConversationComponents(conversation)
 
         val agentRoutingSpec =
-            resolveAgent(agentRoutingSpecResolver, context, input)
+            withContext(Dispatchers.IO) { resolveAgent(agentRoutingSpecResolver, context, input) }
         log.info("Resolved agent: $agentRoutingSpec")
         return agentRoutingSpec?.toAgent() ?: throw AgentRoutingSpecResolverException("No agent resolved for user query")
     }
