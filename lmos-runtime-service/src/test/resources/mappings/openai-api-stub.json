@@ -1,0 +1,30 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/llm/chat/completions"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "id": "chatcmpl-7a1b2c3d4e",
+      "object": "chat.completion",
+      "created": 1677654321,
+      "model": "gpt-4",
+      "choices": [
+        {
+          "index": 0,
+          "message": { "role": "assistant", "content": "{\"agentName\": \"SummaryAgent\"}" },
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 15,
+        "completion_tokens": 9,
+        "total_tokens": 24
+      }
+    }
+  }
+}

@@ -34,11 +34,7 @@ import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
 import java.util.*
 
-@SpringBootTest
-@ActiveProfiles("test")
-@AutoConfigureWebTestClient
-@Import
-class ConversationControllerIntegrationTest : BaseWireMockTest() {
+abstract class AbstractConversationControllerIntegrationTest : BaseWireMockTest() {
     @Autowired
     private lateinit var webTestClient: WebTestClient
 
