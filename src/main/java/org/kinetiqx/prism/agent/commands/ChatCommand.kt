@@ -1,4 +1,4 @@
-package org.kinetiqx.prism.commands
+package org.kinetiqx.prism.agent.commands
 
 import picocli.CommandLine
 

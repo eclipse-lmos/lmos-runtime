@@ -16,9 +16,11 @@ val quarkusPlatformVersion: String by project
 dependencies {
     implementation(enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}"))
     implementation(kotlin("stdlib-jdk8"))
+    implementation("io.quarkus:quarkus-kotlin")
     implementation("io.quarkus:quarkus-picocli")
     implementation("io.quarkus:quarkus-arc")
     implementation("org.apache.commons:commons-compress:1.27.0")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.2")
 
     testImplementation("io.quarkus:quarkus-junit5")
 }
