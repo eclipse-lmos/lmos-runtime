@@ -41,6 +41,24 @@ ${Ansi.AUTO.string("The @|bold,blue,underline LMOS Agent Universe|@ is Calling."
     @Throws(Exception::class)
     override fun run(vararg args: String): Int {
 
+//        credManagerTest()
+
+        val agent = arrayOf("agent", "create")
+
+        val agent2 = arrayOf("agent", "create", "-t", "ARC")
+        val agent3 = arrayOf("agent", "create", "-t", "DUMMY")
+
+        CommandLine(this, factory).execute(*agent)
+        CommandLine(this, factory).execute(*agent2)
+        CommandLine(this, factory).execute(*agent3)
+
+
+        val arg = arrayOf("cred", "list")
+        return CommandLine(this, factory).execute(*arg)
+
+    }
+
+    private fun credManagerTest(): Int {
         val argCreate1 = arrayOf("cred", "add", "1", "-u", "admin", "-p", "pass")
 
         val argGet1 = arrayOf("cred", "get", "1")
@@ -62,7 +80,6 @@ ${Ansi.AUTO.string("The @|bold,blue,underline LMOS Agent Universe|@ is Calling."
         CommandLine(this, factory).execute(*arg)
         CommandLine(this, factory).execute(*argDel)
         return CommandLine(this, factory).execute(*arg)
-
     }
 
 }

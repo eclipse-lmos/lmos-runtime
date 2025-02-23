@@ -9,6 +9,7 @@ import java.util.concurrent.Callable
     mixinStandardHelpOptions = true,
     description = ["Agent Management Commands"],
     subcommands = [
+        CreateCommand::class,
         ChatCommand::class,
         InstallCommand::class,
         ListCommand::class,

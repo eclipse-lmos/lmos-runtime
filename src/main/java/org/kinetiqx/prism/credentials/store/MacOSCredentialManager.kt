@@ -1,6 +1,7 @@
-package org.kinetiqx.prism.credentials
+package org.kinetiqx.prism.credentials.store
 
 import jakarta.enterprise.context.ApplicationScoped
+import org.kinetiqx.prism.credentials.Credential
 import java.io.BufferedReader
 
 @ApplicationScoped
