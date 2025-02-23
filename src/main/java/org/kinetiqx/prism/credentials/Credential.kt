@@ -3,9 +3,9 @@ package org.kinetiqx.prism.credentials
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.quarkus.runtime.annotations.RegisterForReflection
+import org.kinetiqx.prism.constants.LmosCliConstants.projectDir
 import org.kinetiqx.prism.credentials.utils.EncryptionUtils
 import java.nio.file.Files
-import java.nio.file.Paths
 import javax.crypto.SecretKey
 import javax.crypto.spec.SecretKeySpec
 
@@ -31,8 +31,8 @@ data class Credential(
 //}
 
 class DefaultCredentialStore {
-    private val homeDir = System.getProperty("user.home")
-    private val credDir = Paths.get(homeDir, ".credman")
+
+    private val credDir = projectDir.resolve( ".cred")
     private val credFile = credDir.resolve("credentials.json").toFile()
     private val keyFile = credDir.resolve("key").toFile()
     private val objectMapper = jacksonObjectMapper()

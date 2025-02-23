@@ -43,19 +43,21 @@ ${Ansi.AUTO.string("The @|bold,blue,underline LMOS Agent Universe|@ is Calling."
 
 //        credManagerTest()
 
+        return agentTest()
+
+    }
+
+    private fun agentTest(): Int {
         val agent = arrayOf("agent", "create")
 
         val agent2 = arrayOf("agent", "create", "-t", "ARC")
-        val agent3 = arrayOf("agent", "create", "-t", "DUMMY")
 
         CommandLine(this, factory).execute(*agent)
         CommandLine(this, factory).execute(*agent2)
-        CommandLine(this, factory).execute(*agent3)
 
 
         val arg = arrayOf("cred", "list")
         return CommandLine(this, factory).execute(*arg)
-
     }
 
     private fun credManagerTest(): Int {

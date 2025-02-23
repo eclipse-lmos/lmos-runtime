@@ -1,7 +1,7 @@
 package org.kinetiqx.prism.credentials.commands
 
 import org.kinetiqx.prism.credentials.Credential
-import org.kinetiqx.prism.credentials.store.CredentialStore
+import org.kinetiqx.prism.credentials.CredentialStore
 import picocli.CommandLine
 import java.util.concurrent.Callable
 
