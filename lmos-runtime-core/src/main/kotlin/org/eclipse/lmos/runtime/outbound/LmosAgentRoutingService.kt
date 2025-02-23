@@ -37,7 +37,7 @@ class LmosAgentRoutingService(private val lmosRuntimeConfig: LmosRuntimeConfig) 
         return agentRoutingSpec?.toAgent() ?: throw AgentRoutingSpecResolverException("No agent resolved for user query")
     }
 
-    fun resolveAgent(
+    private fun resolveAgent(
         agentRoutingSpecResolver: AgentRoutingSpecsResolver,
         context: Context,
         input: UserMessage,
@@ -122,7 +122,7 @@ fun AgentRoutingSpec.toAgent(): Agent =
         .name(name)
         .description(description)
         .version(version)
-        .addresses(addresses.map { address -> org.eclipse.lmos.runtime.core.model.Address(address.protocol, address.uri) }.toSet())
+        .addresses(addresses.map { address -> org.eclipse.lmos.runtime.core.model.Address(address.protocol, address.uri) }.toList())
         .apply {
             capabilities(
                 capabilities.map { capability ->

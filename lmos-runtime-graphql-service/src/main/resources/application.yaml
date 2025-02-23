@@ -1,5 +1,5 @@
 #
-# // SPDX-FileCopyrightText: 2025 Deutsche Telekom AG and others
+# // SPDX-FileCopyrightText: 2024 Deutsche Telekom AG
 # //
 # // SPDX-License-Identifier: Apache-2.0
 #
@@ -11,7 +11,6 @@ lmos:
     router:
       type: EXPLICIT
     open-ai:
-      provider: ${OPENAI_API_PROVIDER:openai}
       url: ${OPENAI_API_URL:https://api.openai.com/v1}
       key: ${OPENAI_API_KEY:}
       model: ${OPENAI_API_MODEL:"gpt-3.5-turbo"}
@@ -20,13 +19,6 @@ lmos:
       format: ${OPENAI_API_FORMAT:json_object}
     cache:
       ttl: ${CACHE_TTL:1800}
-    cors:
-      enabled: ${CORS_ENABLED:false}
-      allowed-origins: ${CORS_ALLOWED_ORIGINS:*}
-      allowed-methods: ${CORS_ALLOWED_METHODS:*}
-      allowed-headers: ${CORS_ALLOWED_HEADERS:*}
-      patterns: ${CORS_PATTERNS:/**}
-      max-age: ${CORS_MAX_AGE:8000}
 
 server:
   port: 8081

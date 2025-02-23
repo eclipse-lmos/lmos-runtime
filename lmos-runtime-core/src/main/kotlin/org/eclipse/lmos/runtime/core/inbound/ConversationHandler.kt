@@ -6,6 +6,9 @@
 
 package org.eclipse.lmos.runtime.core.inbound
 
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.onEach
 import org.eclipse.lmos.runtime.core.LmosRuntimeConfig
 import org.eclipse.lmos.runtime.core.cache.LmosRuntimeTenantAwareCache
 import org.eclipse.lmos.runtime.core.constants.LmosRuntimeConstants.Cache.ROUTES
@@ -24,7 +27,7 @@ interface ConversationHandler {
         conversationId: String,
         tenantId: String,
         turnId: String,
-    ): AssistantMessage
+    ): Flow<AssistantMessage>
 }
 
 class DefaultConversationHandler(
@@ -41,22 +44,23 @@ class DefaultConversationHandler(
         conversationId: String,
         tenantId: String,
         turnId: String,
-    ): AssistantMessage {
-        log.debug("Request Received, conversationId: $conversationId, turnId: $turnId")
-        val routingInformation =
-            lmosRuntimeTenantAwareCache.get(tenantId, ROUTES, conversationId)
-                ?: agentRegistryService.getRoutingInformation(tenantId, conversation.systemContext.channelId)
-                    .also { result ->
-                        log.debug("Caching routing information: {}", result)
-                        lmosRuntimeTenantAwareCache.save(
-                            tenantId, ROUTES, conversationId,
-                            result, lmosRuntimeConfig.cache.ttl,
-                        )
-                    }
-        log.info("routingInformation: $routingInformation")
-        val agent: Agent = agentRoutingService.resolveAgentForConversation(conversation, routingInformation.agentList)
-        log.info("Resolved agent: $agent")
-        val agentResponse =
+    ): Flow<AssistantMessage> =
+        coroutineScope {
+            log.debug("Request Received, conversationId: $conversationId, turnId: $turnId")
+            val routingInformation =
+                lmosRuntimeTenantAwareCache.get(tenantId, ROUTES, conversationId)
+                    ?: agentRegistryService.getRoutingInformation(tenantId, conversation.systemContext.channelId)
+                        .also { result ->
+                            log.debug("Caching routing information: {}", result)
+                            lmosRuntimeTenantAwareCache.save(
+                                tenantId, ROUTES, conversationId,
+                                result, lmosRuntimeConfig.cache.ttl,
+                            )
+                        }
+            log.info("routingInformation: $routingInformation")
+            val agent: Agent = agentRoutingService.resolveAgentForConversation(conversation, routingInformation.agentList)
+            log.info("Resolved agent: $agent")
+
             agentClientService.askAgent(
                 conversation,
                 conversationId,
@@ -64,8 +68,8 @@ class DefaultConversationHandler(
                 agent.name,
                 agent.addresses.random(),
                 routingInformation.subset,
-            )
-        log.info("Agent Response: $agentResponse")
-        return agentResponse
-    }
+            ).onEach {
+                log.info("Agent Response: $it")
+            }
+        }
 }

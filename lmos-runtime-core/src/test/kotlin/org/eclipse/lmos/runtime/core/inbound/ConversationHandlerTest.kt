@@ -6,6 +6,8 @@
 package org.eclipse.lmos.runtime.core.inbound
 
 import io.mockk.*
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
 import org.eclipse.lmos.arc.api.Message
 import org.eclipse.lmos.runtime.core.LmosRuntimeConfig
@@ -80,7 +82,7 @@ class ConversationHandlerTest {
             )
 
             // Invoke method
-            val result = conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId)
+            val result = conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId).first()
 
             // Assertions
             assertEquals(agentResponse, result)
@@ -112,7 +114,7 @@ class ConversationHandlerTest {
             )
 
             // Execute the method
-            conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId)
+            conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId).first()
 
             coVerify {
                 agentClientService.askAgent(
@@ -158,7 +160,7 @@ class ConversationHandlerTest {
                     conversationId,
                     tenantId,
                     turnId,
-                )
+                ).first()
 
             assertEquals(expectedAgentResponse, result)
 
@@ -208,7 +210,7 @@ class ConversationHandlerTest {
                     conversationId,
                     tenantId,
                     turnId,
-                )
+                ).first()
 
             assertEquals(expectedAgentResponse, result)
 
@@ -236,7 +238,7 @@ class ConversationHandlerTest {
 
         assertThrows<NoRoutingInfoFoundException> {
             runBlocking {
-                conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId)
+                conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId).first()
             }
         }
     }
@@ -258,7 +260,7 @@ class ConversationHandlerTest {
 
         assertThrows<AgentClientException> {
             runBlocking {
-                conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId)
+                conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId).first()
             }
         }
     }
@@ -296,7 +298,7 @@ class ConversationHandlerTest {
                     conversationId,
                     tenantId,
                     turnId,
-                )
+                ).first()
 
             // Assert
             assertEquals(expectedAgentResponse, result)
@@ -319,7 +321,7 @@ class ConversationHandlerTest {
     private fun routingInformation(subset: String? = null): RoutingInformation {
         val routingInformation =
             RoutingInformation(
-                agentList = listOf(Agent("agent1", "v1", "desc", listOf(), setOf(Address(uri = "http://localhost:8080/")))),
+                agentList = listOf(Agent("agent1", "v1", "desc", listOf(), listOf(Address(uri = "http://localhost:8080/")))),
                 subset = subset,
             )
         return routingInformation
@@ -334,7 +336,9 @@ class ConversationHandlerTest {
         subset: String?,
         agentResponse: AssistantMessage,
     ) {
-        coEvery { agentClientService.askAgent(conversation, conversationId, turnId, agentName, address, subset) } returns agentResponse
+        coEvery {
+            agentClientService.askAgent(conversation, conversationId, turnId, agentName, address, subset)
+        } returns flow { emit(agentResponse) }
     }
 
     private fun mockAgentRegistry(
