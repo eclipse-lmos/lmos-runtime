@@ -2,6 +2,7 @@ plugins {
     java
     id("io.quarkus")
     kotlin("jvm")
+    kotlin("plugin.serialization") version "1.8.0"
 }
 
 repositories {
@@ -20,7 +21,7 @@ dependencies {
     implementation("io.quarkus:quarkus-picocli")
     implementation("io.quarkus:quarkus-arc")
     implementation("org.apache.commons:commons-compress:1.27.0")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.2")
+    implementation("net.mamoe.yamlkt:yamlkt:0.13.0")
     implementation("org.eclipse.lmos:lmos-starter:0.0.1-SNAPSHOT")
 
     testImplementation("io.quarkus:quarkus-junit5")
