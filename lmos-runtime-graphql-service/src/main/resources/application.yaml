@@ -11,6 +11,7 @@ lmos:
     router:
       type: EXPLICIT
     open-ai:
+      provider: ${OPENAI_API_PROVIDER:openai}
       url: ${OPENAI_API_URL:https://api.openai.com/v1}
       key: ${OPENAI_API_KEY:}
       model: ${OPENAI_API_MODEL:"gpt-3.5-turbo"}
