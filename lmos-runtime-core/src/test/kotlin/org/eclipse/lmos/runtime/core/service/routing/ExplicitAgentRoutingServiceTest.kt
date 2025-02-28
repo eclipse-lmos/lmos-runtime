@@ -94,14 +94,14 @@ class ExplicitAgentRoutingServiceTest {
                 version = "1.0",
                 description = "Test Agent",
                 capabilities = listOf(),
-                addresses = setOf(),
+                addresses = listOf(),
             ),
             Agent(
                 name = "AgentY",
                 version = "1.0",
                 description = "Another Agent",
                 capabilities = listOf(),
-                addresses = setOf(),
+                addresses = listOf(),
             ),
         )
 }

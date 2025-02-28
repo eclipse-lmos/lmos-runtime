@@ -6,6 +6,7 @@
 
 package org.eclipse.lmos.runtime.core.service.outbound
 
+import kotlinx.coroutines.flow.Flow
 import org.eclipse.lmos.runtime.core.model.Address
 import org.eclipse.lmos.runtime.core.model.AssistantMessage
 import org.eclipse.lmos.runtime.core.model.Conversation
@@ -18,5 +19,5 @@ interface AgentClientService {
         agentName: String,
         agentAddress: Address,
         subset: String?,
-    ): AssistantMessage
+    ): Flow<AssistantMessage>
 }

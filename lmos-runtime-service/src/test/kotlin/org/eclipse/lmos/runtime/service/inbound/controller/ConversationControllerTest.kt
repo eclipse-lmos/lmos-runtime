@@ -8,6 +8,7 @@ package org.eclipse.lmos.runtime.service.inbound.controller
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.coEvery
 import io.mockk.mockk
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
 import org.eclipse.lmos.arc.api.Message
 import org.eclipse.lmos.runtime.core.exception.ErrorMessage
@@ -80,7 +81,7 @@ class ConversationControllerTest {
                     tenantId,
                     turnId,
                 )
-            } returns assistantMessage
+            } returns flow { emit(assistantMessage) }
 
             webClient.post()
                 .uri("$BASE_PATH$CHAT_URL", tenantId, conversationId)
@@ -117,7 +118,7 @@ class ConversationControllerTest {
                     tenantId,
                     turnId,
                 )
-            } returns assistantMessage
+            } returns flow { emit(assistantMessage) }
 
             webClient
                 .post()
