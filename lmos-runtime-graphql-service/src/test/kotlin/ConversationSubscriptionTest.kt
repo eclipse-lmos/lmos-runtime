@@ -13,10 +13,11 @@ import io.mockk.mockk
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import org.eclipse.lmos.arc.api.Message
+import org.eclipse.lmos.arc.api.*
 import org.eclipse.lmos.runtime.core.inbound.ConversationHandler
-import org.eclipse.lmos.runtime.core.model.*
-import org.junit.jupiter.api.*
+import org.eclipse.lmos.runtime.core.model.AssistantMessage
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class ConversationSubscriptionTest {
@@ -32,91 +33,108 @@ class ConversationSubscriptionTest {
     @Test
     fun `chat should return flow of assistant messages`() =
         runTest {
-            val conversation = conversation()
-            val conversationId = "conv123"
-            val tenantId = "tenant456"
-            val turnId = "turn789"
+            val agentRequest = createAgentRequest()
 
             val assistantMessage1 = AssistantMessage(content = "Hello, how can I assist you?")
             val assistantMessage2 = AssistantMessage(content = "Do you need help with anything else?")
             val assistantMessageFlow = flowOf(assistantMessage1, assistantMessage2)
 
             coEvery {
-                conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId)
+                conversationHandler.handleConversation(any(), any(), any(), any())
             } returns assistantMessageFlow
 
-            val resultFlow = conversationSubscription.chat(conversation, conversationId, tenantId, turnId)
+            val resultFlow = conversationSubscription.agent(null, agentRequest)
 
             resultFlow.test {
-                assertEquals(assistantMessage1, awaitItem())
-                assertEquals(assistantMessage2, awaitItem())
+                assertEquals(assistantMessage1.toAgentResult(), awaitItem())
+                assertEquals(assistantMessage2.toAgentResult(), awaitItem())
                 awaitComplete()
             }
 
             coVerify(exactly = 1) {
-                conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId)
+                conversationHandler.handleConversation(any(), any(), any(), any())
             }
         }
 
     @Test
     fun `chat should handle empty flow of assistant messages`() =
         runTest {
-            val conversation = conversation()
-            val conversationId = "convEmpty"
-            val tenantId = "tenantEmpty"
-            val turnId = "turnEmpty"
+            val agentRequest = createAgentRequest()
 
             val assistantMessageFlow = emptyFlow<AssistantMessage>()
 
             coEvery {
-                conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId)
+                conversationHandler.handleConversation(any(), any(), any(), any())
             } returns assistantMessageFlow
 
-            val resultFlow = conversationSubscription.chat(conversation, conversationId, tenantId, turnId)
+            val resultFlow = conversationSubscription.agent(null, agentRequest)
 
             resultFlow.test {
                 awaitComplete()
             }
 
             coVerify(exactly = 1) {
-                conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId)
+                conversationHandler.handleConversation(any(), any(), any(), any())
             }
         }
 
     @Test
     fun `chat should propagate exception from conversation handler`() =
         runTest {
-            val conversation = conversation()
-            val conversationId = "convError"
-            val tenantId = "tenantError"
-            val turnId = "turnError"
+            val agentRequest = createAgentRequest()
 
             val exceptionMessage = "Test exception"
             val exception = RuntimeException(exceptionMessage)
 
             coEvery {
-                conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId)
+                conversationHandler.handleConversation(any(), any(), any(), any())
             } throws exception
 
-            val resultFlow = conversationSubscription.chat(conversation, conversationId, tenantId, turnId)
+            val resultFlow = conversationSubscription.agent(null, agentRequest)
 
             resultFlow.test {
                 assertEquals(exceptionMessage, awaitError().message)
             }
 
             coVerify(exactly = 1) {
-                conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId)
+                conversationHandler.handleConversation(any(), any(), any(), any())
             }
         }
 
-    private fun conversation() =
-        Conversation(
-            inputContext =
-                InputContext(
-                    messages = listOf(Message("user", "Hello")),
-                    explicitAgent = "agent1",
+    private fun createAgentRequest() =
+        AgentRequest(
+            messages = listOf(Message("user", "Hello world")),
+            systemContext =
+                listOf(
+                    SystemContextEntry("tenantId", "tenant id"),
+                    SystemContextEntry("channelId", "channel id"),
                 ),
-            systemContext = SystemContext(channelId = "channel1"),
-            userContext = UserContext(userId = "user1", userToken = "token1"),
+            conversationContext =
+                ConversationContext(
+                    conversationId = "conversation id",
+                    turnId = "turn id",
+                    anonymizationEntities =
+                        listOf(
+                            AnonymizationEntity("type", "value", "replacement"),
+                        ),
+                ),
+            userContext =
+                org.eclipse.lmos.arc.api.UserContext(
+                    userId = "user id",
+                    userToken = "user token",
+                    profile = listOf(ProfileEntry("key", "value")),
+                ),
         )
 }
+
+private fun AssistantMessage.toAgentResult() =
+    AgentResult(
+        messages =
+            listOf(
+                Message(
+                    role = "assistant",
+                    content = this.content,
+                    turnId = "turn id",
+                ),
+            ),
+    )
