@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-package org.eclipse.lmos.runtime.graphql.service.inbound.subscription
+package org.eclipse.lmos.runtime.graphql.service
 
 import org.eclipse.lmos.runtime.graphql.service.properties.LmosRuntimeCorsProperties
 import org.springframework.boot.autoconfigure.SpringBootApplication
