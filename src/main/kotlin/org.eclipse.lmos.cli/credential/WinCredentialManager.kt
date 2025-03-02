@@ -45,10 +45,9 @@ class WinCredentialManager : CredentialManager {
         addCredential(prefix, credential)  
     }  
   
-    override fun deleteCredential(prefix: String, id: String) {  
-        val target = "$prefix/$id"  
+    override fun deleteCredential(prefix: String, id: String) {
         try {  
-            winCred.deleteCredential(target, id)
+            winCred.deleteCredential(prefix, id)
         } catch (e: Exception) {
             println(e)
         }  

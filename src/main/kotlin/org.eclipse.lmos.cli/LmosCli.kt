@@ -127,21 +127,21 @@ ${Ansi.AUTO.string("The @|bold,blue,underline LMOS Agent Universe|@ is Calling."
         val argList = arrayOf("config", "llm", "list")
 
         val argDelAll = arrayOf("config", "llm", "delete")
-        val argDelAll2 = arrayOf("config", "llm", "delete", "-i", "1")
+        val argDelAll2 = arrayOf("config", "llm", "delete", "-i", "4")
         val argDelAll3 = arrayOf("config", "llm", "delete", "-i", "all")
 
 
-        CommandLine(this, factory).execute(*argList)
-
-        CommandLine(this, factory).execute(*argCreate1)
-        CommandLine(this, factory).execute(*argGet1)
-        CommandLine(this, factory).execute(*argGet2)
-        CommandLine(this, factory).execute(*argCreate2)
-        CommandLine(this, factory).execute(*argGet2)
-        CommandLine(this, factory).execute(*argList)
+//        CommandLine(this, factory).execute(*argList)
+//
+//        CommandLine(this, factory).execute(*argCreate1)
+//        CommandLine(this, factory).execute(*argGet1)
+//        CommandLine(this, factory).execute(*argGet2)
+//        CommandLine(this, factory).execute(*argCreate2)
+//        CommandLine(this, factory).execute(*argGet2)
+//        CommandLine(this, factory).execute(*argList)
         CommandLine(this, factory).execute(*argDelAll2)
-        CommandLine(this, factory).execute(*argDelAll2)
-        CommandLine(this, factory).execute(*argDelAll3)
+//        CommandLine(this, factory).execute(*argDelAll2)
+//        CommandLine(this, factory).execute(*argDelAll3)
         return CommandLine(this, factory).execute(*argList)
     }
 

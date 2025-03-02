@@ -48,7 +48,7 @@ class WinCred : CredAdvapi32 {
     }
 
     fun deleteCredential(target: String, userName: String): Boolean {
-        val fullTargetName = "$target|$userName"  // Match the TargetName format
+        val fullTargetName = "$target:$userName"  // Match the TargetName format
         if (!CredDelete(fullTargetName, CredAdvapi32.CRED_TYPE_GENERIC, 0)) {
             println("********Exception in delete")
             throw LastErrorException(Native.getLastError())
