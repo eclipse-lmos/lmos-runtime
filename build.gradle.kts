@@ -28,6 +28,8 @@ dependencies {
     implementation("org.eclipse.lmos:lmos-starter:0.0.1-SNAPSHOT")
     implementation("org.eclipse.lmos:arc-agent-client:0.1.0-SNAPSHOT")
     implementation("org.eclipse.lmos:arc-api:0.1.0-SNAPSHOT")
+    implementation("net.java.dev.jna:jna:5.14.0")
+    implementation("net.java.dev.jna:jna-platform:5.14.0")
 
     testImplementation("io.quarkus:quarkus-junit5")
 }
