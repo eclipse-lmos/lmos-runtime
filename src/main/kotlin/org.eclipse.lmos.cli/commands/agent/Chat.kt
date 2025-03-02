@@ -1,11 +1,15 @@
 package org.eclipse.lmos.cli.commands.agent
 
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
+import org.eclipse.lmos.arc.api.Message
+import org.eclipse.lmos.cli.*
 import org.eclipse.lmos.cli.agent.AgentType
 import org.eclipse.lmos.cli.constants.LmosCliConstants.AgentStarterConstants.AGENT_PROJECTS_DIRECTORY
 import org.eclipse.lmos.cli.registry.agent.AgentRegistry
 import picocli.CommandLine
 import java.io.*
+import java.util.UUID
 import kotlin.collections.List
 
 @CommandLine.Command(name = "chat", description = ["Chat with the system"], mixinStandardHelpOptions = true)
@@ -20,16 +24,37 @@ class Chat : Runnable {
 
         println("Chatting with query: $agentName")
 
-        agentName?.let { while (true) {
+        val agentName: String = agentName ?: promptUser("Enter the agent name")
 
+        agentName.let { while (true) {
+
+            val conversationId = UUID.randomUUID().toString()
             val startStatus = run { startProject() }
+            val message = listOf<Message>()
+            val inputContext = InputContext(message)
+            val systemContext = SystemContext("channelId")
+            val userContext = UserContext("userId", "userToken")
+            val conversation = Conversation(inputContext, systemContext, userContext)
 
             if(startStatus == "STARTED") {
 
                 val agentRegistry = AgentRegistry()
                 val agentInfo: AgentInfo = agentRegistry.findAgent(it)
 
-                val input = promptUser("Enter your query")!!
+                val input = promptUser("Enter your query")
+                val turnId = UUID.randomUUID().toString()
+
+                message.plus(Message(role = "user", content = input, turnId = turnId))
+
+                runBlocking {
+                    ArcAgentClientService().askAgent(
+                        conversation, conversationId, turnId,
+                        agentInfo.name, "localhost:8080"
+                    ).collect { response ->
+                        println("${agentName.uppercase()}: $response")
+                        return@collect
+                    }
+                }
 
                 if (input.equals("exit", ignoreCase = true)) {
                     println("Exiting session...")
@@ -42,7 +67,7 @@ class Chat : Runnable {
             } else {
                 println("Error in starting Agents, consult logs")
             }
-        } } ?: "Chat with LLM" //todo integrate llm call
+        } } ?: TODO("Implement Direct LLM integration") //todo integrate llm call
 
 
     }

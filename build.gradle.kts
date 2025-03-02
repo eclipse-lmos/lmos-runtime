@@ -8,6 +8,9 @@ plugins {
 repositories {
     mavenCentral()
     mavenLocal()
+    maven {
+        url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
+    }
 }
 
 val quarkusPlatformGroupId: String by project
@@ -23,6 +26,8 @@ dependencies {
     implementation("org.apache.commons:commons-compress:1.27.0")
     implementation("net.mamoe.yamlkt:yamlkt:0.13.0")
     implementation("org.eclipse.lmos:lmos-starter:0.0.1-SNAPSHOT")
+    implementation("org.eclipse.lmos:arc-agent-client:0.1.0-SNAPSHOT")
+    implementation("org.eclipse.lmos:arc-api:0.1.0-SNAPSHOT")
 
     testImplementation("io.quarkus:quarkus-junit5")
 }
