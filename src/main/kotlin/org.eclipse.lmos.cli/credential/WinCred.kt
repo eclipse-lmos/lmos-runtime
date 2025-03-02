@@ -17,7 +17,8 @@ class WinCred : CredAdvapi32 {
                 val passwordBytes = credMem.CredentialBlob?.getByteArray(0, credMem.CredentialBlobSize) ?: ByteArray(0)
                 val password = String(passwordBytes, Charsets.UTF_16LE)  
                 return Credential(credMem.TargetName!!.toString(), credMem.UserName!!.toString(), password)
-            } else {  
+            } else {
+                println("********Exception in get")
                 throw LastErrorException(Native.getLastError())
             }  
         } finally {
@@ -40,6 +41,7 @@ class WinCred : CredAdvapi32 {
             UserName = WString(userName)
         }
         if (!CredWrite(credMem, 0)) {
+            println("********Exception in set")
             throw LastErrorException(Native.getLastError())
         }
         return true
@@ -48,6 +50,7 @@ class WinCred : CredAdvapi32 {
     fun deleteCredential(target: String, userName: String): Boolean {
         val fullTargetName = "$target|$userName"  // Match the TargetName format
         if (!CredDelete(fullTargetName, CredAdvapi32.CRED_TYPE_GENERIC, 0)) {
+            println("********Exception in delete")
             throw LastErrorException(Native.getLastError())
         }
         return true
