@@ -11,10 +11,12 @@ import java.util.concurrent.Callable
 )
 class DeleteLLMConfig : Callable<Int> {
 
-    @CommandLine.Option(names = ["-i", "--id"], description = ["Id of Credential"])
+    @CommandLine.Option(names = ["-i", "--id"], description = ["Id of WindowsCredential"])
     var id: String? = null
 
     override fun call(): Int {
+
+        printlnHeader("Deleting LLM Config")
         val id = id ?: promptUser("Enter id")
         val deleteLLMConfig = DefaultLLMConfigManager().deleteLLMConfig(id)
         if (deleteLLMConfig == null) {

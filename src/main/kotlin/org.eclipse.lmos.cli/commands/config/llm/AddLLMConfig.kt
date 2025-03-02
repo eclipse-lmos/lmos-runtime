@@ -9,10 +9,12 @@ import java.util.concurrent.Callable
 @CommandLine.Command(name = "add", description = ["Add a new credential"])
 class AddLLMConfig : Callable<Int> {
 
-    @CommandLine.Option(names = ["-i", "--id"], description = ["Id of Credential"])
+    @CommandLine.Option(names = ["-i", "--id"], description = ["Id of WindowsCredential"])
     var id: String? = null
 
     override fun call(): Int {
+
+        printlnHeader("Adding new LLM Config")
 
         val id = id ?: promptUser("Enter id")
         val modelName = promptUser("Enter model name")

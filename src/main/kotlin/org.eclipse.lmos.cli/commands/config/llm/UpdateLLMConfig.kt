@@ -12,10 +12,12 @@ import java.util.concurrent.Callable
 )
 class UpdateLLMConfig : Callable<Int> {
 
-    @CommandLine.Option(names = ["-i", "--id"], description = ["Id of Credential"])
+    @CommandLine.Option(names = ["-i", "--id"], description = ["Id of WindowsCredential"])
     var id: String? = null
 
     override fun call(): Int {
+
+        printlnHeader("Update LLM Config")
         val id = id ?: promptUser("Enter id")
         val llmConfigManager = DefaultLLMConfigManager()
         val llmConfig = llmConfigManager.getLLMConfig(id)

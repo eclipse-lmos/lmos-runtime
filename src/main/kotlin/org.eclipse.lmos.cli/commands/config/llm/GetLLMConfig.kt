@@ -11,10 +11,12 @@ import java.util.concurrent.Callable
 )
 class GetLLMConfig : Callable<Int> {
 
-    @CommandLine.Option(names = ["-i", "--id"], description = ["Id of Credential"])
+    @CommandLine.Option(names = ["-i", "--id"], description = ["Id of WindowsCredential"], required = false)
     var id: String? = null
 
     override fun call(): Int {
+
+        printlnHeader("Getting LLM Config")
         val id = id ?: promptUser("Enter id")
         val llmConfig = DefaultLLMConfigManager().getLLMConfig(id)
         if (llmConfig == null) {
@@ -26,7 +28,7 @@ class GetLLMConfig : Callable<Int> {
                 |ID: ${llmConfig.id}
                 |Model Name: ${llmConfig.modelName}
                 |Base URL: ${llmConfig.baseUrl}
-                |API Key: *****${llmConfig.apiKey.substring(llmConfig.apiKey.length - 4)}
+                |API Key: *****${llmConfig.apiKey.substring(llmConfig.apiKey.length)}
                 |Provider: ${llmConfig.provider}
             """.trimIndent()
             )

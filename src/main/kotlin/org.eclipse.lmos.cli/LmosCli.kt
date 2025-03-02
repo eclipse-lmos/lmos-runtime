@@ -16,7 +16,8 @@ import kotlin.io.path.createDirectories
 import kotlin.io.path.notExists
 
 
-@TopCommand
+//@TopCommand
+@QuarkusMain
 @CommandLine.Command(
     name = "lmos",
     mixinStandardHelpOptions = true,
@@ -25,10 +26,10 @@ import kotlin.io.path.notExists
         Config::class
     ], description = ["LMOS Command Line Interface"]
 )
-class LmosCli : Runnable {
+class LmosCli : Runnable, QuarkusApplication {
 
-//    @Inject
-//    lateinit var factory: CommandLine.IFactory
+    @Inject
+    lateinit var factory: CommandLine.IFactory
 
 
     override fun run() {
@@ -74,22 +75,21 @@ ${Ansi.AUTO.string("The @|bold,blue,underline LMOS Agent Universe|@ is Calling."
         }
     }
 
-//    @Throws(Exception::class)
-//    override fun run(vararg args: String): Int {
-//
-//        init()
+    @Throws(Exception::class)
+    override fun run(vararg args: String): Int {
+
+        init()
 //        CommandLine.usage(this, System.out)
-//        return 0
+
+//        val agent2 = arrayOf("agent", "chat")
 //
-////        val agent2 = arrayOf("agent", "chat")
-////
-////        return CommandLine(this, factory).execute(*agent2)
-////
-////        return credManagerTest()
+//        return CommandLine(this, factory).execute(*agent2)
 //
-////        return agentTest()
-//
-//    }
+        return credManagerTest()
+
+//        return agentTest()
+
+    }
 
 //    private fun agentTest(): Int {
 //        val agent = arrayOf("agent", "create")
@@ -104,43 +104,45 @@ ${Ansi.AUTO.string("The @|bold,blue,underline LMOS Agent Universe|@ is Calling."
 //        return CommandLine(this, factory).execute(*arg)
 //    }
 //
-//    private fun credManagerTest(): Int {
-////        val argCreate1 = arrayOf("config", "llm", "add", "1", "-u", "admin", "-p", "pass")
-////
-////        val argGet1 = arrayOf("config", "llm", "get", "1")
-////        val argGet2 = arrayOf("config", "llm", "get", "2")
-////
-////        val argCreate2 = arrayOf("config", "llm", "add", "2", "-u", "admin", "-p", "pass")
-////
-////        val arg = arrayOf("config", "llm", "list")
-////
-////        val argDel = arrayOf("config", "llm", "delete", "all")
-//
-//        val argCreate1 = arrayOf("config", "llm", "add", "-i", "1")
-//        val argCreate2 = arrayOf("config", "llm", "add", "-i", "2")
+    private fun credManagerTest(): Int {
+//        val argCreate1 = arrayOf("config", "llm", "add", "1", "-u", "admin", "-p", "pass")
 //
 //        val argGet1 = arrayOf("config", "llm", "get", "1")
 //        val argGet2 = arrayOf("config", "llm", "get", "2")
 //
-//        val argList = arrayOf("config", "llm", "list")
+//        val argCreate2 = arrayOf("config", "llm", "add", "2", "-u", "admin", "-p", "pass")
 //
-//        val argDelAll = arrayOf("config", "llm", "delete", "1")
-//        val argDelAll2 = arrayOf("config", "llm", "delete", "2")
-//        val argDelAll3 = arrayOf("config", "llm", "delete", "3")
+//        val arg = arrayOf("config", "llm", "list")
 //
-//
-//        CommandLine(this, factory).execute(*argList)
-//
+//        val argDel = arrayOf("config", "llm", "delete", "all")
+
+        println("Starting Credential Manager Test")
+
+        val argCreate1 = arrayOf("config", "llm", "add", "-i", "1")
+        val argCreate2 = arrayOf("config", "llm", "add")
+
+        val argGet1 = arrayOf("config", "llm", "get", "-i", "1")
+        val argGet2 = arrayOf("config", "llm", "get")
+
+        val argList = arrayOf("config", "llm", "list")
+
+        val argDelAll = arrayOf("config", "llm", "delete")
+        val argDelAll2 = arrayOf("config", "llm", "delete", "-i", "2")
+        val argDelAll3 = arrayOf("config", "llm", "delete", "-i", "all")
+
+
+        CommandLine(this, factory).execute(*argList)
+
 //        CommandLine(this, factory).execute(*argCreate1)
 //        CommandLine(this, factory).execute(*argGet1)
 //        CommandLine(this, factory).execute(*argGet2)
 //        CommandLine(this, factory).execute(*argCreate2)
 //        CommandLine(this, factory).execute(*argGet2)
 //        CommandLine(this, factory).execute(*argList)
-//        CommandLine(this, factory).execute(*argDelAll)
-//        CommandLine(this, factory).execute(*argDelAll2)
-//        CommandLine(this, factory).execute(*argDelAll3)
-//        return CommandLine(this, factory).execute(*argList)
-//    }
+        CommandLine(this, factory).execute(*argDelAll)
+        CommandLine(this, factory).execute(*argDelAll2)
+        CommandLine(this, factory).execute(*argDelAll3)
+        return CommandLine(this, factory).execute(*argList)
+    }
 
 }
