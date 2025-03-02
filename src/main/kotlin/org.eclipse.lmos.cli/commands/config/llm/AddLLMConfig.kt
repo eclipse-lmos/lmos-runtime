@@ -17,10 +17,10 @@ class AddLLMConfig : Callable<Int> {
         printlnHeader("Adding new LLM Config")
 
         val id = id ?: promptUser("Enter id")
-        val modelName = promptUser("Enter model name")
-        val baseUrl = promptUser("Enter base-url")
-        val apiKey = promptUser("Enter api-key")
-        val provider = promptUser("Enter provider")
+        val modelName = "m" ?: promptUser("Enter model name")
+        val baseUrl = "m" ?:  promptUser("Enter base-url")
+        val apiKey = "m" ?:  promptUser("Enter api-key")
+        val provider = "m" ?:  promptUser("Enter provider")
         val llmConfig = LLMConfig(id, modelName, baseUrl, apiKey, provider)
         val maskedApiKey = if (llmConfig.apiKey.length >= 4) {
             "*****${llmConfig.apiKey.takeLast(4)}"

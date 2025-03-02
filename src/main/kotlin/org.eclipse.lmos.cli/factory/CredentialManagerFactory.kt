@@ -36,7 +36,6 @@ class CredentialManagerFactory {
                 CredentialManagerType.DEFAULT -> TODO()
             }
         }
-        println("Returning Credential Manager: ${credentialManager.credentialManagerType()}")
         return credentialManager
     }
 

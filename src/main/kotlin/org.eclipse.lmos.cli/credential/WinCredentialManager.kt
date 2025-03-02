@@ -12,22 +12,24 @@ class WinCredentialManager : CredentialManager {
   
     override fun testCredentialManager(): Boolean {  
         return try {  
-            val testTarget = "CredentialManagerTestTarget"  
-            winCred.setCredential(testTarget, "testUser", "testPassword")  
-            winCred.deleteCredential(testTarget)  
+            val testTarget = "CredentialManagerTestTarget"
+            val user = "testUser4"
+            //winCred.deleteCredential2(testTarget, user)
+            winCred.setCredential(testTarget, user, "testPassword")
+            winCred.listCredentials("")
+            winCred.deleteCredential(testTarget, user)
             true  
         } catch (e: Exception) {  
             false  
         }  
     }  
   
-    override fun addCredential(prefix: String, credential: Credential) {  
-        val target = "$prefix/${credential.id}"  
-        winCred.setCredential(target, credential.id, credential.content)  
+    override fun addCredential(prefix: String, credential: Credential) {
+        winCred.setCredential("$prefix:", credential.id, credential.content)
     }  
   
     override fun getCredential(prefix: String, id: String): Credential? {  
-        val target = "$prefix/$id"  
+        val target = "$prefix:$id"
         return try {  
             val winCredential = winCred.getCredential(target)  
             Credential(  
@@ -46,9 +48,9 @@ class WinCredentialManager : CredentialManager {
     override fun deleteCredential(prefix: String, id: String) {  
         val target = "$prefix/$id"  
         try {  
-            winCred.deleteCredential(target)  
-        } catch (e: Exception) {  
-            // Handle exceptions or log if necessary  
+            winCred.deleteCredential(target, id)
+        } catch (e: Exception) {
+            println(e)
         }  
     }  
   

@@ -9,48 +9,51 @@ class WinCred : CredAdvapi32 {
     data class Credential(val target: String, val username: String, val password: String)  
   
     fun getCredential(target: String): Credential {  
-        val pcredMem = CredAdvapi32.PCREDENTIAL()  
+        val pcredMem = CredAdvapi32.PCREDENTIAL()
   
-        try {  
-            if (CredRead(target, CredAdvapi32.CRED_TYPE_GENERIC, 0, pcredMem)) {  
-                val credMem = CredAdvapi32.CREDENTIAL(pcredMem.credential)  
+        try {
+            if (CredRead(target, CredAdvapi32.CRED_TYPE_GENERIC, 0, pcredMem)) {
+                val credMem = CredAdvapi32.CREDENTIAL(pcredMem.credential)
                 val passwordBytes = credMem.CredentialBlob?.getByteArray(0, credMem.CredentialBlobSize) ?: ByteArray(0)
                 val password = String(passwordBytes, Charsets.UTF_16LE)  
-                return Credential(credMem.TargetName!!, credMem.UserName!!, password)
+                return Credential(credMem.TargetName!!.toString(), credMem.UserName!!.toString(), password)
             } else {  
-                throw LastErrorException(Native.getLastError())  
+                throw LastErrorException(Native.getLastError())
             }  
-        } finally {  
-            CredFree(pcredMem.credential!!)
+        } finally {
+            pcredMem.credential?.let {
+                CredFree(pcredMem.credential!!)
+            }
         }  
-    }  
-  
-    fun setCredential(target: String, userName: String, password: String): Boolean {  
-        val credMem = CredAdvapi32.CREDENTIAL().apply {  
-            Flags = 0  
-            TargetName = target  
-            Type = CredAdvapi32.CRED_TYPE_GENERIC  
-            UserName = userName  
-            AttributeCount = 0  
-            Persist = CredAdvapi32.CRED_PERSIST_ENTERPRISE  
-            val bpassword = password.toByteArray(Charsets.UTF_16LE)  
-            CredentialBlobSize = bpassword.size  
-            CredentialBlob = getPointer(bpassword)  
-        }  
-        if (!CredWrite(credMem, 0)) {  
-            throw LastErrorException(Native.getLastError())  
-        }  
-        return true  
-    }  
-  
-    fun deleteCredential(target: String): Boolean {  
-        if (!CredDelete(target, CredAdvapi32.CRED_TYPE_GENERIC, 0)) {  
-            throw LastErrorException(Native.getLastError())  
-        }  
-        return true  
-    }  
-  
-    fun listCredentials(prefix: String): List<Credential> {  
+    }
+
+    fun setCredential(target: String, userName: String, password: String): Boolean {
+        val credMem = CredAdvapi32.CREDENTIAL().apply {
+            Flags = 0
+            TargetName = WString("$target$userName")
+            Type = CredAdvapi32.CRED_TYPE_GENERIC
+            AttributeCount = 0
+            Persist = CredAdvapi32.CRED_PERSIST_ENTERPRISE
+            val bpassword = password.toByteArray(Charsets.UTF_16LE)
+            CredentialBlobSize = bpassword.size
+            CredentialBlob = getPointer(bpassword)
+            UserName = WString(userName)
+        }
+        if (!CredWrite(credMem, 0)) {
+            throw LastErrorException(Native.getLastError())
+        }
+        return true
+    }
+
+    fun deleteCredential(target: String, userName: String): Boolean {
+        val fullTargetName = "$target|$userName"  // Match the TargetName format
+        if (!CredDelete(fullTargetName, CredAdvapi32.CRED_TYPE_GENERIC, 0)) {
+            throw LastErrorException(Native.getLastError())
+        }
+        return true
+    }
+
+    fun listCredentials(prefix: String): List<Credential> {
         val count = IntByReference()  
         val pCredentials = PointerByReference()  
   
@@ -60,8 +63,8 @@ class WinCred : CredAdvapi32 {
             throw LastErrorException(Native.getLastError())  
         }  
   
-        val credentials = mutableListOf<Credential>()  
-  
+        val credentials = mutableListOf<Credential>()
+
         val credentialPointers = pCredentials.value.getPointerArray(0, count.value)  
         for (pointer in credentialPointers) {  
             val cred = CredAdvapi32.CREDENTIAL(pointer)  
@@ -69,8 +72,8 @@ class WinCred : CredAdvapi32 {
             val password = String(passwordBytes, Charsets.UTF_16LE)  
             credentials.add(  
                 Credential(  
-                    target = cred.TargetName!!,
-                    username = cred.UserName!!,
+                    target = cred.TargetName!!.toString(),
+                    username = cred.UserName.toString() ?: "",
                     password = password  
                 )  
             )  
@@ -81,11 +84,11 @@ class WinCred : CredAdvapi32 {
     }  
   
     // Overridden methods from CredAdvapi32.  
-    @Throws(LastErrorException::class)  
-    override fun CredRead(targetName: String, type: Int, flags: Int, pcredential: CredAdvapi32.PCREDENTIAL): Boolean =  
-        synchronized(CredAdvapi32.INSTANCE) {  
-            CredAdvapi32.INSTANCE.CredRead(targetName, type, flags, pcredential)  
-        }  
+    @Throws(LastErrorException::class)
+    override fun CredRead(targetName: String, type: Int, flags: Int, pcredential: CredAdvapi32.PCREDENTIAL): Boolean =
+        synchronized(CredAdvapi32.INSTANCE) {
+            CredAdvapi32.INSTANCE.CredRead(targetName, type, flags, pcredential)
+        }
   
     @Throws(LastErrorException::class)  
     override fun CredWrite(credential: CredAdvapi32.CREDENTIAL, flags: Int): Boolean =  
