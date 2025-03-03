@@ -3,6 +3,10 @@ kind: ConfigMap
 metadata:
   name: {{ include "lmos-runtime.fullname" . }}-config
 data:
+  {{- if .Values.openaiApiProvider }}
+  LMOS_RUNTIME_OPENAI_PROVIDER: {{ .Values.openaiApiProvider | quote }}
+  {{- end }}
+
   {{- if .Values.openaiApiUrl }}
   LMOS_RUNTIME_OPENAI_URL: {{ .Values.openaiApiUrl | quote }}
   {{- end }}
