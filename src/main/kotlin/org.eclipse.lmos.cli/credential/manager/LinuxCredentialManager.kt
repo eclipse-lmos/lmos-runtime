@@ -39,6 +39,7 @@ class LinuxCredentialManager : CredentialManager {
 //            val password = getSecret(prefix, id) ?: return null
             Credential(id, password)
         } catch (e: Exception) {
+            println("getCredential exception: $e")
             null
         }
     }
@@ -55,7 +56,7 @@ class LinuxCredentialManager : CredentialManager {
             LibSecret.INSTANCE.secret_password_clear_sync(schema, null, "target", prefix, "user", id, null)
 //            deleteSecret(prefix, id)
         } catch (e: Exception) {
-            println(e)
+            println("deleteCredential exception: $e")
         }
     }
 
