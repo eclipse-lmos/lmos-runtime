@@ -1,5 +1,6 @@
 package org.eclipse.lmos.cli
 
+import jakarta.inject.Singleton
 import org.eclipse.lmos.cli.constants.LmosCliConstants.AgentStarterConstants.AGENTS_REGISTRY
 import org.eclipse.lmos.cli.constants.LmosCliConstants.AgentStarterConstants.AGENT_PROJECTS_DIRECTORY
 import org.eclipse.lmos.cli.constants.LmosCliConstants.CredentialManagerConstants.CREDENTIAL_CONFIG
@@ -7,8 +8,7 @@ import org.eclipse.lmos.cli.constants.LmosCliConstants.CredentialManagerConstant
 import kotlin.io.path.createDirectories
 import kotlin.io.path.notExists
 
-//quarkus.native.image.initialize-at-run-time=org.eclipse.lmos.cli.LmosCli
-
+@Singleton
 class Initializer {
 
     fun initialize() {

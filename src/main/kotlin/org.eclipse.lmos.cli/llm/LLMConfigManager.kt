@@ -11,8 +11,8 @@ interface LLMConfigManager {
     fun getLLMConfig(id: String): LLMConfig?
     fun updateLLMConfig(llmConfig: LLMConfig): LLMConfig?
     fun deleteLLMConfig(id: String): LLMConfig?
-    fun listLLMConfig(): Set<LLMConfig>
-    fun deleteAllLLMConfig(): Set<LLMConfig>
+    fun listLLMConfig(): Set<String>
+    fun deleteAllLLMConfig(): Set<String>
 
 }
 
@@ -59,21 +59,19 @@ class DefaultLLMConfigManager : LLMConfigManager {
         }
     }
 
-    override fun listLLMConfig(): Set<LLMConfig> {
+    override fun listLLMConfig(): Set<String> {
         val credentialManager = CredentialManagerFactory().getCredentialManager()
         val listCredentials = credentialManager.listCredentials(PREFIX)
-        println("listCredentials: ${listCredentials.forEach { println(it.id + ".." + it.content) }}")
-        return listCredentials.map {
-            Yaml.decodeFromString(LLMConfig.serializer(), it.content)
-        }.toSet()
+        println("listCredentials: ${listCredentials.forEach { println(it.id) }}")
+        return listCredentials.map { it.id }.toSet()
     }
 
-    override fun deleteAllLLMConfig(): Set<LLMConfig> {
-        val list: Set<LLMConfig> = setOf()
+    override fun deleteAllLLMConfig(): Set<String> {
+        val list: Set<String> = setOf()
         val credentialManager = CredentialManagerFactory().getCredentialManager()
         credentialManager.listCredentials(PREFIX).forEach {
             credentialManager.deleteCredential(PREFIX, it.id)
-            list.plus(Yaml().decodeAnyFromString(it.content) as LLMConfig)
+            list.plus(it)
         }
         return list
     }

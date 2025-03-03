@@ -21,7 +21,7 @@ class ListLLMConfig : Callable<Int> {
             listLLMConfig
                 .forEach {
                     println("""
-                ID: ${it.id}
+                ID: $it
             """.trimIndent())
                 }
         }
