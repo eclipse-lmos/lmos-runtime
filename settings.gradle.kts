@@ -13,7 +13,7 @@ include("lmos-runtime-graphql-service")
 
 pluginManagement {
     plugins {
-        kotlin("jvm") version "2.0.21"
+        kotlin("jvm") version "2.1.10"
     }
 }
 plugins {
