@@ -8,15 +8,15 @@ class WinCred : CredAdvapi32 {
   
     data class Credential(val target: String, val username: String, val password: String)  
   
-    fun getCredential(target: String): Credential {  
+    fun getCredential(target: String, userName: String): Credential {
         val pcredMem = CredAdvapi32.PCREDENTIAL()
   
         try {
-            if (CredRead(target, CredAdvapi32.CRED_TYPE_GENERIC, 0, pcredMem)) {
+            if (CredRead("$target:$userName", CredAdvapi32.CRED_TYPE_GENERIC, 0, pcredMem)) {
                 val credMem = CredAdvapi32.CREDENTIAL(pcredMem.credential)
                 val passwordBytes = credMem.CredentialBlob?.getByteArray(0, credMem.CredentialBlobSize) ?: ByteArray(0)
                 val password = String(passwordBytes, Charsets.UTF_16LE)  
-                return Credential(credMem.TargetName!!.toString(), credMem.UserName!!.toString(), password)
+                return Credential(credMem.TargetName!!.toString(), (credMem.UserName ?: "").toString(), password)
             } else {
                 println("********Exception in get")
                 throw LastErrorException(Native.getLastError())
@@ -31,14 +31,13 @@ class WinCred : CredAdvapi32 {
     fun setCredential(target: String, userName: String, password: String): Boolean {
         val credMem = CredAdvapi32.CREDENTIAL().apply {
             Flags = 0
-            TargetName = WString("$target$userName")
+            TargetName = WString("$target:$userName")
             Type = CredAdvapi32.CRED_TYPE_GENERIC
             AttributeCount = 0
             Persist = CredAdvapi32.CRED_PERSIST_ENTERPRISE
             val bpassword = password.toByteArray(Charsets.UTF_16LE)
             CredentialBlobSize = bpassword.size
             CredentialBlob = getPointer(bpassword)
-            UserName = WString(userName)
         }
         if (!CredWrite(credMem, 0)) {
             println("********Exception in set")

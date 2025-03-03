@@ -16,8 +16,9 @@ class WinCredentialManager : CredentialManager {
             val user = "testUser4"
             //winCred.deleteCredential2(testTarget, user)
             winCred.setCredential(testTarget, user, "testPassword")
-            winCred.listCredentials("")
-            winCred.deleteCredential(testTarget, user)
+//            winCred.getCredential(testTarget, user)
+//            winCred.listCredentials("")
+//            winCred.deleteCredential(testTarget, user)
             true  
         } catch (e: Exception) {  
             false  
@@ -25,13 +26,12 @@ class WinCredentialManager : CredentialManager {
     }  
   
     override fun addCredential(prefix: String, credential: Credential) {
-        winCred.setCredential("$prefix:", credential.id, credential.content)
+        winCred.setCredential(prefix, credential.id, credential.content)
     }  
   
-    override fun getCredential(prefix: String, id: String): Credential? {  
-        val target = "$prefix:$id"
+    override fun getCredential(prefix: String, id: String): Credential? {
         return try {  
-            val winCredential = winCred.getCredential(target)  
+            val winCredential = winCred.getCredential(prefix, id)
             Credential(  
                 id = winCredential.username ?: id,  
                 content = winCredential.password  
@@ -57,7 +57,7 @@ class WinCredentialManager : CredentialManager {
         return try {  
             winCred.listCredentials(prefix).map {  
                 Credential(  
-                    id = it.username ?: "",  
+                    id = it.username ?: "",
                     content = it.password  
                 )  
             }.toSet()  
