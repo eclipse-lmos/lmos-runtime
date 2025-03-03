@@ -4,8 +4,10 @@ import net.mamoe.yamlkt.Yaml
 import org.eclipse.lmos.cli.constants.LmosCliConstants.CredentialManagerConstants.CREDENTIAL_CONFIG
 import org.eclipse.lmos.cli.credential.CredentialManagerConfig
 import org.eclipse.lmos.cli.credential.CredentialManagerType
+import org.eclipse.lmos.cli.credential.WinCredentialManager
 import org.eclipse.lmos.cli.credential.manager.CredentialManager
 import org.eclipse.lmos.cli.credential.manager.DefaultCredentialManager
+import org.eclipse.lmos.cli.credential.manager.LinuxCredentialManager
 //import org.eclipse.lmos.cli.credential.manager.LinuxCred
 import org.eclipse.lmos.cli.credential.manager.MacOSCredentialManager
 
@@ -19,8 +21,8 @@ class CredentialManagerFactory {
         if(credConfig.isEmpty()) {
             credentialManager = when (getOS()) {
                 CredentialManagerType.MAC -> MacOSCredentialManager()
-                CredentialManagerType.WIN -> TODO()
-                CredentialManagerType.LINUX -> TODO()
+                CredentialManagerType.WIN -> WinCredentialManager()
+                CredentialManagerType.LINUX -> LinuxCredentialManager()
                 CredentialManagerType.DEFAULT -> DefaultCredentialManager()
             }
             if(!credentialManager.testCredentialManager()) {
@@ -32,9 +34,9 @@ class CredentialManagerFactory {
             val credentialManagerConfig = Yaml.decodeFromString(CredentialManagerConfig.serializer(), credConfig)
             credentialManager = when (credentialManagerConfig.type) {
                 CredentialManagerType.MAC -> MacOSCredentialManager()
-                CredentialManagerType.LINUX -> TODO()
-                CredentialManagerType.WIN -> TODO()
-                CredentialManagerType.DEFAULT -> TODO()
+                CredentialManagerType.WIN -> WinCredentialManager()
+                CredentialManagerType.LINUX -> LinuxCredentialManager()
+                CredentialManagerType.DEFAULT -> DefaultCredentialManager()
             }
         }
         return credentialManager
