@@ -1,11 +1,11 @@
 package org.eclipse.lmos.cli.credential.manager
 
 import com.sun.jna.*
+import com.sun.jna.ptr.PointerByReference
 import org.eclipse.lmos.cli.credential.Credential
 import org.eclipse.lmos.cli.credential.CredentialManagerType
 
 class LinuxCredentialManager : CredentialManager {
-//    data class Credential(val id: String, val content: String)
 
     override fun credentialManagerType(): CredentialManagerType = CredentialManagerType.LINUX
 
@@ -22,21 +22,41 @@ class LinuxCredentialManager : CredentialManager {
     }
 
     override fun addCredential(prefix: String, credential: Credential) {
-//        setCredential(prefix, credential.id, credential.content)
-        val schema = LibSecret.INSTANCE.secret_schema_new("lmos-cli-schema", 0, "target",
-            LibSecret.SECRET_SCHEMA_ATTRIBUTE_STRING, "user",
-            LibSecret.SECRET_SCHEMA_ATTRIBUTE_STRING, null)
-        LibSecret.INSTANCE.secret_password_store_sync(schema,
-            LibSecret.SECRET_COLLECTION_DEFAULT, "$prefix${credential.id}", credential.content, null, "target", prefix, "user", credential.id, null)
+        val schema = LibSecret.INSTANCE.secret_schema_new(
+            "lmos-cli-schema", 0,
+            "target", LibSecret.SECRET_SCHEMA_ATTRIBUTE_STRING,
+            "user", LibSecret.SECRET_SCHEMA_ATTRIBUTE_STRING,
+            null
+        )
+        LibSecret.INSTANCE.secret_password_store_sync(
+            schema,
+            LibSecret.SECRET_COLLECTION_DEFAULT,
+            "$prefix${credential.id}",
+            credential.content,
+            null,   // GCancellable* cancellable
+            null,   // GError** error
+            "target", prefix,
+            "user", credential.id,
+            null
+        )
     }
 
     override fun getCredential(prefix: String, id: String): Credential? {
         return try {
-            val schema = LibSecret.INSTANCE.secret_schema_new("lmos-cli-schema", 0, "target",
-                LibSecret.SECRET_SCHEMA_ATTRIBUTE_STRING, "user",
-                LibSecret.SECRET_SCHEMA_ATTRIBUTE_STRING, null)
-            val password = LibSecret.INSTANCE.secret_password_lookup_sync(schema, null, "target", prefix, "user", id, null) ?: return null
-//            val password = getSecret(prefix, id) ?: return null
+            val schema = LibSecret.INSTANCE.secret_schema_new(
+                "lmos-cli-schema", 0,
+                "target", LibSecret.SECRET_SCHEMA_ATTRIBUTE_STRING,
+                "user", LibSecret.SECRET_SCHEMA_ATTRIBUTE_STRING,
+                null
+            )
+            val password = LibSecret.INSTANCE.secret_password_lookup_sync(
+                schema,
+                null,   // GCancellable* cancellable
+                null,   // GError** error
+                "target", prefix,
+                "user", id,
+                null
+            ) ?: return null
             Credential(id, password)
         } catch (e: Exception) {
             println("getCredential exception: $e")
@@ -50,11 +70,20 @@ class LinuxCredentialManager : CredentialManager {
 
     override fun deleteCredential(prefix: String, id: String) {
         try {
-            val schema = LibSecret.INSTANCE.secret_schema_new("lmos-cli-schema", 0, "target",
-                LibSecret.SECRET_SCHEMA_ATTRIBUTE_STRING, "user",
-                LibSecret.SECRET_SCHEMA_ATTRIBUTE_STRING, null)
-            LibSecret.INSTANCE.secret_password_clear_sync(schema, null, "target", prefix, "user", id, null)
-//            deleteSecret(prefix, id)
+            val schema = LibSecret.INSTANCE.secret_schema_new(
+                "lmos-cli-schema", 0,
+                "target", LibSecret.SECRET_SCHEMA_ATTRIBUTE_STRING,
+                "user", LibSecret.SECRET_SCHEMA_ATTRIBUTE_STRING,
+                null
+            )
+            LibSecret.INSTANCE.secret_password_clear_sync(
+                schema,
+                null,   // GCancellable* cancellable
+                null,   // GError** error
+                "target", prefix,
+                "user", id,
+                null
+            )
         } catch (e: Exception) {
             println("deleteCredential exception: $e")
         }
@@ -62,48 +91,103 @@ class LinuxCredentialManager : CredentialManager {
 
     override fun listCredentials(prefix: String): Set<Credential> {
         return try {
-            println("Not Supported")
-            listSecrets(prefix).map { Credential(it, getSecret(prefix, it) ?: "") }.toSet()
+            println("Listing credentials is not directly supported via libsecret.")
+            // As listing is not supported, we return an empty set
+            emptySet()
         } catch (e: Exception) {
             emptySet()
         }
     }
 
     override fun deleteAllCredentials(prefix: String) {
-        listCredentials(prefix).forEach { deleteCredential(prefix, it.id) }
+        // Since listing is not supported, we cannot delete all credentials
+        println("Deleting all credentials is not possible because listing is not supported.")
     }
 
     private fun setCredential(target: String, user: String, password: String) {
-        val schema = LibSecret.INSTANCE.secret_schema_new("lmos-cli-schema", 0, "target",
-            LibSecret.SECRET_SCHEMA_ATTRIBUTE_STRING, "user",
-            LibSecret.SECRET_SCHEMA_ATTRIBUTE_STRING, null)
-        LibSecret.INSTANCE.secret_password_store_sync(schema,
-            LibSecret.SECRET_COLLECTION_DEFAULT, "$target$user", password, null, "target", target, "user", user, null)
+        val schema = LibSecret.INSTANCE.secret_schema_new(
+            "lmos-cli-schema", 0,
+            "target", LibSecret.SECRET_SCHEMA_ATTRIBUTE_STRING,
+            "user", LibSecret.SECRET_SCHEMA_ATTRIBUTE_STRING,
+            null
+        )
+        LibSecret.INSTANCE.secret_password_store_sync(
+            schema,
+            LibSecret.SECRET_COLLECTION_DEFAULT,
+            "$target$user",
+            password,
+            null,   // GCancellable* cancellable
+            null,   // GError** error
+            "target", target,
+            "user", user,
+            null
+        )
     }
 
     private fun getSecret(target: String, user: String): String? {
-        val schema = LibSecret.INSTANCE.secret_schema_new("lmos-cli-schema", 0, "target",
-            LibSecret.SECRET_SCHEMA_ATTRIBUTE_STRING, "user",
-            LibSecret.SECRET_SCHEMA_ATTRIBUTE_STRING, null)
-        return LibSecret.INSTANCE.secret_password_lookup_sync(schema, null, "target", target, "user", user, null)
+        val schema = LibSecret.INSTANCE.secret_schema_new(
+            "lmos-cli-schema", 0,
+            "target", LibSecret.SECRET_SCHEMA_ATTRIBUTE_STRING,
+            "user", LibSecret.SECRET_SCHEMA_ATTRIBUTE_STRING,
+            null
+        )
+        return LibSecret.INSTANCE.secret_password_lookup_sync(
+            schema,
+            null,   // GCancellable* cancellable
+            null,   // GError** error
+            "target", target,
+            "user", user,
+            null
+        )
     }
 
     private fun deleteSecret(target: String, user: String) {
-        val schema = LibSecret.INSTANCE.secret_schema_new("lmos-cli-schema", 0, "target",
-            LibSecret.SECRET_SCHEMA_ATTRIBUTE_STRING, "user",
-            LibSecret.SECRET_SCHEMA_ATTRIBUTE_STRING, null)
-        LibSecret.INSTANCE.secret_password_clear_sync(schema, null, "target", target, "user", user, null)
-    }
-
-    private fun listSecrets(prefix: String): List<String> {
-        return emptyList() // Listing stored secrets is not directly supported via libsecret.
+        val schema = LibSecret.INSTANCE.secret_schema_new(
+            "lmos-cli-schema", 0,
+            "target", LibSecret.SECRET_SCHEMA_ATTRIBUTE_STRING,
+            "user", LibSecret.SECRET_SCHEMA_ATTRIBUTE_STRING,
+            null
+        )
+        LibSecret.INSTANCE.secret_password_clear_sync(
+            schema,
+            null,   // GCancellable* cancellable
+            null,   // GError** error
+            "target", target,
+            "user", user,
+            null
+        )
     }
 
     private interface LibSecret : Library {
-        fun secret_schema_new(name: String, flags: Int, vararg args: Any?): Pointer
-        fun secret_password_store_sync(schema: Pointer, collection: String, label: String, password: String, cancellable: Pointer?, vararg args: Any?): Boolean
-        fun secret_password_lookup_sync(schema: Pointer, cancellable: Pointer?, vararg args: Any?): String?
-        fun secret_password_clear_sync(schema: Pointer, cancellable: Pointer?, vararg args: Any?): Boolean
+        fun secret_schema_new(
+            name: String,
+            flags: Int,
+            vararg args: Any?
+        ): Pointer
+
+        fun secret_password_store_sync(
+            schema: Pointer,
+            collection: String,
+            label: String,
+            password: String,
+            cancellable: Pointer?,      // GCancellable*
+            error: PointerByReference?, // GError**
+            vararg args: Any?           // attributes
+        ): Boolean
+
+        fun secret_password_lookup_sync(
+            schema: Pointer,
+            cancellable: Pointer?,      // GCancellable*
+            error: PointerByReference?, // GError**
+            vararg args: Any?           // attributes
+        ): String?
+
+        fun secret_password_clear_sync(
+            schema: Pointer,
+            cancellable: Pointer?,      // GCancellable*
+            error: PointerByReference?, // GError**
+            vararg args: Any?           // attributes
+        ): Boolean
 
         companion object {
             val INSTANCE: LibSecret = Native.load("secret-1", LibSecret::class.java)
