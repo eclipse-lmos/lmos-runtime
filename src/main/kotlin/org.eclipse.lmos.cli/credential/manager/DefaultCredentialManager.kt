@@ -7,18 +7,18 @@ import org.eclipse.lmos.cli.constants.LmosCliConstants.CredentialManagerConstant
 import org.eclipse.lmos.cli.credential.Credential
 import org.eclipse.lmos.cli.credential.CredentialManagerType
 import org.eclipse.lmos.cli.utils.EncryptionUtils
+import java.io.File
 import java.nio.file.Files
 import javax.crypto.SecretKey
 import javax.crypto.spec.SecretKeySpec
 
 class DefaultCredentialManager: CredentialManager {
 
-    private val keyFile = CREDENTIAL_DIRECTORY.resolve("key").toFile()
-    private val key: SecretKey
+    private val keyFile: File by lazy { CREDENTIAL_DIRECTORY.resolve("key").toFile() }
+    private val key: SecretKey by lazy { loadOrCreateKey() }
     private val credentials: MutableMap<String, Credential> = mutableMapOf()
 
     init {
-        key = loadOrCreateKey()
         loadCredentials()
     }
 

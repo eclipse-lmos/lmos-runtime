@@ -2,8 +2,10 @@ package org.eclipse.lmos.cli.credential
 
 import com.sun.jna.*
 import com.sun.jna.ptr.*
+import io.quarkus.arc.properties.IfBuildProperty
 import org.eclipse.lmos.cli.constants.CredAdvapi32
 
+@IfBuildProperty(name = "os.name", stringValue = "Windows")
 class WinCred : CredAdvapi32 {
 
     data class Credential(val target: String, val username: String, val password: String)

@@ -6,7 +6,7 @@ import org.eclipse.lmos.cli.credential.CredentialManagerConfig
 import org.eclipse.lmos.cli.credential.CredentialManagerType
 import org.eclipse.lmos.cli.credential.manager.CredentialManager
 import org.eclipse.lmos.cli.credential.manager.DefaultCredentialManager
-import org.eclipse.lmos.cli.credential.manager.LinuxCred
+//import org.eclipse.lmos.cli.credential.manager.LinuxCred
 import org.eclipse.lmos.cli.credential.manager.MacOSCredentialManager
 
 class CredentialManagerFactory {
@@ -15,18 +15,19 @@ class CredentialManagerFactory {
         var credentialManager: CredentialManager
 
         val credConfig = CREDENTIAL_CONFIG.readText()
+        println("DEBUG: credConfig: $CREDENTIAL_CONFIG: $credConfig")
         if(credConfig.isEmpty()) {
             credentialManager = when (getOS()) {
                 CredentialManagerType.MAC -> MacOSCredentialManager()
                 CredentialManagerType.WIN -> TODO()
-                CredentialManagerType.LINUX -> LinuxCred()
+                CredentialManagerType.LINUX -> TODO()
                 CredentialManagerType.DEFAULT -> DefaultCredentialManager()
             }
             if(!credentialManager.testCredentialManager()) {
                 credentialManager = DefaultCredentialManager()
             }
             val credentialManagerConfig = CredentialManagerConfig(credentialManager.credentialManagerType())
-            CREDENTIAL_CONFIG.writeText(Yaml.encodeToString(credentialManagerConfig))
+            CREDENTIAL_CONFIG.writeText(Yaml.encodeToString(CredentialManagerConfig.serializer(), credentialManagerConfig))
         } else {
             val credentialManagerConfig = Yaml.decodeFromString(CredentialManagerConfig.serializer(), credConfig)
             credentialManager = when (credentialManagerConfig.type) {

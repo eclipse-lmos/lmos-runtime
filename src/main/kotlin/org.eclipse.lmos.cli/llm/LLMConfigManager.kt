@@ -61,7 +61,9 @@ class DefaultLLMConfigManager : LLMConfigManager {
 
     override fun listLLMConfig(): Set<LLMConfig> {
         val credentialManager = CredentialManagerFactory().getCredentialManager()
-        return credentialManager.listCredentials(PREFIX).map {
+        val listCredentials = credentialManager.listCredentials(PREFIX)
+        println("listCredentials: ${listCredentials.forEach { println(it.id + ".." + it.content) }}")
+        return listCredentials.map {
             Yaml.decodeFromString(LLMConfig.serializer(), it.content)
         }.toSet()
     }

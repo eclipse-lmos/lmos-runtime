@@ -1,7 +1,9 @@
 package org.eclipse.lmos.cli.credential
 
+import io.quarkus.arc.properties.IfBuildProperty
 import org.eclipse.lmos.cli.credential.manager.CredentialManager
 
+@IfBuildProperty(name = "os.name", stringValue = "Windows")
 class WinCredentialManager : CredentialManager {
 
     private val winCred = WinCred()
