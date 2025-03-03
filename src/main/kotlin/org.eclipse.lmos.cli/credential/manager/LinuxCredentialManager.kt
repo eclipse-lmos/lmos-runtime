@@ -27,7 +27,7 @@ class LinuxCredentialManager : CredentialManager {
             LibSecret.SECRET_SCHEMA_ATTRIBUTE_STRING, "user",
             LibSecret.SECRET_SCHEMA_ATTRIBUTE_STRING, null)
         LibSecret.INSTANCE.secret_password_store_sync(schema,
-            LibSecret.SECRET_COLLECTION_DEFAULT, "$prefix${credential.id}", credential.content, null, "target", prefix, "user", credential.id, null)
+            LibSecret.SECRET_COLLECTION_DEFAULT, "$prefix:${credential.id}", credential.content, null, "target", prefix, "user", credential.id, null)
     }
 
     override fun getCredential(prefix: String, id: String): Credential? {
@@ -77,7 +77,7 @@ class LinuxCredentialManager : CredentialManager {
             LibSecret.SECRET_SCHEMA_ATTRIBUTE_STRING, "user",
             LibSecret.SECRET_SCHEMA_ATTRIBUTE_STRING, null)
         LibSecret.INSTANCE.secret_password_store_sync(schema,
-            LibSecret.SECRET_COLLECTION_DEFAULT, "$target$user", password, null, "target", target, "user", user, null)
+            LibSecret.SECRET_COLLECTION_DEFAULT, "$target:$user", password, null, "target", target, "user", user, null)
     }
 
     private fun getSecret(target: String, user: String): String? {
