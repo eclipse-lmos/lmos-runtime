@@ -25,7 +25,7 @@ class DefaultLLMConfigManager : LLMConfigManager {
             return null
         }
 
-        val configYaml = Yaml().encodeToString(llmConfig)
+        val configYaml = Yaml().encodeToString(LLMConfig.serializer(), llmConfig)
         val credential = Credential(llmConfig.id, configYaml)
         credentialManager.addCredential(PREFIX, credential)
         return llmConfig
