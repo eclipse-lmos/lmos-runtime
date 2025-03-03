@@ -4,11 +4,13 @@ import com.sun.jna.*
 import com.sun.jna.platform.win32.WinBase
 import com.sun.jna.ptr.*  
 import com.sun.jna.win32.StdCallLibrary  
-import com.sun.jna.win32.W32APIOptions  
+import com.sun.jna.win32.W32APIOptions
 
 interface CredAdvapi32 : StdCallLibrary {    
     companion object {
-        var INSTANCE: CredAdvapi32 = Native.load("Advapi32", CredAdvapi32::class.java, W32APIOptions.UNICODE_OPTIONS)  
+        val INSTANCE: CredAdvapi32 by lazy {
+            Native.load("Advapi32", CredAdvapi32::class.java, W32APIOptions.UNICODE_OPTIONS)
+        }
         const val CRED_TYPE_GENERIC = 1    
         const val CRED_PERSIST_ENTERPRISE = 3    
     }    

@@ -28,16 +28,16 @@ import kotlin.io.path.notExists
 )
 class LmosCli : Runnable {
 
-//    @Inject
-//    lateinit var factory: CommandLine.IFactory
+    @Inject
+    lateinit var factory: CommandLine.IFactory
 
 
     override fun run() {
 
-        run {
-            init()
-            println("Running init for Lmos CLI")
-        }
+//        run {
+            Initializer().initialize()
+            println("Running init for Lmos CLI Completed")
+//        }
         val str = """ 
             
 ************************************************************
@@ -45,35 +45,15 @@ ${Ansi.AUTO.string("The @|bold,blue,underline LMOS Agent Universe|@ is Calling."
 ************************************************************
             
             """.trimIndent()
+        val argGet2 = arrayOf("config", "llm", "list")
+        CommandLine(this, factory).execute(*argGet2)
         println(str)
         CommandLine.usage(this, System.out);
     }
 
-    private fun init() {
-        ensureDirectories()
-        ensureConfigs()
-    }
 
-    private fun ensureConfigs() {
-        if(!CREDENTIAL_CONFIG.exists()) {
-            val createNewFile = CREDENTIAL_CONFIG.createNewFile()
-            println("Cred file created: $createNewFile")
-            CREDENTIAL_CONFIG.setWritable(true, true)
-        }
-    }
 
-    private fun ensureDirectories() {
-        if(AGENT_PROJECTS_DIRECTORY.notExists()) {
-            AGENT_PROJECTS_DIRECTORY.createDirectories()
-        }
-        if(AGENTS_REGISTRY.notExists()) {
-            AGENTS_REGISTRY.createDirectories()
-        }
-        if (!CREDENTIAL_DIRECTORY.toFile().exists()) {
-            val createDirectories = CREDENTIAL_DIRECTORY.createDirectories()
-            println("Cred directory created: $createDirectories")
-        }
-    }
+
 //
 //    @Throws(Exception::class)
 //    override fun run(vararg args: String): Int {
