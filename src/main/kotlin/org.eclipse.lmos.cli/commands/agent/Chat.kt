@@ -48,33 +48,33 @@ class Chat : Runnable {
             while (true) {
 
 
-            val inputContext = InputContext(message)
-            val conversation = Conversation(inputContext, systemContext, userContext)
+                val inputContext = InputContext(message)
+                val conversation = Conversation(inputContext, systemContext, userContext)
 
-            if(startStatus.uppercase() == "STARTED") {
+                if(startStatus.uppercase() == "STARTED") {
 
-                val agentRegistry = AgentRegistry()
+                    val agentRegistry = AgentRegistry()
 //                val agentInfo: AgentInfo = agentRegistry.findAgent(it)
 
-                val input =
+                    val input =
 //                    "hi"
-                    promptUser("Enter your query")
-                val turnId = UUID.randomUUID().toString()
+                        promptUser("Enter your query")
+                    val turnId = UUID.randomUUID().toString()
 
-                message.plus(Message(role = "user", content = input, turnId = turnId))
+                    message.plus(Message(role = "user", content = input, turnId = turnId))
 
-                var response = ""
+                    var response = ""
 
                     runBlocking {
-                    ArcAgentClientService().askAgent(
-                        conversation, conversationId, turnId,
-                        agentName, "localhost"
-                    ).collect { it ->
-                        println("Agent Response: $it")
-                        response = it
-                    }
+                        ArcAgentClientService().askAgent(
+                            conversation, conversationId, turnId,
+                            agentName, "localhost"
+                        ).collect { it ->
+                            println("Agent Response: $it")
+                            response = it
+                        }
 
-                }
+                    }
 
 //                try {
 //                    graphQlAgentClient.callAgent(
@@ -90,18 +90,18 @@ class Chat : Runnable {
 //                        )
 //                    }
 
-                if (input.equals("exit", ignoreCase = true)) {
-                    println("Exiting session...")
-                    break
-                }
+                    if (input.equals("exit", ignoreCase = true)) {
+                        println("Exiting session...")
+                        break
+                    }
 
 //                val response = processInput(input, agentInfo)  //todo agent-integrator
-                history.add(input to response)
-                println("Response: $response")
-            } else {
-                println("Error in starting Agents, consult logs")
-            }
-        } } ?: TODO("Implement Direct LLM integration") //todo integrate llm call
+                    history.add(input to response)
+                    println("Response: $response")
+                } else {
+                    println("Error in starting Agents, consult logs")
+                }
+            } } ?: TODO("Implement Direct LLM integration") //todo integrate llm call
 
 
     }
@@ -177,7 +177,7 @@ class WindowsAgentStarter : AgentStarter {
         val agents = AGENT_PROJECTS_DIRECTORY.resolve(AgentType.ARC.name)
 
         //        val deleteCommand = "cd $projectDirectory && if [ -f application.log ]; then rm application.log && echo \"deleted\"; fi"
-        val deleteCommand = arrayOf("cd $agents && if exist application.log (del application.log && echo deleted)")
+        val deleteCommand = arrayOf("cmd.exe", "/c", "cd /d $agents && if exist application.log (del application.log && echo deleted)")
         executeCommand(deleteCommand)
 
 //        val startCommand = "cd $projectDirectory && nohup ./gradlew -q --console=plain bootrun --args='$params'>application.log 2>&1 < /dev/null &"
@@ -191,10 +191,6 @@ class WindowsAgentStarter : AgentStarter {
             defaultLLMConfigManager.getLLMConfig(it)
         }.toList()
 
-        if(llmConfigs.isEmpty()) {
-            println("No LLM Config found")
-            return "FAILED"
-        }
 
         val envVars = llmConfigs.mapIndexed { index, config ->
             """
@@ -207,11 +203,11 @@ class WindowsAgentStarter : AgentStarter {
         }.joinToString("\n")
 
         val startCommand = arrayOf(
-            """
-        cd $agents &&
-        $envVars &&
-        && start /b /min "" gradlew -q --console=plain bootrun --args="$params" > application.log 2>&1
-        """.trimIndent()
+            "cmd.exe", "/c", """
+    cd /d $agents &&
+    ${envVars.replace("\n", " && ")} &&
+    start /b /min "" gradlew -q --console=plain bootrun --args="$params" > application.log 2>&1
+    """.trimIndent()
         )
 
         run {val result = executeCommand(startCommand, false)
@@ -250,10 +246,6 @@ class MacOSAgentStarter: AgentStarter {
         }.toList()
 
 
-        if(llmConfigs.isEmpty()) {
-            println("No LLM Config found")
-            return "FAILED"
-        }
         val envVars = llmConfigs.mapIndexed { index, config ->
             """
         export ARC_AI_CLIENTS_${index}_ID=${config.id}
@@ -274,7 +266,7 @@ class MacOSAgentStarter: AgentStarter {
 
         println("Start Command: ${startCommand.contentToString()}")
         run {executeCommand(startCommand, false)
-        println("Completed Command: ${startCommand.contentToString()}")
+            println("Completed Command: ${startCommand.contentToString()}")
         }
 
         return runAtFixedRate(setOf("STARTED", "FAILED"), 2000, 30, 4000) { checkForStartUpStatus(agents) }
