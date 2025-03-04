@@ -42,14 +42,16 @@ class CredentialManagerFactory {
         return credentialManager
     }
 
-    private fun getOS(): CredentialManagerType {
-        val osName = System.getProperty("os.name").lowercase()
-        return when {
-            osName.contains("win") -> CredentialManagerType.WIN
-            osName.contains("nix") || osName.contains("nux") -> CredentialManagerType.LINUX
-            osName.contains("mac") -> CredentialManagerType.MAC
-            else -> CredentialManagerType.DEFAULT
-        }
-    }
 
+
+}
+
+fun getOS(): CredentialManagerType {
+    val osName = System.getProperty("os.name").lowercase()
+    return when {
+        osName.contains("win") -> CredentialManagerType.WIN
+        osName.contains("nix") || osName.contains("nux") -> CredentialManagerType.LINUX
+        osName.contains("mac") -> CredentialManagerType.MAC
+        else -> CredentialManagerType.DEFAULT
+    }
 }

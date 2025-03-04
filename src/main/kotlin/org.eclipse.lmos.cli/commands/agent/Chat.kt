@@ -1,16 +1,27 @@
 package org.eclipse.lmos.cli.commands.agent
 
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
 import org.eclipse.lmos.arc.api.Message
 import org.eclipse.lmos.cli.*
 import org.eclipse.lmos.cli.agent.AgentType
 import org.eclipse.lmos.cli.constants.LmosCliConstants.AgentStarterConstants.AGENT_PROJECTS_DIRECTORY
+import org.eclipse.lmos.cli.credential.CredentialManagerType
+import org.eclipse.lmos.cli.credential.manager.executeCommand
+import org.eclipse.lmos.cli.factory.getOS
+import org.eclipse.lmos.cli.llm.DefaultLLMConfigManager
+import org.eclipse.lmos.cli.llm.LLMConfig
 import org.eclipse.lmos.cli.registry.agent.AgentRegistry
 import picocli.CommandLine
 import java.io.*
+import java.nio.file.Files
+import java.nio.file.Path
+import java.util.Arrays
 import java.util.UUID
 import kotlin.collections.List
+import kotlin.io.path.exists
+import kotlin.io.path.readText
 
 @CommandLine.Command(name = "chat", description = ["Chat with the system"], mixinStandardHelpOptions = true)
 class Chat : Runnable {
@@ -26,42 +37,64 @@ class Chat : Runnable {
 
         val agentName: String = agentName ?: promptUser("Enter the agent name")
 
-        agentName.let { while (true) {
+        agentName.let {
 
             val conversationId = UUID.randomUUID().toString()
-            val startStatus = run { startProject() }
+            val startStatus = runBlocking { startProject() }
             val message = listOf<Message>()
-            val inputContext = InputContext(message)
             val systemContext = SystemContext("channelId")
             val userContext = UserContext("userId", "userToken")
+
+            while (true) {
+
+
+            val inputContext = InputContext(message)
             val conversation = Conversation(inputContext, systemContext, userContext)
 
-            if(startStatus == "STARTED") {
+            if(startStatus.uppercase() == "STARTED") {
 
                 val agentRegistry = AgentRegistry()
-                val agentInfo: AgentInfo = agentRegistry.findAgent(it)
+//                val agentInfo: AgentInfo = agentRegistry.findAgent(it)
 
-                val input = promptUser("Enter your query")
+                val input = "hi"
+//                    promptUser("Enter your query")
                 val turnId = UUID.randomUUID().toString()
 
                 message.plus(Message(role = "user", content = input, turnId = turnId))
 
-                runBlocking {
+                var response = ""
+
+                    runBlocking {
                     ArcAgentClientService().askAgent(
                         conversation, conversationId, turnId,
-                        agentInfo.name, "localhost:8080"
-                    ).collect { response ->
-                        println("${agentName.uppercase()}: $response")
-                        return@collect
+                        agentName, "localhost"
+                    ).collect { it ->
+                        println("Agent Response: $it")
+                        response = it
                     }
+
                 }
+
+//                try {
+//                    graphQlAgentClient.callAgent(
+//                        agentRequest,
+//                        requestHeaders = subsetHeader,
+//                    ).collect { response ->
+//                        log.info("Agent Response: $response")
+//                        emit(
+//                            AssistantMessage(
+//                                response.messages[0].content,
+//                                response.anonymizationEntities,
+//                            ),
+//                        )
+//                    }
 
                 if (input.equals("exit", ignoreCase = true)) {
                     println("Exiting session...")
                     break
                 }
 
-                val response = processInput(input, agentInfo)  //todo agent-integrator
+//                val response = processInput(input, agentInfo)  //todo agent-integrator
                 history.add(input to response)
                 println("Response: $response")
             } else {
@@ -75,6 +108,12 @@ class Chat : Runnable {
     private fun startProject(): String {
         val projectDirectory = AGENT_PROJECTS_DIRECTORY.resolve(AgentType.ARC.name)
 
+
+
+        val agentStarter: AgentStarter = AgentStarterFactory().getAgentStarter()
+
+        val startAgent = agentStarter.startAgent()
+
         val args = arrayOf("")  //todo fetch config from credential manager
 
         val command = "cd $projectDirectory && nohup ./gradlew -q --console=plain bootrun --args='$args'>application.log 2>&1 < /dev/null &"   //macos
@@ -83,7 +122,7 @@ class Chat : Runnable {
 
         //todo execute command and return result
 
-        return "Started"
+        return startAgent
     }
 
     private fun processInput(input: String, agentInfo: AgentInfo): String {
@@ -97,6 +136,170 @@ class Chat : Runnable {
 
         return "Answer: $input"
     }
+}
+
+interface AgentStarter {
+
+    fun startAgent(): String
+    fun checkStatus(): AgentStatus
+}
+
+class AgentStarterFactory {
+    fun getAgentStarter(): AgentStarter {
+        val os = getOS()
+        return when(os) {
+            CredentialManagerType.MAC -> MacOSAgentStarter()
+            CredentialManagerType.WIN -> WindowsAgentStarter()
+            CredentialManagerType.LINUX -> MacOSAgentStarter()
+            CredentialManagerType.DEFAULT -> LinuxAgentStarter()
+        }
+    }
+
+}
+
+class LinuxAgentStarter : AgentStarter {
+    override fun startAgent(): String {
+        TODO("Not yet implemented")
+    }
+
+    override fun checkStatus(): AgentStatus {
+        TODO("Not yet implemented")
+    }
+
+}
+
+class WindowsAgentStarter : AgentStarter {
+    override fun startAgent(): String {
+
+        val agents = AGENT_PROJECTS_DIRECTORY.resolve(AgentType.ARC.name)
+
+        //        val deleteCommand = "cd $projectDirectory && if [ -f application.log ]; then rm application.log && echo \"deleted\"; fi"
+        val deleteCommand = arrayOf("cd $agents && if exist application.log (del application.log && echo deleted)")
+        executeCommand(deleteCommand)
+
+//        val startCommand = "cd $projectDirectory && nohup ./gradlew -q --console=plain bootrun --args='$params'>application.log 2>&1 < /dev/null &"
+
+//        actual fun chatCommand(directory: String, agentName: String): String = "cd $projectDirectory && ./gradlew -q --console=plain arc -Pagent=$agentName"
+
+        val params = "--management.endpoint.shutdown.enabled=true --management.endpoints.web.exposure.include=\"*\""
+
+        val defaultLLMConfigManager = DefaultLLMConfigManager()
+        val llmConfigs: List<LLMConfig> = defaultLLMConfigManager.listLLMConfig().mapNotNull {
+            defaultLLMConfigManager.getLLMConfig(it)
+        }.toList()
+
+
+        val envVars = llmConfigs.mapIndexed { index, config ->
+            """
+        set ARC_AI_CLIENTS_${index}_ID=${config.id}
+        set ARC_AI_CLIENTS_${index}_CLIENT=${config.provider}
+        set ARC_AI_CLIENTS_${index}_URL=${config.baseUrl}
+        set ARC_AI_CLIENTS_${index}_APIKEY=${config.apiKey}
+        set ARC_AI_CLIENTS_${index}_MODELNAME=${config.modelName}
+        """.trimIndent()
+        }.joinToString("\n")
+
+        val startCommand = arrayOf(
+            """
+        cd $agents &&
+        $envVars &&
+        && start /b /min "" gradlew -q --console=plain bootrun --args="$params" > application.log 2>&1
+        """.trimIndent()
+        )
+
+        run {val result = executeCommand(startCommand, false)
+            println("Command: ${startCommand.contentToString()}, Result: $result")
+        }
+
+        return runAtFixedRate(setOf("STARTED", "FAILED"), 2000, 30, 4000) { checkForStartUpStatus(agents) }
+
+
+    }
+
+    override fun checkStatus(): AgentStatus {
+        TODO("Not yet implemented")
+    }
+}
+
+class MacOSAgentStarter: AgentStarter {
+    override fun startAgent(): String {
+
+        val agents = AGENT_PROJECTS_DIRECTORY.resolve(AgentType.ARC.name)
+
+        //        val deleteCommand = "cd $projectDirectory && if [ -f application.log ]; then rm application.log && echo \"deleted\"; fi"
+        val deleteCommand = arrayOf("sh", "-c", "cd $agents && if [ -f application.log ]; then rm application.log && echo \"deleted\"; fi")
+        executeCommand(deleteCommand)
+
+//        val startCommand = "cd $projectDirectory && nohup ./gradlew -q --console=plain bootrun --args='$params'>application.log 2>&1 < /dev/null &"
+
+//        actual fun chatCommand(directory: String, agentName: String): String = "cd $projectDirectory && ./gradlew -q --console=plain arc -Pagent=$agentName"
+
+        val params = "--management.endpoint.shutdown.enabled=true --management.endpoints.web.exposure.include=\"*\""
+
+        val defaultLLMConfigManager = DefaultLLMConfigManager()
+        val llmConfigs: List<LLMConfig> = defaultLLMConfigManager.listLLMConfig().mapNotNull {
+            defaultLLMConfigManager.getLLMConfig(it)
+        }.toList()
+
+
+        val envVars = llmConfigs.mapIndexed { index, config ->
+            """
+        export ARC_AI_CLIENTS_${index}_ID=${config.id}
+        export ARC_AI_CLIENTS_${index}_CLIENT=${config.provider}
+        export ARC_AI_CLIENTS_${index}_URL=${config.baseUrl}
+        export ARC_AI_CLIENTS_${index}_APIKEY=${config.apiKey}
+        export ARC_AI_CLIENTS_${index}_MODELNAME=${config.modelName}
+        """.trimIndent()
+        }.joinToString("\n")
+
+        val startCommand = arrayOf(
+            "sh", "-c", """
+        cd $agents &&
+        $envVars &&
+        nohup ./gradlew -q --console=plain bootrun --args='$params' > application.log 2>&1 < /dev/null &
+        """.trimIndent()
+        )
+
+        run {val result = executeCommand(startCommand, false)
+        println("Command: ${startCommand.contentToString()}, Result: $result")
+        }
+
+        return runAtFixedRate(setOf("STARTED", "FAILED"), 2000, 30, 4000) { checkForStartUpStatus(agents) }
+    }
+
+    override fun checkStatus(): AgentStatus {
+        TODO("Not yet implemented")
+    }
+}
+
+private fun checkForStartUpStatus(projectRootDirectory: Path): String {
+    val logFile = projectRootDirectory.resolve("application.log")
+
+    return when {
+        logFile.exists() -> {
+            val logs = logFile.readText()
+            when {
+                "Starting hot-reload of agents" in logs -> "STARTED"
+                "finished with non-zero exit value 1" in logs -> "FAILED"
+                else -> "PROGRESS"
+            }
+        }
+        else -> "PROGRESS"
+    }
+}
+
+private fun runAtFixedRate(stopKeywords: Set<String>, pollingDurationMillis: Long, maxAttempts: Long, initialDelayMillis: Long = 0, fn: () -> String): String {
+    var matched = ""
+    runBlocking {
+        var i = 0
+        delay(initialDelayMillis)
+        while (matched.isEmpty() && i++ < maxAttempts) {
+            delay(pollingDurationMillis)
+            val result = fn()
+            matched = stopKeywords.find { result.contains(it) } ?: ""
+        }
+    }
+    return matched
 }
 
 interface AgentDiscovery {

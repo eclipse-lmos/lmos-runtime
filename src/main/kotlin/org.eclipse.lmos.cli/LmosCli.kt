@@ -20,9 +20,7 @@ import picocli.CommandLine.Help.Ansi
         Config::class
     ], description = ["LMOS Command Line Interface"]
 )
-class LmosCli : Runnable
-    , QuarkusApplication
-{
+class LmosCli : Runnable, QuarkusApplication {
 
     @Inject
     lateinit var factory: CommandLine.IFactory
@@ -31,13 +29,15 @@ class LmosCli : Runnable
     lateinit var initializer: Initializer
 
 
-
-
     override fun run() {
 
 //        run {
         initializer.initialize()
-            println("Running init for Lmos CLI Completed")
+        println("Running init for Lmos CLI Completed")
+
+        chatAgentTest()
+//        credManagerTest()
+//        agentTest()
 //        }
         val str = """ 
             
@@ -51,24 +51,22 @@ ${Ansi.AUTO.string("The @|bold,blue,underline LMOS Agent Universe|@ is Calling."
     }
 
 
-
-
-//
+    //
     @Throws(Exception::class)
     override
-fun run(vararg args: String): Int {
+    fun run(vararg args: String): Int {
 
-    val str = """ 
+        val str = """ 
             
 ************************************************************
 ${Ansi.AUTO.string("The @|bold,blue,underline Quarkus - LMOS Agent Universe|@ is Calling.")}
 ************************************************************
             
             """.trimIndent()
-    println(str)
+        println(str)
 
-    initializer.initialize()
-    return CommandLine(this, factory).execute(*args)
+        initializer.initialize()
+        return CommandLine(this, factory).execute(*args)
 
 
 //        CommandLine.usage(this, System.out)
@@ -83,17 +81,24 @@ ${Ansi.AUTO.string("The @|bold,blue,underline Quarkus - LMOS Agent Universe|@ is
 
     }
 
+
+    private fun chatAgentTest() {
+        val agent2 = arrayOf("agent", "chat", "--an", "testAgent")
+
+        CommandLine(this, factory).execute(*agent2)
+    }
+
     private fun agentTest(): Int {
         val agent = arrayOf("agent", "create")
 
         val agent2 = arrayOf("agent", "create", "-t", "ARC")
 
-        CommandLine(this, factory).execute(*agent)
-        CommandLine(this, factory).execute(*agent2)
+        return CommandLine(this, factory).execute(*agent)
+//        CommandLine(this, factory).execute(*agent2)
 
 
-        val arg = arrayOf("config", "llm", "list")
-        return CommandLine(this, factory).execute(*arg)
+//        val arg = arrayOf("config", "llm", "list")
+//        return CommandLine(this, factory).execute(*arg)
     }
 
     private fun credManagerTest(): Int {
@@ -121,11 +126,9 @@ ${Ansi.AUTO.string("The @|bold,blue,underline Quarkus - LMOS Agent Universe|@ is
         val argDelAll = arrayOf("config", "llm", "delete")
         val argDelAll2 = arrayOf("config", "llm", "delete", "-i", "4")
         val argDelAll3 = arrayOf("config", "llm", "delete", "-i", "all")
-
-
-//        CommandLine(this, factory).execute(*argList)
+        CommandLine(this, factory).execute(*argCreate2)
 //
-//        CommandLine(this, factory).execute(*argCreate1)
+        CommandLine(this, factory).execute(*argDelAll)
 //        CommandLine(this, factory).execute(*argGet1)
 //        CommandLine(this, factory).execute(*argGet2)
 //        CommandLine(this, factory).execute(*argCreate2)
@@ -134,7 +137,7 @@ ${Ansi.AUTO.string("The @|bold,blue,underline Quarkus - LMOS Agent Universe|@ is
 //        CommandLine(this, factory).execute(*argDelAll2)
 //        CommandLine(this, factory).execute(*argDelAll2)
 //        CommandLine(this, factory).execute(*argDelAll3)
-        return CommandLine(this, factory).execute(*argList)
+        return CommandLine(this, factory).execute(*argDelAll)
     }
 
 }

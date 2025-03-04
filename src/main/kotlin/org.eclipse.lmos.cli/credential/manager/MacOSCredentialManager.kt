@@ -93,11 +93,15 @@ class MacOSCredentialManager: CredentialManager {
         }
     }
 
-    private fun executeCommand(command: Array<String>): String {
-        val process = ProcessBuilder(*command).redirectErrorStream(true).start()
-        val output = process.inputStream.bufferedReader().use(BufferedReader::readText)
-        process.waitFor()
-        return output
-    }
 
+
+}
+
+fun executeCommand(command: Array<String>, wait: Boolean = true): String {
+    val process = ProcessBuilder(*command).redirectErrorStream(true).start()
+    val output = process.inputStream.bufferedReader().use(BufferedReader::readText)
+    if(wait) {
+        process.waitFor()
+    }
+    return output
 }
