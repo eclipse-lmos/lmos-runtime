@@ -191,6 +191,10 @@ class WindowsAgentStarter : AgentStarter {
             defaultLLMConfigManager.getLLMConfig(it)
         }.toList()
 
+        if(llmConfigs.isEmpty()) {
+            println("No LLM Config found")
+            return "FAILED"
+        }
 
         val envVars = llmConfigs.mapIndexed { index, config ->
             """
@@ -246,6 +250,10 @@ class MacOSAgentStarter: AgentStarter {
         }.toList()
 
 
+        if(llmConfigs.isEmpty()) {
+            println("No LLM Config found")
+            return "FAILED"
+        }
         val envVars = llmConfigs.mapIndexed { index, config ->
             """
         export ARC_AI_CLIENTS_${index}_ID=${config.id}
