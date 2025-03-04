@@ -40,6 +40,12 @@ object LmosCliConstants {
             println("DEBUG: CREDENTIAL_DIRECTORY: $resolved")
             resolved
         }
+
+        val MODEL_IDS: File by lazy {
+            val resolved = CREDENTIAL_DIRECTORY.resolve("models.yaml").toFile()
+            println("DEBUG: CREDENTIAL_DIRECTORY: $resolved")
+            resolved
+        }
     }
 
     const val PREFIX = "LLM_CONFIG:"

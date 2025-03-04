@@ -5,6 +5,7 @@ import org.eclipse.lmos.cli.constants.LmosCliConstants.AgentStarterConstants.AGE
 import org.eclipse.lmos.cli.constants.LmosCliConstants.AgentStarterConstants.AGENT_PROJECTS_DIRECTORY
 import org.eclipse.lmos.cli.constants.LmosCliConstants.CredentialManagerConstants.CREDENTIAL_CONFIG
 import org.eclipse.lmos.cli.constants.LmosCliConstants.CredentialManagerConstants.CREDENTIAL_DIRECTORY
+import org.eclipse.lmos.cli.constants.LmosCliConstants.CredentialManagerConstants.MODEL_IDS
 import kotlin.io.path.createDirectories
 import kotlin.io.path.notExists
 
@@ -22,6 +23,12 @@ class Initializer {
             val createNewFile = CREDENTIAL_CONFIG.createNewFile()
             println("Cred file created: $createNewFile")
             CREDENTIAL_CONFIG.setWritable(true, true)
+        }
+
+        if (!MODEL_IDS.exists()) {
+            val createNewFile = MODEL_IDS.createNewFile()
+            println("MODEL_IDS file created: $createNewFile")
+            MODEL_IDS.setWritable(true, true)
         }
     }
 

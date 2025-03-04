@@ -56,8 +56,9 @@ class Chat : Runnable {
                 val agentRegistry = AgentRegistry()
 //                val agentInfo: AgentInfo = agentRegistry.findAgent(it)
 
-                val input = "hi"
-//                    promptUser("Enter your query")
+                val input =
+//                    "hi"
+                    promptUser("Enter your query")
                 val turnId = UUID.randomUUID().toString()
 
                 message.plus(Message(role = "user", content = input, turnId = turnId))
@@ -263,8 +264,9 @@ class MacOSAgentStarter: AgentStarter {
         """.trimIndent()
         )
 
-        run {val result = executeCommand(startCommand, false)
-        println("Command: ${startCommand.contentToString()}, Result: $result")
+        println("Start Command: ${startCommand.contentToString()}")
+        run {executeCommand(startCommand, false)
+        println("Completed Command: ${startCommand.contentToString()}")
         }
 
         return runAtFixedRate(setOf("STARTED", "FAILED"), 2000, 30, 4000) { checkForStartUpStatus(agents) }
@@ -276,9 +278,11 @@ class MacOSAgentStarter: AgentStarter {
 }
 
 private fun checkForStartUpStatus(projectRootDirectory: Path): String {
+
+    println("checking for status")
     val logFile = projectRootDirectory.resolve("application.log")
 
-    return when {
+    val s = when {
         logFile.exists() -> {
             val logs = logFile.readText()
             when {
@@ -287,11 +291,15 @@ private fun checkForStartUpStatus(projectRootDirectory: Path): String {
                 else -> "PROGRESS"
             }
         }
+
         else -> "PROGRESS"
     }
+    println("result of check status $s")
+    return s
 }
 
 private fun runAtFixedRate(stopKeywords: Set<String>, pollingDurationMillis: Long, maxAttempts: Long, initialDelayMillis: Long = 0, fn: () -> String): String {
+    println("Polling agent status")
     var matched = ""
     runBlocking {
         var i = 0
@@ -299,6 +307,7 @@ private fun runAtFixedRate(stopKeywords: Set<String>, pollingDurationMillis: Lon
         while (matched.isEmpty() && i++ < maxAttempts) {
             delay(pollingDurationMillis)
             val result = fn()
+            println("result: $result")
             matched = stopKeywords.find { result.contains(it) } ?: ""
         }
     }

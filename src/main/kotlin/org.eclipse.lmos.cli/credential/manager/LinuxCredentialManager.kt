@@ -91,9 +91,7 @@ class LinuxCredentialManager : CredentialManager {
 
     override fun listCredentials(prefix: String): Set<Credential> {
         return try {
-            println("Listing credentials is not directly supported via libsecret.")
-            // As listing is not supported, we return an empty set
-            emptySet()
+            TODO()
         } catch (e: Exception) {
             emptySet()
         }
