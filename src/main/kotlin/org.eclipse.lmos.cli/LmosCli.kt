@@ -35,7 +35,7 @@ class LmosCli : Runnable, QuarkusApplication {
         initializer.initialize()
         println("Running init for Lmos CLI Completed")
 
-        chatAgentTest()
+//        chatAgentTest()
 //        credManagerTest()
 //        agentTest()
 //        }

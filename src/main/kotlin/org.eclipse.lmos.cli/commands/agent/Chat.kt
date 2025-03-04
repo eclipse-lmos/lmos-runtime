@@ -112,6 +112,8 @@ class Chat : Runnable {
 
         val agentStarter: AgentStarter = AgentStarterFactory().getAgentStarter()
 
+        println("agentStarter type: ${agentStarter.javaClass}")
+
         val startAgent = agentStarter.startAgent()
 
         val args = arrayOf("")  //todo fetch config from credential manager
@@ -228,7 +230,8 @@ class MacOSAgentStarter: AgentStarter {
 
         //        val deleteCommand = "cd $projectDirectory && if [ -f application.log ]; then rm application.log && echo \"deleted\"; fi"
         val deleteCommand = arrayOf("sh", "-c", "cd $agents && if [ -f application.log ]; then rm application.log && echo \"deleted\"; fi")
-        executeCommand(deleteCommand)
+        val result = executeCommand(deleteCommand)
+        println("Delete command: ${deleteCommand.contentToString()}, Result: $result")
 
 //        val startCommand = "cd $projectDirectory && nohup ./gradlew -q --console=plain bootrun --args='$params'>application.log 2>&1 < /dev/null &"
 
