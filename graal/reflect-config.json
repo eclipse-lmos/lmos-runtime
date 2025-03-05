@@ -546,7 +546,8 @@
 {
   "name":"org.eclipse.lmos.cli.commands.config.llm.DeleteLLMConfig",
   "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true
+  "queryAllDeclaredMethods":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "name":"org.eclipse.lmos.cli.commands.config.llm.GetLLMConfig",
