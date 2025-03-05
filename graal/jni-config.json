@@ -118,6 +118,10 @@
   "methods":[{"name":"getProperty","parameterTypes":["java.lang.String"] }]
 },
 {
+  "name":"java.lang.UnsatisfiedLinkError",
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.String"] }]
+},
+{
   "name":"java.lang.Void",
   "fields":[{"name":"TYPE"}]
 },
