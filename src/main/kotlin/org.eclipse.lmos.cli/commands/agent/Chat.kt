@@ -253,13 +253,18 @@ class WindowsAgentStarter : AgentStarter {
 
         // Build the command to execute
         val command = arrayOf(
-            "cmd.exe", "/c", "gradlew.bat", "-q", "--console=plain", "bootrun", "--args=$params"
+            "cmd.exe", "/c", "gradlew.bat", "-q", "--console=plain", "bootrun", "--args=$params", " > application.log 2>&1"
         )
+
+        //    start /b /min "" gradlew -q --console=plain bootrun --args="$params" > application.log 2>&1
+
+//        output = process.inputStream.bufferedReader().use(BufferedReader::readText)
+
 
         val processBuilder = ProcessBuilder(*command)
             .directory(agents.toFile())
-            .redirectErrorStream(true)
-            .redirectOutput(ProcessBuilder.Redirect.to(agents.resolve("application.log").toFile()))
+//            .redirectErrorStream(true)
+//            .redirectOutput(ProcessBuilder.Redirect.to(agents.resolve("application.log").toFile()))
 
         // Set the environment variables
         val env = processBuilder.environment()
