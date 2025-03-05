@@ -569,7 +569,8 @@
 {
   "name":"org.eclipse.lmos.cli.commands.config.llm.UpdateLLMConfig",
   "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true
+  "queryAllDeclaredMethods":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "name":"org.eclipse.lmos.cli.constants.CredAdvapi32",
@@ -588,6 +589,14 @@
 },
 {
   "name":"org.eclipse.lmos.cli.credential.manager.MacOSCredentialManager"
+},
+{
+  "name":"org.eclipse.lmos.cli.llm.LLMConfig",
+  "fields":[{"name":"Companion"}]
+},
+{
+  "name":"org.eclipse.lmos.cli.llm.LLMConfig$Companion",
+  "methods":[{"name":"serializer","parameterTypes":[] }]
 },
 {
   "name":"org.eclipse.microprofile.config.Config"
