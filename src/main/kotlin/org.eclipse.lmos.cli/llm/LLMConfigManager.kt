@@ -1,17 +1,16 @@
 package org.eclipse.lmos.cli.llm
 
 import net.mamoe.yamlkt.Yaml
-import org.eclipse.lmos.cli.constants.LmosCliConstants.CredentialManagerConstants.MODEL_IDS
 import org.eclipse.lmos.cli.constants.LmosCliConstants.PREFIX
 import org.eclipse.lmos.cli.credential.Credential
 import org.eclipse.lmos.cli.factory.CredentialManagerFactory
 
 interface LLMConfigManager {
 
-    fun addLLMConfig(llmConfig: LLMConfig): LLMConfig?
+    fun addLLMConfig(llmConfig: LLMConfig): LLMConfig
     fun getLLMConfig(id: String): LLMConfig?
-    fun updateLLMConfig(llmConfig: LLMConfig): LLMConfig?
-    fun deleteLLMConfig(id: String): LLMConfig?
+    fun updateLLMConfig(llmConfig: LLMConfig): LLMConfig
+    fun deleteLLMConfig(id: String)
     fun listLLMConfig(): Set<String>
     fun deleteAllLLMConfig(): Set<String>
 
@@ -20,17 +19,10 @@ interface LLMConfigManager {
 class DefaultLLMConfigManager : LLMConfigManager {
 
 
-    override fun addLLMConfig(llmConfig: LLMConfig): LLMConfig? {
+    override fun addLLMConfig(llmConfig: LLMConfig): LLMConfig {
         val credentialManager = CredentialManagerFactory().getCredentialManager()
-        credentialManager.getCredential(PREFIX, llmConfig.id)?.let {
-            return null
-        }
-
         val configYaml = Yaml().encodeToString(LLMConfig.serializer(), llmConfig)
         val credential = Credential(llmConfig.id, configYaml)
-        val modelIds = MODEL_IDS.readLines().toMutableList()
-        modelIds.add(llmConfig.id)
-        MODEL_IDS.writeText(modelIds.joinToString(System.lineSeparator()))
         credentialManager.addCredential(PREFIX, credential)
         return llmConfig
     }
@@ -45,33 +37,22 @@ class DefaultLLMConfigManager : LLMConfigManager {
         }
     }
 
-    override fun updateLLMConfig(llmConfig: LLMConfig): LLMConfig? {
+    override fun updateLLMConfig(llmConfig: LLMConfig): LLMConfig {
         val credentialManager = CredentialManagerFactory().getCredentialManager()
         credentialManager.deleteCredential(PREFIX, llmConfig.id)
-        credentialManager.addCredential(PREFIX, Credential(llmConfig.id, Yaml().encodeToString(llmConfig)))
+        credentialManager.addCredential(PREFIX, Credential(llmConfig.id, Yaml().encodeToString(LLMConfig.serializer(), llmConfig)))
         return llmConfig
     }
 
-    override fun deleteLLMConfig(id: String): LLMConfig? {
+    override fun deleteLLMConfig(id: String) {
         val credentialManager = CredentialManagerFactory().getCredentialManager()
-        val credential = credentialManager.getCredential(PREFIX, id)
-        if (credential == null) {
-            return null
-        } else {
             credentialManager.deleteCredential(PREFIX, id)
-            return Yaml().decodeFromString(LLMConfig.serializer(), credential.content)
         }
-    }
 
     override fun listLLMConfig(): Set<String> {
         val credentialManager = CredentialManagerFactory().getCredentialManager()
-        val modelIds = MODEL_IDS.readLines().toSet()
-//        val listCredentials = modelIds.map { credentialManager.getCredential(PREFIX, it) }.toSet()
-//        val listCredentials = credentialManager.listCredentials(PREFIX)
-//        println("listCredentials: ${listCredentials.forEach { println(it.id) }}")
-//        return listCredentials.map { it.id }.toSet()
-        println("modelIds: $modelIds")
-        return modelIds
+        val listCredentials = credentialManager.listCredentials(PREFIX)
+        return listCredentials.map { it.id }.toSet()
     }
 
     override fun deleteAllLLMConfig(): Set<String> {

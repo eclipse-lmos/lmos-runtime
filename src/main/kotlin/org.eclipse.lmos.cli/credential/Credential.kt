@@ -16,5 +16,5 @@ data class CredentialManagerConfig (
 )
 
 enum class CredentialManagerType {
-    MAC, LINUX, WIN, DEFAULT
+    MAC, LINUX, WIN
 }

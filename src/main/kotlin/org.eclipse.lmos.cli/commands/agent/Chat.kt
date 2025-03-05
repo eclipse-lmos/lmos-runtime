@@ -1,25 +1,26 @@
 package org.eclipse.lmos.cli.commands.agent
 
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
 import org.eclipse.lmos.arc.api.Message
-import org.eclipse.lmos.cli.*
+import org.eclipse.lmos.cli.Conversation
+import org.eclipse.lmos.cli.InputContext
+import org.eclipse.lmos.cli.SystemContext
+import org.eclipse.lmos.cli.UserContext
+import org.eclipse.lmos.cli.agent.AgentManager
 import org.eclipse.lmos.cli.agent.AgentType
-import org.eclipse.lmos.cli.constants.LmosCliConstants.AgentStarterConstants.AGENT_PROJECTS_DIRECTORY
-import org.eclipse.lmos.cli.credential.manager.executeCommand
+import org.eclipse.lmos.cli.arc.ArcAgentClientService
+import org.eclipse.lmos.cli.factory.AgentManagerFactory
 import org.eclipse.lmos.cli.llm.DefaultLLMConfigManager
 import org.eclipse.lmos.cli.llm.LLMConfig
 import org.eclipse.lmos.cli.registry.agent.AgentRegistry
-import org.eclipse.lmos.cli.starter.AgentStarter
-import org.eclipse.lmos.cli.starter.AgentStarterFactory
+import org.eclipse.lmos.cli.utils.CliPrinter.printConvOutput
+import org.eclipse.lmos.cli.utils.CliPrinter.printError
+import org.eclipse.lmos.cli.utils.CliPrinter.printSuccess
+import org.eclipse.lmos.cli.utils.CliPrinter.printlnHeader
 import picocli.CommandLine
-import java.io.*
-import java.nio.file.Path
 import java.util.*
 import kotlin.collections.List
-import kotlin.io.path.exists
-import kotlin.io.path.readText
 
 @CommandLine.Command(name = "chat", description = ["Chat with the system"], mixinStandardHelpOptions = true)
 class Chat : Runnable {
@@ -27,170 +28,99 @@ class Chat : Runnable {
     @CommandLine.Option(names = ["--an"], description = ["Agent name"])
     private var agentName: String? = null
 
-    private val history = mutableListOf<Pair<String, String>>()  // Stores input-response pairs
+    private val history = mutableListOf<Pair<String, String>>()
 
     override fun run() {
 
-        println("Chatting with query: $agentName")
-
         val agentName: String = agentName ?: promptUser("Enter the agent name")
 
-        agentName.let {
+        val agentRegistry = AgentRegistry()
+        val agentInfo: AgentInfo =
+            agentRegistry.findAgent(agentName) ?: run {
+                printError("Agent $agentName not found")
+                return
+            }
 
-            val conversationId = UUID.randomUUID().toString()
-            val startStatus = runBlocking { startProject() }
-            val message = listOf<Message>()
-            val systemContext = SystemContext("channelId")
-            val userContext = UserContext("userId", "userToken")
+        val startStatus = runBlocking { startProject() }
 
-            while (true) {
-
-
-                val inputContext = InputContext(message)
-                val conversation = Conversation(inputContext, systemContext, userContext)
-
-                if(startStatus.uppercase() == "STARTED") {
-
-                    val agentRegistry = AgentRegistry()
-//                val agentInfo: AgentInfo = agentRegistry.findAgent(it)
-
-                    val input =
-//                    "hi"
-                        promptUser("Enter your query")
-                    val turnId = UUID.randomUUID().toString()
-
-                    message.plus(Message(role = "user", content = input, turnId = turnId))
-
-                    var response = ""
-
-                    runBlocking {
-                        ArcAgentClientService().askAgent(
-                            conversation, conversationId, turnId,
-                            agentName, "localhost"
-                        ).collect { it ->
-                            println("Agent Response: $it")
-                            response = it
-                        }
-
-                    }
-
-//                try {
-//                    graphQlAgentClient.callAgent(
-//                        agentRequest,
-//                        requestHeaders = subsetHeader,
-//                    ).collect { response ->
-//                        log.info("Agent Response: $response")
-//                        emit(
-//                            AssistantMessage(
-//                                response.messages[0].content,
-//                                response.anonymizationEntities,
-//                            ),
-//                        )
-//                    }
-
-                    if (input.equals("exit", ignoreCase = true)) {
-                        println("Exiting session...")
-                        break
-                    }
-
-//                val response = processInput(input, agentInfo)  //todo agent-integrator
-                    history.add(input to response)
-                    println("Response: $response")
-                } else {
-                    println("Error in starting Agents, consult logs")
-                }
-            } } ?: TODO("Implement Direct LLM integration") //todo integrate llm call
-
-
-    }
-
-    private fun startProject(): String {
-        val projectDirectory = AGENT_PROJECTS_DIRECTORY.resolve(AgentType.ARC.name)
-
-
-
-        val agentStarter: AgentStarter = AgentStarterFactory().getAgentStarter()
-
-        println("agentStarter type: ${agentStarter.javaClass}")
-
-        val startAgent = agentStarter.startAgent()
-
-        val args = arrayOf("")  //todo fetch config from credential manager
-
-        val command = "cd $projectDirectory && nohup ./gradlew -q --console=plain bootrun --args='$args'>application.log 2>&1 < /dev/null &"   //macos
-
-        val windowsCommand = "cd $projectDirectory && start /b /min \"\" gradlew -q --console=plain bootrun --args=\"$args\" > application.log 2>&1"
-
-        //todo execute command and return result
-
-        return startAgent
-    }
-
-    private fun processInput(input: String, agentInfo: AgentInfo): String {
-
-        val agentCommunicator: AgentCommunicator? = null
-        agentCommunicator?.connect()
-        if(AgentStatus.READY == agentCommunicator?.checkStatus()) {
-            agentCommunicator.sendCommand(input)
+        if(startStatus) {
+            chatLoop(agentInfo)
+        } else {
+            val logs = getLogs(agentInfo)
+            printError("Failed to start agent")
+            logs.forEach { printlnHeader(it) }
         }
-        agentCommunicator?.disconnect()
 
-        return "Answer: $input"
+
     }
-}
 
-interface AgentDiscovery {
+    private fun getLogs(agentInfo: AgentInfo): List<String> {
+        val agentManager: AgentManager = AgentManagerFactory.agentManager()
+        return agentManager.getLogs(agentInfo)
+    }
 
-    fun discoverAgents(): List<AgentInfo>
+    private fun chatLoop(agentInfo: AgentInfo) {
+        val conversationId = UUID.randomUUID().toString()
+        val messages = mutableListOf<Message>()
+        val systemContext = SystemContext("channelId")
+        val userContext = UserContext("userId", "userToken")
 
-}
+        while (true) {
+            val input = promptUser("User query:")
+            if (input.equals("/bye", ignoreCase = true)) {
+                shutdownAgent(agentInfo)
+                printSuccess("Agent chat session closed. See you next time!")
+                break
+            }
 
-interface AgentCommunicator {
-    fun connect()
-    fun checkStatus(): AgentStatus
-    fun sendCommand(command: String): String
-    fun disconnect()
+            val turnId = UUID.randomUUID().toString()
+            messages.add(Message(role = "user", content = input, turnId = turnId))
+
+            var response = ""
+            try {
+                runBlocking {
+                    ArcAgentClientService().askAgent(
+                        Conversation(InputContext(messages), systemContext, userContext),
+                        conversationId, turnId, agentInfo.name, "localhost"
+                    ).collect {
+                        response = it
+                    }
+                }
+                history.add(input to response)
+                printConvOutput("${agentInfo.name}:", response)
+            } catch (e: Exception) {
+                printError("An error occurred while communicating with the agent: ${e.message}")
+                shutdownAgent(agentInfo)
+                break
+            }
+        }
+    }
+
+    private fun shutdownAgent(agentInfo: AgentInfo) {
+        val agentManager: AgentManager = AgentManagerFactory.agentManager()
+        agentManager.shutdownAgent(agentInfo)
+    }
+
+    private fun startProject(): Boolean {
+        val defaultLLMConfigManager = DefaultLLMConfigManager()
+        val llmConfigs: List<LLMConfig> = defaultLLMConfigManager.listLLMConfig().mapNotNull {
+            defaultLLMConfigManager.getLLMConfig(it)
+        }
+        val agentManager: AgentManager = AgentManagerFactory.agentManager()
+        return agentManager.startAgent(llmConfigs) == AgentStatus.READY
+    }
 }
 
 enum class AgentStatus {
-    STARTING, READY, FAILED
-}
-
-
-class ConsoleIOAdapter(private val processBuilder: ProcessBuilder) : AgentCommunicator {
-    private var process: Process? = null
-    private var reader: BufferedReader? = null
-    private var writer: BufferedWriter? = null
-
-    override fun connect() {
-        process = processBuilder.start()
-        reader = BufferedReader(InputStreamReader(process?.inputStream))
-        writer = BufferedWriter(OutputStreamWriter(process?.outputStream))
-    }
-
-    override fun checkStatus(): AgentStatus {
-        TODO("Not yet implemented")
-    }
-
-    override fun sendCommand(command: String): String {
-        writer?.write(command)
-        writer?.newLine()
-        writer?.flush()
-        return reader?.readLine() ?: ""
-    }
-
-    override fun disconnect() {
-        reader?.close()
-        writer?.close()
-        process?.destroy()
-    }
+    STARTING, READY, FAILED, ERROR
 }
 
 @Serializable
 data class AgentInfo(
-    val id: String,
     val name: String,
-    val protocol: String,
-    val directory: String?,
-    val connectionParams: Map<String, String>?
+    val type: AgentType,
+    val id: String? = null,
+    val protocol: String? = null,
+    val directory: String? = null,
+    val connectionParams: Map<String, String>? = emptyMap()
 )

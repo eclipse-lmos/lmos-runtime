@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.lmos.cli
+package org.eclipse.lmos.cli.arc
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import org.eclipse.lmos.arc.agent.client.graphql.GraphQlAgentClient
 import org.eclipse.lmos.arc.api.*
+import org.eclipse.lmos.cli.Conversation
 import org.slf4j.LoggerFactory
 
 class ArcAgentClientService {
@@ -55,13 +56,12 @@ class ArcAgentClientService {
                         agentRequest,
                         agentName
                     ).collect { response ->
-                        log.info("Agent Response: $response")
                         emit(
                                 response.messages[0].content
                             )
                     }
                 } catch (e: Exception) {
-                    log.error("Error response from ArcAgentClient", e)
+                    log.error("Exception in ArcAgentClientService askAgent with host: $host and agent: $agentName, : ${e.message}, ${e.stackTrace}")
                     throw RuntimeException(e.message)
                 }
             }
@@ -69,8 +69,6 @@ class ArcAgentClientService {
 
     private fun createGraphQlAgentClient(host: String): GraphQlAgentClient {
         val agentUrl = "ws://${host}:8080/subscriptions"
-
-        log.info("Creating GraphQlAgentClient with url $agentUrl")
         val graphQlAgentClient = GraphQlAgentClient(agentUrl)
         return graphQlAgentClient
     }

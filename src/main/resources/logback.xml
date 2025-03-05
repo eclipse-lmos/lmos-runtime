@@ -1,0 +1,26 @@
+<configuration>
+    <appender name="ROLLING_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${lmos.cli.logfile.path}</file>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- File name pattern with date and index -->
+            <fileNamePattern>${lmos.cli.logfile.path}.%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
+
+            <!-- Roll over daily and when size exceeds 100MB -->
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+
+            <!-- Optional: Keep 30 days of logs -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="ROLLING_FILE" />
+    </root>
+</configuration>

@@ -3,47 +3,46 @@ package org.eclipse.lmos.cli
 import jakarta.inject.Singleton
 import org.eclipse.lmos.cli.constants.LmosCliConstants.AgentStarterConstants.AGENTS_REGISTRY
 import org.eclipse.lmos.cli.constants.LmosCliConstants.AgentStarterConstants.AGENT_PROJECTS_DIRECTORY
-import org.eclipse.lmos.cli.constants.LmosCliConstants.CredentialManagerConstants.CREDENTIAL_CONFIG
 import org.eclipse.lmos.cli.constants.LmosCliConstants.CredentialManagerConstants.CREDENTIAL_DIRECTORY
-import org.eclipse.lmos.cli.constants.LmosCliConstants.CredentialManagerConstants.MODEL_IDS
+import org.eclipse.lmos.cli.constants.LmosCliConstants.LOG_DIR
+import org.eclipse.lmos.cli.constants.LmosCliConstants.LOG_FILE_PATH
+import org.slf4j.LoggerFactory
+import java.nio.file.Files
 import kotlin.io.path.createDirectories
-import kotlin.io.path.notExists
+import kotlin.io.path.createFile
+
 
 @Singleton
 class Initializer {
 
-    fun initialize() {
-        println("Initializing Lmos CLI")
+    private val log = LoggerFactory.getLogger(Initializer::class.java)
+
+    fun initialize(): Int {
         ensureDirectories()
-        ensureConfigs()
+        setLogFilePath()
+        return 0
     }
 
-    private fun ensureConfigs() {
-        if (!CREDENTIAL_CONFIG.exists()) {
-            val createNewFile = CREDENTIAL_CONFIG.createNewFile()
-            println("Cred file created: $createNewFile")
-            CREDENTIAL_CONFIG.setWritable(true, true)
-        }
-
-        if (!MODEL_IDS.exists()) {
-            val createNewFile = MODEL_IDS.createNewFile()
-            println("MODEL_IDS file created: $createNewFile")
-            MODEL_IDS.setWritable(true, true)
-        }
+    private fun setLogFilePath() {
+        System.setProperty("custom.logfile.path", LOG_FILE_PATH.toString());
+        log.info("Logging initialized at {}", LOG_FILE_PATH.toString())
     }
 
     private fun ensureDirectories() {
-        if (AGENT_PROJECTS_DIRECTORY.notExists()) {
-            AGENT_PROJECTS_DIRECTORY.createDirectories()
-            println("Cred directory created: $AGENT_PROJECTS_DIRECTORY")
+        if (Files.notExists(LOG_DIR)) {
+            LOG_DIR.createDirectories()
         }
-        if (AGENTS_REGISTRY.notExists()) {
+        if (Files.notExists(LOG_FILE_PATH)) {
+            LOG_FILE_PATH.createFile()
+        }
+        if (Files.notExists(AGENT_PROJECTS_DIRECTORY)) {
+            AGENT_PROJECTS_DIRECTORY.createDirectories()
+        }
+        if (Files.notExists(AGENTS_REGISTRY)) {
             AGENTS_REGISTRY.createDirectories()
-            println("Cred directory created: $AGENTS_REGISTRY")
         }
         if (!CREDENTIAL_DIRECTORY.toFile().exists()) {
-            val createDirectories = CREDENTIAL_DIRECTORY.createDirectories()
-            println("Cred directory created: $createDirectories")
+            CREDENTIAL_DIRECTORY.createDirectories()
         }
     }
 }
