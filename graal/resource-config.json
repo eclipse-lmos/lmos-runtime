@@ -1,0 +1,39 @@
+{
+  "resources":{
+  "includes":[{
+    "pattern":"\\QMETA-INF/microprofile-config.properties\\E"
+  }, {
+    "pattern":"\\QMETA-INF/services/io.quarkus.arc.ComponentsProvider\\E"
+  }, {
+    "pattern":"\\QMETA-INF/services/io.quarkus.arc.ResourceReferenceProvider\\E"
+  }, {
+    "pattern":"\\QMETA-INF/services/java.lang.System$LoggerFinder\\E"
+  }, {
+    "pattern":"\\QMETA-INF/services/java.nio.file.spi.FileSystemProvider\\E"
+  }, {
+    "pattern":"\\QMETA-INF/services/java.time.zone.ZoneRulesProvider\\E"
+  }, {
+    "pattern":"\\QMETA-INF/services/org.eclipse.microprofile.config.spi.ConfigProviderResolver\\E"
+  }, {
+    "pattern":"\\QMETA-INF/services/org.jboss.logging.LoggerProvider\\E"
+  }, {
+    "pattern":"\\QMETA-INF/services/org.jboss.logmanager.ConfiguratorFactory\\E"
+  }, {
+    "pattern":"\\QMETA-INF/services/org.jboss.logmanager.LogContextConfigurator\\E"
+  }, {
+    "pattern":"\\QMETA-INF/services/org.jboss.logmanager.LogContextInitializer\\E"
+  }, {
+    "pattern":"\\QMETA-INF/services/org.jboss.logmanager.MDCProvider\\E"
+  }, {
+    "pattern":"\\QMETA-INF/services/org.jboss.logmanager.NDCProvider\\E"
+  }, {
+    "pattern":"\\Qapplication.properties\\E"
+  }, {
+    "pattern":"\\Qcom/sun/jna/win32-x86-64/jnidispatch.dll\\E"
+  }, {
+    "pattern":"\\Qlogging.properties\\E"
+  }, {
+    "pattern":"\\Qorg/jboss/threads/Version.properties\\E"
+  }]},
+  "bundles":[]
+}
