@@ -540,7 +540,8 @@
 {
   "name":"org.eclipse.lmos.cli.commands.config.llm.AddLLMConfig",
   "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true
+  "queryAllDeclaredMethods":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "name":"org.eclipse.lmos.cli.commands.config.llm.DeleteLLMConfig",
@@ -575,6 +576,10 @@
 },
 {
   "name":"org.eclipse.lmos.cli.constants.CredAdvapi32$CREDENTIAL",
+  "allDeclaredFields":true
+},
+{
+  "name":"org.eclipse.lmos.cli.constants.CredAdvapi32$PCREDENTIAL",
   "allDeclaredFields":true
 },
 {
