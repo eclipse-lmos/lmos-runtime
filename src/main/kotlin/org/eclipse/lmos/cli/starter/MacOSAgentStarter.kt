@@ -7,6 +7,8 @@ import org.eclipse.lmos.cli.constants.LmosCliConstants.AgentStarterConstants.AGE
 import org.eclipse.lmos.cli.credential.manager.executeCommand
 import org.eclipse.lmos.cli.llm.DefaultLLMConfigManager
 import org.eclipse.lmos.cli.llm.LLMConfig
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 
 class MacOSAgentStarter: AgentStarter {
@@ -14,10 +16,10 @@ class MacOSAgentStarter: AgentStarter {
 
         val agents = AGENT_PROJECTS_DIRECTORY.resolve(AgentType.ARC.name)
 
-        //        val deleteCommand = "cd $projectDirectory && if [ -f application.log ]; then rm application.log && echo \"deleted\"; fi"
-        val deleteCommand = arrayOf("sh", "-c", "cd $agents && if [ -f application.log ]; then rm application.log && echo \"deleted\"; fi")
-        val result = executeCommand(deleteCommand)
-        println("Delete command: ${deleteCommand.contentToString()}, Result: $result")
+        // TODO: Delete older files 
+//        val deleteCommand = arrayOf("sh", "-c", "cd $agents && if [ -f application.log ]; then rm application.log && echo \"deleted\"; fi")
+//        val result = executeCommand(deleteCommand)
+//        println("Delete command: ${deleteCommand.contentToString()}, Result: $result")
 
 //        val startCommand = "cd $projectDirectory && nohup ./gradlew -q --console=plain bootrun --args='$params'>application.log 2>&1 < /dev/null &"
 
@@ -41,11 +43,14 @@ class MacOSAgentStarter: AgentStarter {
         """.trimIndent()
         }.joinToString("\n")
 
+        val timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss_SSS"))
+
+
         val startCommand = arrayOf(
             "sh", "-c", """
         cd $agents &&
         $envVars &&
-        nohup ./gradlew -q --console=plain bootrun --args='$params' > application.log 2>&1 < /dev/null &
+        nohup ./gradlew -q --console=plain bootrun --args='$params' > application_$timestamp.log 2>&1 < /dev/null &
         """.trimIndent()
         )
 
