@@ -9,7 +9,7 @@ import java.net.URI
 
 plugins {
     id("org.springframework.boot") version "3.4.0" apply false
-    id("org.jlleitschuh.gradle.ktlint") version "12.1.2"
+    id("org.jlleitschuh.gradle.ktlint") version "12.2.0"
     id("io.spring.dependency-management") version "1.1.6"
     id("org.cadixdev.licenser") version "0.6.1"
 
@@ -29,7 +29,7 @@ val springBootVersion by extra { "3.4.0" }
 fun getProperty(propertyName: String) = getenv(propertyName) ?: project.findProperty(propertyName) as String
 
 mavenPublishing {
-    publishToMavenCentral(SonatypeHost.DEFAULT)
+    publishToMavenCentral(SonatypeHost.DEFAULT, automaticRelease = true)
     signAllPublications()
 
     pom {
@@ -58,15 +58,8 @@ mavenPublishing {
     }
 
     release {
-        buildTasks = listOf("releaseBuild")
-        ignoredSnapshotDependencies =
-            listOf()
         newVersionCommitMessage = "New Snapshot-Version:"
         preTagCommitMessage = "Release:"
-    }
-
-    tasks.register("releaseBuild") {
-        dependsOn(subprojects.mapNotNull { it.tasks.findByName("build") })
     }
 
     repositories {

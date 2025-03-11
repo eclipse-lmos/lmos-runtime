@@ -44,7 +44,8 @@ dependencyManagement {
 }
 
 tasks.named<BootBuildImage>("bootBuildImage") {
-    if (project.hasProperty("REGISTRY_URL")) {
+    group = "publishing"
+    if ((System.getenv("REGISTRY_URL") ?: project.findProperty("REGISTRY_URL")) != null) {
         val registryUrl = getProperty("REGISTRY_URL")
         val registryUsername = getProperty("REGISTRY_USERNAME")
         val registryPassword = getProperty("REGISTRY_PASSWORD")
@@ -86,30 +87,38 @@ tasks.register("replaceChartVersion") {
 
 tasks.register("helmPush") {
     description = "Push Helm chart to OCI registry"
-    group = "helm"
+    group = "publishing"
     dependsOn(tasks.named("helmPackageMainChart"))
 
     doLast {
-        val registryUrl = getProperty("REGISTRY_URL")
-        val registryUsername = getProperty("REGISTRY_USERNAME")
-        val registryPassword = getProperty("REGISTRY_PASSWORD")
-        val registryNamespace = getProperty("REGISTRY_NAMESPACE")
+        group = "publishing"
+        if ((System.getenv("REGISTRY_URL") ?: project.findProperty("REGISTRY_URL")) != null) {
+            val registryUrl = getProperty("REGISTRY_URL")
+            val registryUsername = getProperty("REGISTRY_USERNAME")
+            val registryPassword = getProperty("REGISTRY_PASSWORD")
+            val registryNamespace = getProperty("REGISTRY_NAMESPACE")
 
-        helm.execHelm("registry", "login") {
-            option("-u", registryUsername)
-            option("-p", registryPassword)
-            args(registryUrl)
-        }
+            helm.execHelm("registry", "login") {
+                option("-u", registryUsername)
+                option("-p", registryPassword)
+                args(registryUrl)
+            }
 
-        helm.execHelm("push") {
-            args(tasks.named("helmPackageMainChart").get().outputs.files.singleFile.toString())
-            args("oci://$registryUrl/$registryNamespace")
-        }
+            helm.execHelm("push") {
+                args(tasks.named("helmPackageMainChart").get().outputs.files.singleFile.toString())
+                args("oci://$registryUrl/$registryNamespace")
+            }
 
-        helm.execHelm("registry", "logout") {
-            args(registryUrl)
+            helm.execHelm("registry", "logout") {
+                args(registryUrl)
+            }
         }
     }
+}
+
+tasks.named("publish") {
+    dependsOn(tasks.named<BootBuildImage>("bootBuildImage"))
+    dependsOn(tasks.named("helmPush"))
 }
 
 fun getProperty(propertyName: String) = System.getenv(propertyName) ?: project.findProperty(propertyName) as String
