@@ -9,7 +9,7 @@ plugins {
 
 dependencies {
 
-    val arcVersion = "0.2.0-SNAPSHOT"
+    val arcVersion = "0.121.0"
     val lmosRouterVersion = "0.1.0"
 
     val ktorVersion = "3.1.1"
