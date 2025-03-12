@@ -16,7 +16,9 @@ import org.springframework.web.cors.reactive.CorsWebFilter
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource
 
 @Configuration
-open class CorsConfig(private val lmosRuntimeCorsProperties: LmosRuntimeCorsProperties) {
+open class CorsConfig(
+    private val lmosRuntimeCorsProperties: LmosRuntimeCorsProperties,
+) {
     private val log = LoggerFactory.getLogger(CorsConfig::class.java)
 
     @Bean

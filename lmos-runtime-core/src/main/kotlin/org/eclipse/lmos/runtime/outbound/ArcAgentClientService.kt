@@ -44,34 +44,37 @@ class ArcAgentClientService : AgentClientService {
                                 anonymizationEntities = conversation.inputContext.anonymizationEntities,
                             ),
                         systemContext =
-                            conversation.systemContext.contextParams.map { (key, value) ->
-                                SystemContextEntry(key, value)
-                            }.toList(),
+                            conversation.systemContext.contextParams
+                                .map { (key, value) ->
+                                    SystemContextEntry(key, value)
+                                }.toList(),
                         userContext =
                             UserContext(
                                 userId = conversation.userContext.userId,
                                 userToken = conversation.userContext.userToken,
                                 profile =
-                                    conversation.userContext.contextParams.map { (key, value) ->
-                                        ProfileEntry(key, value)
-                                    }.toList(),
+                                    conversation.userContext.contextParams
+                                        .map { (key, value) ->
+                                            ProfileEntry(key, value)
+                                        }.toList(),
                             ),
                         messages = conversation.inputContext.messages,
                     )
 
                 try {
-                    graphQlAgentClient.callAgent(
-                        agentRequest,
-                        requestHeaders = subsetHeader,
-                    ).collect { response ->
-                        log.info("Agent Response: $response")
-                        emit(
-                            AssistantMessage(
-                                response.messages[0].content,
-                                response.anonymizationEntities,
-                            ),
-                        )
-                    }
+                    graphQlAgentClient
+                        .callAgent(
+                            agentRequest,
+                            requestHeaders = subsetHeader,
+                        ).collect { response ->
+                            log.info("Agent Response: $response")
+                            emit(
+                                AssistantMessage(
+                                    response.messages[0].content,
+                                    response.anonymizationEntities,
+                                ),
+                            )
+                        }
                 } catch (e: Exception) {
                     log.error("Error response from ArcAgentClient", e)
                     throw AgentClientException(e.message)

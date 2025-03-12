@@ -13,7 +13,9 @@ import org.eclipse.lmos.runtime.core.service.outbound.AgentRegistryService
 import org.springframework.stereotype.Component
 
 @Component
-class LmosInfoQuery(private val agentRegistryService: AgentRegistryService) : Query {
+class LmosInfoQuery(
+    private val agentRegistryService: AgentRegistryService,
+) : Query {
     @GraphQLDescription("Returns the available agents for tenant and channel")
     suspend fun getAvailableAgents(
         tenantId: String,

@@ -16,9 +16,9 @@ import org.springframework.stereotype.Component
 @Component
 class ChatQuery : Query {
     @GraphQLDescription("The single agent interface provided by the lmos-runtime")
-    fun agent(): Agents {
-        return Agents(listOf("lmos-runtime"))
-    }
+    fun agent(): Agents = Agents(listOf("lmos-runtime"))
 }
 
-data class Agents(val names: List<String>)
+data class Agents(
+    val names: List<String>,
+)

@@ -87,12 +87,13 @@ class ConversationHandlerIntegrationTest : BaseWireMockTest() {
             val mockGraphQlAgentClient = mockk<GraphQlAgentClient>()
 
             assertThrows<NoRoutingInfoFoundException> {
-                conversationHandler.handleConversation(
-                    conversation,
-                    conversationId,
-                    tenantId,
-                    turnId,
-                ).first()
+                conversationHandler
+                    .handleConversation(
+                        conversation,
+                        conversationId,
+                        tenantId,
+                        turnId,
+                    ).first()
             }
             coVerify(exactly = 0) { mockGraphQlAgentClient.callAgent(any(), any(), any()) }
         }
@@ -109,12 +110,13 @@ class ConversationHandlerIntegrationTest : BaseWireMockTest() {
             val mockGraphQlAgentClient = mockk<GraphQlAgentClient>()
 
             assertThrows<AgentNotFoundException> {
-                conversationHandler.handleConversation(
-                    conversation,
-                    conversationId,
-                    tenantId,
-                    turnId,
-                ).first()
+                conversationHandler
+                    .handleConversation(
+                        conversation,
+                        conversationId,
+                        tenantId,
+                        turnId,
+                    ).first()
             }
             coVerify(exactly = 0) { mockGraphQlAgentClient.callAgent(any(), any(), any()) }
         }
@@ -133,12 +135,13 @@ class ConversationHandlerIntegrationTest : BaseWireMockTest() {
             coEvery { mockGraphQlAgentClient.callAgent(any(), any(), any()) } throws RuntimeException("Something went wrong")
 
             assertThrows<AgentClientException> {
-                conversationHandler.handleConversation(
-                    conversation,
-                    conversationId,
-                    tenantId,
-                    turnId,
-                ).first()
+                conversationHandler
+                    .handleConversation(
+                        conversation,
+                        conversationId,
+                        tenantId,
+                        turnId,
+                    ).first()
             }
             coVerify(exactly = 1) { mockGraphQlAgentClient.callAgent(any(), any(), any()) }
         }

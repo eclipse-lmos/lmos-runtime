@@ -155,12 +155,13 @@ class ConversationHandlerTest {
             )
 
             val result =
-                conversationHandler.handleConversation(
-                    conversation,
-                    conversationId,
-                    tenantId,
-                    turnId,
-                ).first()
+                conversationHandler
+                    .handleConversation(
+                        conversation,
+                        conversationId,
+                        tenantId,
+                        turnId,
+                    ).first()
 
             assertEquals(expectedAgentResponse, result)
 
@@ -205,12 +206,13 @@ class ConversationHandlerTest {
             )
 
             val result =
-                conversationHandler.handleConversation(
-                    conversation,
-                    conversationId,
-                    tenantId,
-                    turnId,
-                ).first()
+                conversationHandler
+                    .handleConversation(
+                        conversation,
+                        conversationId,
+                        tenantId,
+                        turnId,
+                    ).first()
 
             assertEquals(expectedAgentResponse, result)
 
@@ -293,12 +295,13 @@ class ConversationHandlerTest {
 
             // Act
             val result =
-                conversationHandler.handleConversation(
-                    conversation,
-                    conversationId,
-                    tenantId,
-                    turnId,
-                ).first()
+                conversationHandler
+                    .handleConversation(
+                        conversation,
+                        conversationId,
+                        tenantId,
+                        turnId,
+                    ).first()
 
             // Assert
             assertEquals(expectedAgentResponse, result)

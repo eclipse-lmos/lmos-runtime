@@ -58,13 +58,15 @@ abstract class AbstractConversationControllerIntegrationTest : BaseWireMockTest(
 
             mockAgentCall(agentAddress)
 
-            webTestClient.post()
+            webTestClient
+                .post()
                 .uri(baseUrl, tenantId, conversationId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(TURN_ID, turnId)
                 .bodyValue(conversation)
                 .exchange()
-                .expectStatus().isOk
+                .expectStatus()
+                .isOk
                 .expectBody<AssistantMessage>()
                 .consumeWith { response ->
                     val assistantMessage = response.responseBody
@@ -95,13 +97,15 @@ abstract class AbstractConversationControllerIntegrationTest : BaseWireMockTest(
 
             mockAgentCall(agentAddress)
 
-            webTestClient.post()
+            webTestClient
+                .post()
                 .uri(baseUrl, tenantId, conversationId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(TURN_ID, turnId)
                 .bodyValue(updatedConversation)
                 .exchange()
-                .expectStatus().isOk
+                .expectStatus()
+                .isOk
                 .expectBody<AssistantMessage>()
                 .consumeWith { response ->
                     val assistantMessage = response.responseBody
@@ -124,13 +128,15 @@ abstract class AbstractConversationControllerIntegrationTest : BaseWireMockTest(
 
             mockAgentCall(agentAddress)
 
-            webTestClient.post()
+            webTestClient
+                .post()
                 .uri(baseUrl, tenantId, conversationId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(TURN_ID, turnId)
                 .bodyValue(conversation)
                 .exchange()
-                .expectStatus().isOk
+                .expectStatus()
+                .isOk
                 .expectBody<AssistantMessage>()
                 .consumeWith { response ->
                     val assistantMessage = response.responseBody
@@ -148,13 +154,15 @@ abstract class AbstractConversationControllerIntegrationTest : BaseWireMockTest(
                 )
             val updatedConversation = conversation.copy(inputContext = updatedInputContext)
 
-            webTestClient.post()
+            webTestClient
+                .post()
                 .uri(baseUrl, tenantId, conversationId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(TURN_ID, turnId + "1")
                 .bodyValue(updatedConversation)
                 .exchange()
-                .expectStatus().isOk
+                .expectStatus()
+                .isOk
                 .expectBody<AssistantMessage>()
                 .consumeWith { response ->
                     val assistantMessage = response.responseBody

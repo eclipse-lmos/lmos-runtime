@@ -32,35 +32,29 @@ open class LmosRuntimeAutoConfiguration(
 ) {
     @Bean
     @ConditionalOnMissingBean(AgentClientService::class)
-    open fun agentClientService(): AgentClientService {
-        return ArcAgentClientService()
-    }
+    open fun agentClientService(): AgentClientService = ArcAgentClientService()
 
     @Bean
     @ConditionalOnMissingBean(AgentRoutingService::class)
-    open fun agentRegistryService(): AgentRegistryService {
-        return LmosOperatorAgentRegistry(lmosRuntimeProperties)
-    }
+    open fun agentRegistryService(): AgentRegistryService = LmosOperatorAgentRegistry(lmosRuntimeProperties)
 
     @Bean
     @ConditionalOnMissingBean(LmosRuntimeTenantAwareCache::class)
-    open fun <V : Any> lmosRuntimeTenantAwareCache(): LmosRuntimeTenantAwareCache<V> {
-        return TenantAwareInMemoryCache()
-    }
+    open fun <V : Any> lmosRuntimeTenantAwareCache(): LmosRuntimeTenantAwareCache<V> = TenantAwareInMemoryCache()
 
     @Bean
     @ConditionalOnMissingBean(AgentRoutingService::class)
-    open fun agentRoutingService(): AgentRoutingService {
-        return when (lmosRuntimeProperties.router.type) {
+    open fun agentRoutingService(): AgentRoutingService =
+        when (lmosRuntimeProperties.router.type) {
             Type.EXPLICIT -> ExplicitAgentRoutingService()
             Type.LLM -> {
-                lmosRuntimeProperties.openAi?.key
+                lmosRuntimeProperties.openAi
+                    ?.key
                     ?.takeIf { it.isNotBlank() }
                     ?: throw IllegalArgumentException("openAI configuration key is null or empty")
                 LmosAgentRoutingService(lmosRuntimeProperties)
             }
         }
-    }
 
     @Bean
     @ConditionalOnMissingBean(ConversationHandler::class)
@@ -70,13 +64,12 @@ open class LmosRuntimeAutoConfiguration(
         agentClientService: AgentClientService,
         lmosRuntimeProperties: LmosRuntimeProperties,
         lmosRuntimeTenantAwareCache: LmosRuntimeTenantAwareCache<RoutingInformation>,
-    ): ConversationHandler {
-        return DefaultConversationHandler(
+    ): ConversationHandler =
+        DefaultConversationHandler(
             agentRegistryService,
             agentRoutingService,
             agentClientService,
             lmosRuntimeProperties,
             lmosRuntimeTenantAwareCache,
         )
-    }
 }
