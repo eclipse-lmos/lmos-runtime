@@ -24,7 +24,7 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.1")
 
-    implementation("com.expediagroup:graphql-kotlin-spring-server:8.2.1")
+    implementation("com.expediagroup:graphql-kotlin-spring-server:8.3.0")
 
     testImplementation(testFixtures(project(":lmos-runtime-core")))
     testImplementation("org.springframework.boot:spring-boot-starter-test:$springBootVersion")
