@@ -21,7 +21,9 @@ import org.eclipse.lmos.runtime.core.model.Conversation
 import org.eclipse.lmos.runtime.core.service.outbound.AgentRoutingService
 import org.slf4j.LoggerFactory
 
-class LmosAgentRoutingService(private val lmosRuntimeConfig: LmosRuntimeConfig) : AgentRoutingService {
+class LmosAgentRoutingService(
+    private val lmosRuntimeConfig: LmosRuntimeConfig,
+) : AgentRoutingService {
     private val log = LoggerFactory.getLogger(LmosAgentRoutingService::class.java)
 
     override suspend fun resolveAgentForConversation(
@@ -53,11 +55,10 @@ class LmosAgentRoutingService(private val lmosRuntimeConfig: LmosRuntimeConfig) 
         return agentRoutingSpecResolver
     }
 
-    private fun routingSpecProvider(agentRoutingSpec: List<AgentRoutingSpec>): SimpleAgentRoutingSpecProvider {
-        return SimpleAgentRoutingSpecProvider().apply {
+    private fun routingSpecProvider(agentRoutingSpec: List<AgentRoutingSpec>): SimpleAgentRoutingSpecProvider =
+        SimpleAgentRoutingSpecProvider().apply {
             agentRoutingSpec.forEach { add(it) }
         }
-    }
 
     private fun agentRoutingSpecResolver(agentRoutingSpecsProvider: AgentRoutingSpecsProvider): AgentRoutingSpecsResolver {
         val openAIConfig = lmosRuntimeConfig.openAi ?: throw IllegalArgumentException("openAI configuration key is null")
@@ -81,7 +82,10 @@ class LmosAgentRoutingService(private val lmosRuntimeConfig: LmosRuntimeConfig) 
     }
 
     private fun prepareConversationComponents(conversation: Conversation): Pair<Context, UserMessage> {
-        val userMessage = conversation.inputContext.messages.last().content
+        val userMessage =
+            conversation.inputContext.messages
+                .last()
+                .content
         val conversationHistory =
             conversation.inputContext.messages.dropLast(1).map {
                 when (it.role) {
@@ -98,36 +102,43 @@ class LmosAgentRoutingService(private val lmosRuntimeConfig: LmosRuntimeConfig) 
     }
 }
 
-fun List<Agent>.toAgentRoutingSpec(): List<AgentRoutingSpec> {
-    return this.map { agent ->
-        AgentRoutingSpecBuilder().name(agent.name).version(agent.version).description(agent.description).apply {
-            agent.capabilities.map { agentCapability ->
-                addCapability(
-                    Capability(
-                        agentCapability.name,
-                        agentCapability.description,
-                        agent.version,
-                    ),
-                )
-            }
-            agent.addresses.map { address ->
-                address(Address(address.protocol, address.uri))
-            }
-        }.build()
+fun List<Agent>.toAgentRoutingSpec(): List<AgentRoutingSpec> =
+    this.map { agent ->
+        AgentRoutingSpecBuilder()
+            .name(agent.name)
+            .version(agent.version)
+            .description(agent.description)
+            .apply {
+                agent.capabilities.map { agentCapability ->
+                    addCapability(
+                        Capability(
+                            agentCapability.name,
+                            agentCapability.description,
+                            agent.version,
+                        ),
+                    )
+                }
+                agent.addresses.map { address ->
+                    address(Address(address.protocol, address.uri))
+                }
+            }.build()
     }
-}
 
 fun AgentRoutingSpec.toAgent(): Agent =
     AgentBuilder()
         .name(name)
         .description(description)
         .version(version)
-        .addresses(addresses.map { address -> org.eclipse.lmos.runtime.core.model.Address(address.protocol, address.uri) }.toList())
-        .apply {
+        .addresses(
+            addresses
+                .map { address ->
+                    org.eclipse.lmos.runtime.core.model
+                        .Address(address.protocol, address.uri)
+                }.toList(),
+        ).apply {
             capabilities(
                 capabilities.map { capability ->
                     AgentCapability(capability.name, capability.version, capability.description)
                 },
             )
-        }
-        .build()
+        }.build()

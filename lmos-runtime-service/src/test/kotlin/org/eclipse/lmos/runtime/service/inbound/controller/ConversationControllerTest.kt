@@ -83,13 +83,15 @@ class ConversationControllerTest {
                 )
             } returns flow { emit(assistantMessage) }
 
-            webClient.post()
+            webClient
+                .post()
                 .uri("$BASE_PATH$CHAT_URL", tenantId, conversationId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(TURN_ID, turnId)
                 .body(BodyInserters.fromValue(validConversation))
                 .exchange()
-                .expectStatus().isOk
+                .expectStatus()
+                .isOk
                 .expectBody()
                 .json(objectMapper.writeValueAsString(assistantMessage))
         }
@@ -127,7 +129,8 @@ class ConversationControllerTest {
                 .header(TURN_ID, turnId)
                 .body(BodyInserters.fromValue(emptyConversation))
                 .exchange()
-                .expectStatus().isOk
+                .expectStatus()
+                .isOk
                 .expectBody()
                 .json(objectMapper.writeValueAsString(assistantMessage))
         }
@@ -144,7 +147,8 @@ class ConversationControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromValue(validConversation))
                 .exchange()
-                .expectStatus().isBadRequest
+                .expectStatus()
+                .isBadRequest
         }
 
     @Test
@@ -161,7 +165,8 @@ class ConversationControllerTest {
                 .header(TURN_ID, turnId)
                 .body(BodyInserters.fromValue("{\"invalid\": \"data\"}"))
                 .exchange()
-                .expectStatus().isBadRequest
+                .expectStatus()
+                .isBadRequest
         }
 
     @Test
@@ -189,8 +194,10 @@ class ConversationControllerTest {
                 .header(TURN_ID, turnId)
                 .body(BodyInserters.fromValue(validConversation))
                 .exchange()
-                .expectStatus().isNotFound
-                .expectBody().json(objectMapper.writeValueAsString(errorMessage))
+                .expectStatus()
+                .isNotFound
+                .expectBody()
+                .json(objectMapper.writeValueAsString(errorMessage))
         }
 
     @TestConfiguration

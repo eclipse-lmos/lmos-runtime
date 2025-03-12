@@ -18,8 +18,8 @@ plugins {
     id("net.researchgate.release") version "3.1.0"
     id("com.vanniktech.maven.publish") version "0.31.0"
     kotlin("jvm")
-    kotlin("kapt") version "2.0.21"
-    kotlin("plugin.serialization") version "2.0.21" apply false
+    kotlin("kapt") version "2.1.10"
+    kotlin("plugin.serialization") version "2.1.10" apply false
     id("org.jetbrains.kotlinx.kover") version "0.9.1"
     id("org.jetbrains.dokka") version "2.0.0"
 }
@@ -102,6 +102,10 @@ subprojects {
         toolchain {
             languageVersion = JavaLanguageVersion.of(21)
         }
+    }
+
+    ktlint {
+        version.set("1.5.0")
     }
 
     dependencies {

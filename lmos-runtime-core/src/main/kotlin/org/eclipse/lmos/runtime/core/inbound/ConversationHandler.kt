@@ -49,27 +49,32 @@ class DefaultConversationHandler(
             log.debug("Request Received, conversationId: $conversationId, turnId: $turnId")
             val routingInformation =
                 lmosRuntimeTenantAwareCache.get(tenantId, ROUTES, conversationId)
-                    ?: agentRegistryService.getRoutingInformation(tenantId, conversation.systemContext.channelId)
+                    ?: agentRegistryService
+                        .getRoutingInformation(tenantId, conversation.systemContext.channelId)
                         .also { result ->
                             log.debug("Caching routing information: {}", result)
                             lmosRuntimeTenantAwareCache.save(
-                                tenantId, ROUTES, conversationId,
-                                result, lmosRuntimeConfig.cache.ttl,
+                                tenantId,
+                                ROUTES,
+                                conversationId,
+                                result,
+                                lmosRuntimeConfig.cache.ttl,
                             )
                         }
             log.info("routingInformation: $routingInformation")
             val agent: Agent = agentRoutingService.resolveAgentForConversation(conversation, routingInformation.agentList)
             log.info("Resolved agent: $agent")
 
-            agentClientService.askAgent(
-                conversation,
-                conversationId,
-                turnId,
-                agent.name,
-                agent.addresses.random(),
-                routingInformation.subset,
-            ).onEach {
-                log.info("Agent Response: $it")
-            }
+            agentClientService
+                .askAgent(
+                    conversation,
+                    conversationId,
+                    turnId,
+                    agent.name,
+                    agent.addresses.random(),
+                    routingInformation.subset,
+                ).onEach {
+                    log.info("Agent Response: $it")
+                }
         }
 }

@@ -83,11 +83,12 @@ class LmosOperatorAgentRegistry(
         }
 
         return try {
-            response.bodyAsText().let {
-                log.debug("Get agents from operator response: $it")
-                json.decodeFromString<ChannelRouting>(it)
-            }
-                .toRoutingInformation(response.headers[SUBSET])
+            response
+                .bodyAsText()
+                .let {
+                    log.debug("Get agents from operator response: $it")
+                    json.decodeFromString<ChannelRouting>(it)
+                }.toRoutingInformation(response.headers[SUBSET])
         } catch (e: Exception) {
             log.error("Unexpected response body from operator: ${response.bodyAsText()}, exception: ${e.printStackTrace()}")
             throw UnexpectedResponseException("Unexpected response body from operator: ${e.message}")
@@ -153,19 +154,23 @@ data class Capability(
 
 fun ChannelRouting.toAgent(): List<Agent> {
     val agentVersion = this.metadata.labels.version
-    return this.spec.capabilityGroups.map { agent ->
-        AgentBuilder()
-            .name(agent.name)
-            .description(agent.description)
-            .version(agentVersion)
-            .apply {
-                agent.capabilities.firstOrNull()?.let { addAddress(Address(uri = it.host)) }
-                agent.capabilities.forEach { capability ->
-                    addCapability(
-                        AgentCapability(name = capability.name, version = capability.providedVersion, description = capability.description),
-                    )
-                }
-            }
-            .build()
-    }.toList()
+    return this.spec.capabilityGroups
+        .map { agent ->
+            AgentBuilder()
+                .name(agent.name)
+                .description(agent.description)
+                .version(agentVersion)
+                .apply {
+                    agent.capabilities.firstOrNull()?.let { addAddress(Address(uri = it.host)) }
+                    agent.capabilities.forEach { capability ->
+                        addCapability(
+                            AgentCapability(
+                                name = capability.name,
+                                version = capability.providedVersion,
+                                description = capability.description,
+                            ),
+                        )
+                    }
+                }.build()
+        }.toList()
 }

@@ -107,7 +107,13 @@ tasks.register("helmPush") {
             }
 
             helm.execHelm("push") {
-                args(tasks.named("helmPackageMainChart").get().outputs.files.singleFile.toString())
+                args(
+                    tasks
+                        .named("helmPackageMainChart")
+                        .get()
+                        .outputs.files.singleFile
+                        .toString(),
+                )
                 args("oci://$registryUrl/$registryNamespace")
             }
 

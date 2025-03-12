@@ -18,7 +18,9 @@ import org.eclipse.lmos.runtime.core.model.*
 import org.springframework.stereotype.Component
 
 @Component
-class ConversationSubscription(private val conversationHandler: ConversationHandler) : Subscription {
+class ConversationSubscription(
+    private val conversationHandler: ConversationHandler,
+) : Subscription {
     @GraphQLDescription("Processes the user input and returns the result")
     suspend fun agent(
         agentName: String? = null,

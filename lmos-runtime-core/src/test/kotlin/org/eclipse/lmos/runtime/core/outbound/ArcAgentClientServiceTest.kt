@@ -51,14 +51,15 @@ class ArcAgentClientServiceTest {
                 }
 
             val result: AssistantMessage =
-                service.askAgent(
-                    conversation,
-                    "conversationId",
-                    "turnId",
-                    "agentName",
-                    address,
-                    null,
-                ).first()
+                service
+                    .askAgent(
+                        conversation,
+                        "conversationId",
+                        "turnId",
+                        "agentName",
+                        address,
+                        null,
+                    ).first()
 
             assertEquals("Response from agent", result.content)
         }

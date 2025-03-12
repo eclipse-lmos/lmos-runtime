@@ -47,13 +47,12 @@ class AgentBuilder {
 
     fun addresses(addresses: List<Address>) = apply { this.addresses.addAll(addresses) }
 
-    fun build(): Agent {
-        return Agent(
+    fun build(): Agent =
+        Agent(
             name = name,
             version = version,
             description = description,
             capabilities = capabilities.toList(),
             addresses = addresses,
         )
-    }
 }

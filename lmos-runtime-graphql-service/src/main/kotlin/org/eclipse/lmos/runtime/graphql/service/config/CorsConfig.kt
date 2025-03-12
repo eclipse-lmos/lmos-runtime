@@ -12,7 +12,9 @@ import org.springframework.web.reactive.config.CorsRegistry
 import org.springframework.web.reactive.config.WebFluxConfigurer
 
 @Configuration
-open class CorsConfig(private val runtimeCorsProperties: LmosRuntimeCorsProperties) : WebFluxConfigurer {
+open class CorsConfig(
+    private val runtimeCorsProperties: LmosRuntimeCorsProperties,
+) : WebFluxConfigurer {
     override fun addCorsMappings(registry: CorsRegistry) {
         if (runtimeCorsProperties.enabled) {
             runtimeCorsProperties.patterns.forEach { pattern ->
