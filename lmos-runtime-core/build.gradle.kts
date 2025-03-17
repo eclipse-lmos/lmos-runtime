@@ -13,7 +13,7 @@ dependencies {
     val lmosRouterVersion = "0.2.0"
 
     val ktorVersion = "3.1.1"
-    val junitVersion = "5.12.0"
+    val junitVersion = "5.12.1"
 
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
