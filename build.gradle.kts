@@ -28,52 +28,6 @@ val springBootVersion by extra { "3.4.0" }
 
 fun getProperty(propertyName: String) = getenv(propertyName) ?: project.findProperty(propertyName) as String
 
-mavenPublishing {
-    publishToMavenCentral(SonatypeHost.DEFAULT, automaticRelease = true)
-    signAllPublications()
-
-    pom {
-        name = "LMOS Runtime"
-        description =
-            """The LMOS Runtime facilitates dynamic agent routing and conversation handling in a multi-tenant, multi-channel environment.
-            """.trimMargin()
-        url = "https://github.com/eclipse-lmos/lmos-runtime"
-        licenses {
-            license {
-                name = "Apache-2.0"
-                distribution = "repo"
-                url = "https://github.com/eclipse-lmos/lmos-runtime/blob/main/LICENSES/Apache-2.0.txt"
-            }
-        }
-        developers {
-            developer {
-                id = "telekom"
-                name = "Telekom Open Source"
-                email = "opensource@telekom.de"
-            }
-        }
-        scm {
-            url = "https://github.com/eclipse-lmos/lmos-runtime.git"
-        }
-    }
-
-    release {
-        newVersionCommitMessage = "New Snapshot-Version:"
-        preTagCommitMessage = "Release:"
-    }
-
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = URI("https://maven.pkg.github.com/eclipse-lmos/lmos-runtime")
-            credentials {
-                username = findProperty("GITHUB_USER")?.toString() ?: getenv("GITHUB_USER")
-                password = findProperty("GITHUB_TOKEN")?.toString() ?: getenv("GITHUB_TOKEN")
-            }
-        }
-    }
-}
-
 repositories {
     mavenCentral()
     mavenLocal()
@@ -93,9 +47,6 @@ subprojects {
     repositories {
         mavenCentral()
         mavenLocal()
-        maven {
-            url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
-        }
     }
 
     java {
@@ -116,10 +67,56 @@ subprojects {
     tasks.test {
         useJUnitPlatform()
     }
+
+    mavenPublishing {
+        publishToMavenCentral(SonatypeHost.DEFAULT, automaticRelease = true)
+        signAllPublications()
+
+        pom {
+            name = "LMOS Runtime"
+            description =
+                """The LMOS Runtime facilitates dynamic agent routing and conversation handling in a multi-tenant, multi-channel environment.
+                """.trimMargin()
+            url = "https://github.com/eclipse-lmos/lmos-runtime"
+            licenses {
+                license {
+                    name = "Apache-2.0"
+                    distribution = "repo"
+                    url = "https://github.com/eclipse-lmos/lmos-runtime/blob/main/LICENSES/Apache-2.0.txt"
+                }
+            }
+            developers {
+                developer {
+                    id = "telekom"
+                    name = "Telekom Open Source"
+                    email = "opensource@telekom.de"
+                }
+            }
+            scm {
+                url = "https://github.com/eclipse-lmos/lmos-runtime.git"
+            }
+        }
+
+        repositories {
+            maven {
+                name = "GitHubPackages"
+                url = URI("https://maven.pkg.github.com/eclipse-lmos/lmos-runtime")
+                credentials {
+                    username = findProperty("GITHUB_USER")?.toString() ?: getenv("GITHUB_USER")
+                    password = findProperty("GITHUB_TOKEN")?.toString() ?: getenv("GITHUB_TOKEN")
+                }
+            }
+        }
+    }
 }
 
 dependencies {
     kover(project("lmos-runtime-core"))
     kover(project("lmos-runtime-spring-boot-starter"))
     kover(project("lmos-runtime-service"))
+}
+
+release {
+    newVersionCommitMessage = "New Snapshot-Version:"
+    preTagCommitMessage = "Release:"
 }
