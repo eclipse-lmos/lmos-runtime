@@ -11,11 +11,6 @@ include("lmos-runtime-spring-boot-starter")
 include("lmos-runtime-service")
 include("lmos-runtime-graphql-service")
 
-pluginManagement {
-    plugins {
-        kotlin("jvm") version "2.1.10"
-    }
-}
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.9.0"
 }

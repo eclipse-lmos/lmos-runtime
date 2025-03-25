@@ -17,9 +17,10 @@ plugins {
     id("com.citi.helm-publish") version "2.2.0"
     id("net.researchgate.release") version "3.1.0"
     id("com.vanniktech.maven.publish") version "0.31.0"
-    kotlin("jvm")
-    kotlin("kapt") version "2.1.10"
-    kotlin("plugin.serialization") version "2.1.10" apply false
+    val kotlinVersion = "2.1.10"
+    kotlin("jvm") version kotlinVersion
+    kotlin("kapt") version kotlinVersion
+    kotlin("plugin.serialization") version kotlinVersion apply false
     id("org.jetbrains.kotlinx.kover") version "0.9.1"
     id("org.jetbrains.dokka") version "2.0.0"
 }
@@ -96,15 +97,15 @@ subprojects {
                 url = "https://github.com/eclipse-lmos/lmos-runtime.git"
             }
         }
+    }
 
-        repositories {
-            maven {
-                name = "GitHubPackages"
-                url = URI("https://maven.pkg.github.com/eclipse-lmos/lmos-runtime")
-                credentials {
-                    username = findProperty("GITHUB_USER")?.toString() ?: getenv("GITHUB_USER")
-                    password = findProperty("GITHUB_TOKEN")?.toString() ?: getenv("GITHUB_TOKEN")
-                }
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = URI("https://maven.pkg.github.com/eclipse-lmos/lmos-runtime")
+            credentials {
+                username = findProperty("GITHUB_USER")?.toString() ?: getenv("GITHUB_USER")
+                password = findProperty("GITHUB_TOKEN")?.toString() ?: getenv("GITHUB_TOKEN")
             }
         }
     }
