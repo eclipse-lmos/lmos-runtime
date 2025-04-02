@@ -35,7 +35,7 @@ dependencies {
 // Can be omitted again when spring boot has upgraded to more recent kotlinx-serialization version.
 dependencyManagement {
     dependencies {
-        dependency("org.jetbrains.kotlinx:kotlinx-serialization-bom:1.8.0")
+        dependency("org.jetbrains.kotlinx:kotlinx-serialization-bom:1.8.1")
         dependency("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
         dependency("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.8.0")
         dependency("org.jetbrains.kotlinx:kotlinx-serialization-core:1.8.0")
