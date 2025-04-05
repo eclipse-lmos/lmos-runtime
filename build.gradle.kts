@@ -34,6 +34,8 @@ dependencies {
     implementation("org.slf4j:slf4j-api:2.0.9")
 
     implementation(files("libs/lmos-starter-0.0.1-SNAPSHOT.jar"))
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("com.github.spullara.mustache.java:compiler:0.9.10")
 
 
     testImplementation("io.quarkus:quarkus-junit5")

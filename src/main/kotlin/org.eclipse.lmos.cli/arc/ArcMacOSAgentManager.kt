@@ -33,7 +33,7 @@ class ArcMacOSAgentManager : ArcAgentManager() {
     }
 
     private fun createStartCommand(agents: Path?): List<String> {
-        return listOf( "./gradlew", "-q", "--console=plain", "clean", "bootrun" )
+        return listOf( "./gradlew", "-q", "--console=plain", "bootrun" )
     }
 
 }

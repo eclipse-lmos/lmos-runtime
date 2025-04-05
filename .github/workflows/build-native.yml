@@ -18,10 +18,19 @@ jobs:
           native-image-job-reports: 'true'
 
       - name: Build
-        run: ./gradlew clean build # Runs gradlew clean build on Linux/macOS, gradlew.bat clean build on Windows
+        if: runner.os != 'Windows' # Only run on Linux and macOS
+        run: ./gradlew clean build -Dquarkus.native.enabled=true
+
+      - name: Set up MSVC on Windows
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Build Windows
+        if: runner.os == 'Windows'
+        run: ./gradlew clean build "-Dquarkus.native.enabled=true"
 
       - name: Upload binary
         uses: actions/upload-artifact@v4
         with:
-          name: helloworld-${{ matrix.os }}
-          path: helloworld*
+          name: lmos-${{ matrix.os }}
+          path: build/lmos-cli-*-runner*

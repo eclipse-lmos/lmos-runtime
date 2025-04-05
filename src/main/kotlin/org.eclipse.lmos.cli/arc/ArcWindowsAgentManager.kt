@@ -24,9 +24,6 @@ class ArcWindowsAgentManager : ArcAgentManager() {
         val command = listOf("cmd", "/c", "gradlew.bat", "-q", "--console=plain", "bootrun")
 
 //        val command = listOf( "gradlew.bat", "-q", "--console=plain", "clean", "bootrun" )
-
-        println("Start command: ${command.joinToString(" ")}")
-        println("agents: ${agents.toFile()}")
 //        executeCommand(command, envVars, agents.toFile(), false)
         val pid = executeCommandAndGetPID(agents, envVars, command)
         val checkProcessStatus = checkProcessStatus(pid)
