@@ -1,0 +1,27 @@
+name: GraalVM Native Image builds
+on: [push, pull_request]
+jobs:
+  build:
+    name: lmos-cli on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '23'
+          distribution: 'mandrel'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          native-image-job-reports: 'true'
+
+      - name: Build
+        run: ./gradlew clean build # Runs gradlew clean build on Linux/macOS, gradlew.bat clean build on Windows
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: helloworld-${{ matrix.os }}
+          path: helloworld*
