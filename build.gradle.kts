@@ -18,6 +18,8 @@ val quarkusPlatformArtifactId: String by project
 val quarkusPlatformVersion: String by project
 
 dependencies {
+
+    val arcVersion = "0.121.0"
     implementation(enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}"))
     implementation(kotlin("stdlib"))
     implementation("io.quarkus:quarkus-kotlin")
@@ -27,16 +29,13 @@ dependencies {
     implementation("io.quarkus:quarkus-rest-client-jackson")
     implementation("org.apache.commons:commons-compress:1.27.0")
     implementation("net.mamoe.yamlkt:yamlkt:0.13.0")
-//    implementation("org.eclipse.lmos:lmos-starter:0.0.1-SNAPSHOT")
-    implementation("org.eclipse.lmos:arc-agent-client:0.1.0-SNAPSHOT")
-    implementation("org.eclipse.lmos:arc-api:0.1.0-SNAPSHOT")
+    implementation("org.eclipse.lmos:lmos-starter:0.0.1-SNAPSHOT")
+    implementation("org.eclipse.lmos:arc-agent-client:0.121.0")
+    implementation("org.eclipse.lmos:arc-api:0.121.0")
     implementation("ch.qos.logback:logback-classic:1.4.11")
     implementation("org.slf4j:slf4j-api:2.0.9")
-
-    implementation(files("libs/lmos-starter-0.0.1-SNAPSHOT.jar"))
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("com.github.spullara.mustache.java:compiler:0.9.10")
-
 
     testImplementation("io.quarkus:quarkus-junit5")
 }
@@ -53,5 +52,5 @@ tasks.withType<JavaCompile> {
 }
 
 kotlin {
-    jvmToolchain(23)
+    jvmToolchain(21)
 }

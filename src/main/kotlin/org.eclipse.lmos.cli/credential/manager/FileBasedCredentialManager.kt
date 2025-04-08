@@ -6,61 +6,14 @@ import net.mamoe.yamlkt.Yaml
 import org.eclipse.lmos.cli.constants.LmosCliConstants.CredentialManagerConstants.CREDENTIAL_DIRECTORY
 import org.eclipse.lmos.cli.credential.Credential
 import org.eclipse.lmos.cli.credential.CredentialManagerType
+import org.eclipse.lmos.cli.utils.EnvUtils
 import org.slf4j.LoggerFactory
 import java.util.*
-
-
-//fun main() {
-//    val manager = FileBasedCredentialManager()
-//
-//    val testPrefix = "Random:"
-//
-//    val credential1 = Credential(id = "cred1", content = "secret1")
-//    val credential2 = Credential(id = "cred2", content = "secret2")
-//
-//    manager.addCredential(testPrefix, credential1)
-//    manager.addCredential(testPrefix, credential2)
-//
-//    // List credentials
-//    val listed = manager.listCredentials(testPrefix)
-//    println(2 == listed.size)
-//    println(listed.any { it.id == credential1.id })
-//    println(listed.any { it.id == credential2.id })
-//
-//    // Get credential and check decrypted content
-//    val fetched1 = manager.getCredential(testPrefix, credential1.id)
-//    println(fetched1 != null)
-//    println(credential1.id == fetched1?.id)
-//    println(credential1.content == fetched1?.content)
-//
-//    // Update credential
-//    val updatedCredential = credential1.copy(content = "updatedSecret")
-//    manager.updateCredential(testPrefix, updatedCredential)
-//    val fetchedUpdated = manager.getCredential(testPrefix, credential1.id)
-//    println(fetchedUpdated != null)
-//    println("updatedSecret" == fetchedUpdated?.content)
-//
-//    // Delete one credential
-//    manager.deleteCredential(testPrefix, credential2.id)
-//    val afterDelete = manager.listCredentials(testPrefix)
-//    println(1 == afterDelete.size)
-//    println(manager.getCredential(testPrefix, credential2.id) == null)
-//
-//    // Delete all credentials
-//    manager.deleteAllCredentials(testPrefix)
-//    val finalList = manager.listCredentials(testPrefix)
-//    println(finalList.isEmpty())
-//
-//}
 
 @ApplicationScoped
 class FileBasedCredentialManager : CredentialManager {
 
     private val log = LoggerFactory.getLogger(FileBasedCredentialManager::class.java)
-
-    companion object {
-        private const val SECRET_KEY = "lmos-cli-secret"
-    }
 
     private val encryption = SecureStringEncryption()
     private val yaml = Yaml()
@@ -73,7 +26,7 @@ class FileBasedCredentialManager : CredentialManager {
     override fun addCredential(prefix: String, credential: Credential) {
         log.info("Adding credential with id {} for prefix {}", credential.id, prefix)
         val credentials = listCredentials(prefix).toMutableSet()
-        val encryptedContent = encryption.encrypt(credential.content, SECRET_KEY)
+        val encryptedContent = encryption.encrypt(credential.content, EnvUtils.getLmosCliSecretKey())
         val encryptedCredential = credential.copy(
             content = Base64.getEncoder().encodeToString(encryptedContent)
         )
@@ -110,7 +63,7 @@ class FileBasedCredentialManager : CredentialManager {
         val credential = listCredentials(prefix).find { it.id == id } ?: return null
         try {
             val decryptedContent = encryption.readAndDecrypt(
-               SECRET_KEY,
+                EnvUtils.getLmosCliSecretKey(),
                 Base64.getDecoder().decode(credential.content)
             )
             log.info("Credential with id {} for prefix {} retrieved successfully", id, prefix)

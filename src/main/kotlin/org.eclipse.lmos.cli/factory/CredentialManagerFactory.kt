@@ -1,14 +1,18 @@
 package org.eclipse.lmos.cli.factory
 
 import org.eclipse.lmos.cli.credential.CredentialManagerType
+import org.eclipse.lmos.cli.credential.manager.CredentialManager
 import org.eclipse.lmos.cli.credential.manager.FileBasedCredentialManager
 import org.slf4j.LoggerFactory
+
 
 class CredentialManagerFactory {
 
     private val log = LoggerFactory.getLogger(CredentialManagerFactory::class.java)
 
-    fun getCredentialManager() = FileBasedCredentialManager()
+    fun getCredentialManager(): CredentialManager {
+        return FileBasedCredentialManager()
+    }
 
 }
 

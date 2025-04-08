@@ -21,6 +21,11 @@ import org.eclipse.lmos.cli.utils.CliPrinter.printlnHeader
 import picocli.CommandLine
 import java.util.*
 import kotlin.collections.List
+import kotlin.collections.Map
+import kotlin.collections.emptyMap
+import kotlin.collections.forEach
+import kotlin.collections.mapNotNull
+import kotlin.collections.mutableListOf
 
 @CommandLine.Command(name = "chat", description = ["Chat with the system"], mixinStandardHelpOptions = true)
 class Chat : Runnable {
