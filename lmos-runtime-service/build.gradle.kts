@@ -23,7 +23,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webflux:$springBootVersion")
     implementation("org.springframework.boot:spring-boot-starter-actuator:$springBootVersion")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.2")
 
     testImplementation(testFixtures(project(":lmos-runtime-core")))
     testImplementation("org.springframework.boot:spring-boot-starter-test:$springBootVersion")
