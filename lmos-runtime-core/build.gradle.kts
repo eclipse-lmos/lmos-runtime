@@ -14,7 +14,7 @@ dependencies {
 
     val ktorVersion = "3.1.2"
     val junitVersion = "5.12.1"
-    val kotlinxSerializationVersion = "1.8.0"
+    val kotlinxSerializationVersion = "1.8.1"
 
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
