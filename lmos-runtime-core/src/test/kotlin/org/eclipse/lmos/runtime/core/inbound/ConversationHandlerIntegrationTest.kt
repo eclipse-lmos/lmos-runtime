@@ -99,13 +99,14 @@ class ConversationHandlerIntegrationTest : BaseWireMockTest() {
             val spyAgentRegistryService = spyk(agentRegistryService)
 
             // Create a new conversation handler with the spy
-            val handlerWithSpy = DefaultConversationHandler(
-                spyAgentRegistryService,
-                agentRoutingService,
-                agentClientService,
-                lmosRuntimeConfig,
-                lmosRuntimeTenantAwareCache
-            )
+            val handlerWithSpy =
+                DefaultConversationHandler(
+                    spyAgentRegistryService,
+                    agentRoutingService,
+                    agentClientService,
+                    lmosRuntimeConfig,
+                    lmosRuntimeTenantAwareCache,
+                )
 
             val assistantMessage =
                 handlerWithSpy.handleConversation(conversation, conversationId, tenantId, turnId, subset).first()
@@ -113,8 +114,8 @@ class ConversationHandlerIntegrationTest : BaseWireMockTest() {
             assertEquals("Response with subset", assistantMessage.content)
 
             // Verify that the subset parameter was passed to the agent registry service
-            coVerify(exactly = 1) { 
-                spyAgentRegistryService.getRoutingInformation(tenantId, conversation.systemContext.channelId, subset) 
+            coVerify(exactly = 1) {
+                spyAgentRegistryService.getRoutingInformation(tenantId, conversation.systemContext.channelId, subset)
             }
         }
 

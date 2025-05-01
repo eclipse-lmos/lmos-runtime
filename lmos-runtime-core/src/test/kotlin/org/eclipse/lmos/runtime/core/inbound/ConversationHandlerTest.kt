@@ -88,8 +88,8 @@ class ConversationHandlerTest {
             assertEquals(agentResponse, result)
 
             // Verify that getRoutingInformation was called with null subset
-            coVerify(exactly = 1) { 
-                agentRegistryService.getRoutingInformation(tenantId, conversation.systemContext.channelId, null) 
+            coVerify(exactly = 1) {
+                agentRegistryService.getRoutingInformation(tenantId, conversation.systemContext.channelId, null)
             }
         }
 
@@ -125,8 +125,8 @@ class ConversationHandlerTest {
             assertEquals(agentResponse, result)
 
             // Verify that getRoutingInformation was called with the correct subset
-            coVerify(exactly = 1) { 
-                agentRegistryService.getRoutingInformation(tenantId, conversation.systemContext.channelId, subset) 
+            coVerify(exactly = 1) {
+                agentRegistryService.getRoutingInformation(tenantId, conversation.systemContext.channelId, subset)
             }
         }
 
@@ -270,8 +270,8 @@ class ConversationHandlerTest {
             }
 
             // Verify that getRoutingInformation was not called
-            coVerify(exactly = 0) { 
-                agentRegistryService.getRoutingInformation(any(), any(), any()) 
+            coVerify(exactly = 0) {
+                agentRegistryService.getRoutingInformation(any(), any(), any())
             }
         }
 
@@ -322,8 +322,8 @@ class ConversationHandlerTest {
             assertEquals(expectedAgentResponse, result)
 
             // Verify that getRoutingInformation was called with the new subset
-            coVerify(exactly = 1) { 
-                agentRegistryService.getRoutingInformation(tenantId, conversation.systemContext.channelId, newSubset) 
+            coVerify(exactly = 1) {
+                agentRegistryService.getRoutingInformation(tenantId, conversation.systemContext.channelId, newSubset)
             }
 
             // Verify that the new routing information was cached
