@@ -12,5 +12,6 @@ interface AgentRegistryService {
     suspend fun getRoutingInformation(
         tenantId: String,
         channelId: String,
+        subset: String? = null,
     ): RoutingInformation
 }

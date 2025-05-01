@@ -69,10 +69,53 @@ class ConversationHandlerIntegrationTest : BaseWireMockTest() {
                 }
 
             val assistantMessage =
-                conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId).first()
+                conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId, null).first()
 
             assertEquals("Dummy response from Agent", assistantMessage.content)
             coVerify(exactly = 1) { mockGraphQlAgentClient.callAgent(any(), any(), any()) }
+        }
+
+    @Test
+    fun `should pass subset parameter to agent registry service`() =
+        runBlocking {
+            val conversationId = "conversation-id-with-subset"
+            val tenantId = "en"
+            val turnId = "turn-id-with-subset"
+            val subset = "test-subset"
+
+            val conversation = createConversation("UserManagementAgent")
+
+            val agentAddress = Address(protocol = "http", uri = "localhost:8080/user-agent")
+
+            val mockGraphQlAgentClient = mockk<GraphQlAgentClient>()
+            coEvery { agentClientService.createGraphQlAgentClient(agentAddress) } returns mockGraphQlAgentClient
+            coEvery { mockGraphQlAgentClient.close() } just runs
+            coEvery { mockGraphQlAgentClient.callAgent(any<AgentRequest>()) } returns
+                flow {
+                    emit(AgentResult(messages = listOf(Message(role = "assistant", content = "Response with subset"))))
+                }
+
+            // Use a spy on the agentRegistryService to verify the subset parameter is passed
+            val spyAgentRegistryService = spyk(agentRegistryService)
+
+            // Create a new conversation handler with the spy
+            val handlerWithSpy = DefaultConversationHandler(
+                spyAgentRegistryService,
+                agentRoutingService,
+                agentClientService,
+                lmosRuntimeConfig,
+                lmosRuntimeTenantAwareCache
+            )
+
+            val assistantMessage =
+                handlerWithSpy.handleConversation(conversation, conversationId, tenantId, turnId, subset).first()
+
+            assertEquals("Response with subset", assistantMessage.content)
+
+            // Verify that the subset parameter was passed to the agent registry service
+            coVerify(exactly = 1) { 
+                spyAgentRegistryService.getRoutingInformation(tenantId, conversation.systemContext.channelId, subset) 
+            }
         }
 
     @Test
@@ -93,6 +136,7 @@ class ConversationHandlerIntegrationTest : BaseWireMockTest() {
                         conversationId,
                         tenantId,
                         turnId,
+                        null,
                     ).first()
             }
             coVerify(exactly = 0) { mockGraphQlAgentClient.callAgent(any(), any(), any()) }
@@ -116,6 +160,7 @@ class ConversationHandlerIntegrationTest : BaseWireMockTest() {
                         conversationId,
                         tenantId,
                         turnId,
+                        null,
                     ).first()
             }
             coVerify(exactly = 0) { mockGraphQlAgentClient.callAgent(any(), any(), any()) }
@@ -141,6 +186,7 @@ class ConversationHandlerIntegrationTest : BaseWireMockTest() {
                         conversationId,
                         tenantId,
                         turnId,
+                        null,
                     ).first()
             }
             coVerify(exactly = 1) { mockGraphQlAgentClient.callAgent(any(), any(), any()) }

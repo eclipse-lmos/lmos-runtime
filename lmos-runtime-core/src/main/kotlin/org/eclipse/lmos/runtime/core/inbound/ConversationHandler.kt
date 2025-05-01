@@ -27,6 +27,7 @@ interface ConversationHandler {
         conversationId: String,
         tenantId: String,
         turnId: String,
+        subset: String? = null,
     ): Flow<AssistantMessage>
 }
 
@@ -44,13 +45,14 @@ class DefaultConversationHandler(
         conversationId: String,
         tenantId: String,
         turnId: String,
+        subset: String?,
     ): Flow<AssistantMessage> =
         coroutineScope {
             log.debug("Request Received, conversationId: $conversationId, turnId: $turnId")
             val routingInformation =
                 lmosRuntimeTenantAwareCache.get(tenantId, ROUTES, conversationId)
                     ?: agentRegistryService
-                        .getRoutingInformation(tenantId, conversation.systemContext.channelId)
+                        .getRoutingInformation(tenantId, conversation.systemContext.channelId, subset)
                         .also { result ->
                             log.debug("Caching routing information: {}", result)
                             lmosRuntimeTenantAwareCache.save(

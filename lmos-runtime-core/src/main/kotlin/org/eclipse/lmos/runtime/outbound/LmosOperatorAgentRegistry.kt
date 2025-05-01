@@ -55,6 +55,7 @@ class LmosOperatorAgentRegistry(
     override suspend fun getRoutingInformation(
         tenantId: String,
         channelId: String,
+        subset: String?,
     ): RoutingInformation {
         val urlString =
             "${lmosRuntimeConfig.agentRegistry.baseUrl}/apis/v1/tenants/$tenantId/channels/$channelId/routing"
@@ -62,7 +63,9 @@ class LmosOperatorAgentRegistry(
 
         val response =
             try {
-                client.get(urlString)
+                client.get(urlString) {
+                    subset?.let { headers.append(SUBSET, it) }
+                }
             } catch (e: Exception) {
                 log.error("Exception from Operator with url $urlString is $e")
                 throw InternalServerErrorException("Operator responded with an error")
