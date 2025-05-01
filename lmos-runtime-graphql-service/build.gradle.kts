@@ -24,7 +24,7 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.1")
 
-    implementation("com.expediagroup:graphql-kotlin-spring-server:8.4.0")
+    implementation("com.expediagroup:graphql-kotlin-spring-server:8.6.2")
 
     testImplementation(testFixtures(project(":lmos-runtime-core")))
     testImplementation("org.springframework.boot:spring-boot-starter-test:$springBootVersion")
@@ -37,11 +37,12 @@ dependencies {
 // Can be omitted again when spring boot has upgraded to more recent kotlinx-serialization version.
 dependencyManagement {
     dependencies {
-        dependency("org.jetbrains.kotlinx:kotlinx-serialization-bom:1.8.0")
-        dependency("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
-        dependency("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.8.0")
-        dependency("org.jetbrains.kotlinx:kotlinx-serialization-core:1.8.0")
-        dependency("org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.8.0")
+        val kotlinxSerializationVersion = "1.8.1"
+        dependency("org.jetbrains.kotlinx:kotlinx-serialization-bom:$kotlinxSerializationVersion")
+        dependency("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationVersion")
+        dependency("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:$kotlinxSerializationVersion")
+        dependency("org.jetbrains.kotlinx:kotlinx-serialization-core:$kotlinxSerializationVersion")
+        dependency("org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:$kotlinxSerializationVersion")
     }
 }
 
