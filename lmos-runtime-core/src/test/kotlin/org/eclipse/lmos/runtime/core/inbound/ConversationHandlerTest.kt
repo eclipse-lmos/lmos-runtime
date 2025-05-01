@@ -82,10 +82,52 @@ class ConversationHandlerTest {
             )
 
             // Invoke method
-            val result = conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId).first()
+            val result = conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId, null).first()
 
             // Assertions
             assertEquals(agentResponse, result)
+
+            // Verify that getRoutingInformation was called with null subset
+            coVerify(exactly = 1) { 
+                agentRegistryService.getRoutingInformation(tenantId, conversation.systemContext.channelId, null) 
+            }
+        }
+
+    @Test
+    fun `test handleConversation with non-null subset`() =
+        runBlocking {
+            val conversationId = "testConversationId"
+            val tenantId = "testTenantId"
+            val turnId = "testTurnId"
+            val subset = "test-subset"
+
+            val conversation = conversation()
+            val routingInformation = routingInformation(subset)
+
+            val resolvedAgent = routingInformation.agentList[0]
+            val agentResponse = AssistantMessage("response")
+
+            mockAgentRegistry(tenantId, conversation.systemContext.channelId, routingInformation)
+            mockAgentClient(
+                conversation,
+                conversationId,
+                turnId,
+                resolvedAgent.name,
+                Address(uri = "http://localhost:8080/"),
+                subset,
+                agentResponse,
+            )
+
+            // Invoke method
+            val result = conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId, subset).first()
+
+            // Assertions
+            assertEquals(agentResponse, result)
+
+            // Verify that getRoutingInformation was called with the correct subset
+            coVerify(exactly = 1) { 
+                agentRegistryService.getRoutingInformation(tenantId, conversation.systemContext.channelId, subset) 
+            }
         }
 
     @Test
@@ -114,7 +156,7 @@ class ConversationHandlerTest {
             )
 
             // Execute the method
-            conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId).first()
+            conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId, null).first()
 
             coVerify {
                 agentClientService.askAgent(
@@ -161,6 +203,7 @@ class ConversationHandlerTest {
                         conversationId,
                         tenantId,
                         turnId,
+                        null,
                     ).first()
 
             assertEquals(expectedAgentResponse, result)
@@ -212,6 +255,7 @@ class ConversationHandlerTest {
                         conversationId,
                         tenantId,
                         turnId,
+                        null,
                     ).first()
 
             assertEquals(expectedAgentResponse, result)
@@ -222,6 +266,74 @@ class ConversationHandlerTest {
                     ROUTES,
                     conversationId,
                     routingInformation,
+                )
+            }
+
+            // Verify that getRoutingInformation was not called
+            coVerify(exactly = 0) { 
+                agentRegistryService.getRoutingInformation(any(), any(), any()) 
+            }
+        }
+
+    @Test
+    fun `test different subset parameter overrides cached routing information`() =
+        runBlocking {
+            // Arrange
+            val conversationId = "conv-125"
+            val tenantId = "tenant-1"
+            val turnId = "turn-1"
+            val cachedSubset = "cached-subset"
+            val newSubset = "new-subset"
+
+            val conversation = conversation()
+            val cachedRoutingInformation = routingInformation(cachedSubset)
+            val newRoutingInformation = routingInformation(newSubset)
+
+            val resolvedAgent = newRoutingInformation.agentList[0]
+            val expectedAgentResponse = AssistantMessage(content = "Test response with new subset")
+
+            // Save the cached routing information
+            lmosRuntimeTenantAwareCache.save(tenantId, ROUTES, conversationId, cachedRoutingInformation)
+            clearAllMocks()
+
+            // Mock the registry to return new routing information when called with the new subset
+            mockAgentRegistry(tenantId, conversation.systemContext.channelId, newRoutingInformation)
+            mockAgentClient(
+                conversation,
+                conversationId,
+                turnId,
+                resolvedAgent.name,
+                resolvedAgent.addresses.first(),
+                newSubset,
+                expectedAgentResponse,
+            )
+
+            // Call with a different subset parameter
+            val result =
+                conversationHandler
+                    .handleConversation(
+                        conversation,
+                        conversationId,
+                        tenantId,
+                        turnId,
+                        newSubset,
+                    ).first()
+
+            assertEquals(expectedAgentResponse, result)
+
+            // Verify that getRoutingInformation was called with the new subset
+            coVerify(exactly = 1) { 
+                agentRegistryService.getRoutingInformation(tenantId, conversation.systemContext.channelId, newSubset) 
+            }
+
+            // Verify that the new routing information was cached
+            coVerify(exactly = 1) {
+                lmosRuntimeTenantAwareCache.save(
+                    tenantId,
+                    ROUTES,
+                    conversationId,
+                    newRoutingInformation,
+                    any(),
                 )
             }
         }
@@ -235,12 +347,12 @@ class ConversationHandlerTest {
         val turnId = "testTurnId"
 
         coEvery {
-            agentRegistryService.getRoutingInformation(tenantId, conversation.systemContext.channelId)
+            agentRegistryService.getRoutingInformation(tenantId, conversation.systemContext.channelId, any())
         } throws NoRoutingInfoFoundException("Registry Error")
 
         assertThrows<NoRoutingInfoFoundException> {
             runBlocking {
-                conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId).first()
+                conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId, null).first()
             }
         }
     }
@@ -262,7 +374,7 @@ class ConversationHandlerTest {
 
         assertThrows<AgentClientException> {
             runBlocking {
-                conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId).first()
+                conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId, null).first()
             }
         }
     }
@@ -301,6 +413,7 @@ class ConversationHandlerTest {
                         conversationId,
                         tenantId,
                         turnId,
+                        null,
                     ).first()
 
             // Assert
@@ -349,6 +462,6 @@ class ConversationHandlerTest {
         channelId: String,
         routingInformation: RoutingInformation,
     ) {
-        coEvery { agentRegistryService.getRoutingInformation(tenantId, channelId) } returns routingInformation
+        coEvery { agentRegistryService.getRoutingInformation(tenantId, channelId, any()) } returns routingInformation
     }
 }
