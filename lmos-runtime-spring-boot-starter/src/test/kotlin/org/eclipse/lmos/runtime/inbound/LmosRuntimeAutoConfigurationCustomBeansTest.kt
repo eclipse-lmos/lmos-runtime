@@ -102,6 +102,7 @@ class LmosRuntimeAutoConfigurationCustomBeansTest {
                 override suspend fun getRoutingInformation(
                     tenantId: String,
                     channelId: String,
+                    subset: String?
                 ): RoutingInformation {
                     TODO("Not yet implemented")
                 }
@@ -154,6 +155,7 @@ class LmosRuntimeAutoConfigurationCustomBeansTest {
                     conversationId: String,
                     tenantId: String,
                     turnId: String,
+                    subset: String?
                 ): Flow<AssistantMessage> {
                     TODO("Not yet implemented")
                 }
