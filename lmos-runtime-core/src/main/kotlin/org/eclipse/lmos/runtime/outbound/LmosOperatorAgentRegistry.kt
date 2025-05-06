@@ -59,7 +59,7 @@ class LmosOperatorAgentRegistry(
     ): RoutingInformation {
         val urlString =
             "${lmosRuntimeConfig.agentRegistry.baseUrl}/apis/v1/tenants/$tenantId/channels/$channelId/routing"
-        log.trace("Calling operator: $urlString")
+        log.trace("Calling operator: $urlString with subset: $subset")
 
         val response =
             try {
