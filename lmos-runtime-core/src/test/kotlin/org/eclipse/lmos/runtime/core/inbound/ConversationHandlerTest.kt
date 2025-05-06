@@ -276,7 +276,7 @@ class ConversationHandlerTest {
         }
 
     @Test
-    fun `test different subset parameter overrides cached routing information`() =
+    fun `test different subset parameter should not overrides cached routing information`() =
         runBlocking {
             // Arrange
             val conversationId = "conv-125"
@@ -287,24 +287,21 @@ class ConversationHandlerTest {
 
             val conversation = conversation()
             val cachedRoutingInformation = routingInformation(cachedSubset)
-            val newRoutingInformation = routingInformation(newSubset)
 
-            val resolvedAgent = newRoutingInformation.agentList[0]
+            val resolvedAgent = cachedRoutingInformation.agentList[0]
             val expectedAgentResponse = AssistantMessage(content = "Test response with new subset")
 
             // Save the cached routing information
             lmosRuntimeTenantAwareCache.save(tenantId, ROUTES, conversationId, cachedRoutingInformation)
             clearAllMocks()
 
-            // Mock the registry to return new routing information when called with the new subset
-            mockAgentRegistry(tenantId, conversation.systemContext.channelId, newRoutingInformation)
             mockAgentClient(
                 conversation,
                 conversationId,
                 turnId,
                 resolvedAgent.name,
                 resolvedAgent.addresses.first(),
-                newSubset,
+                cachedSubset,
                 expectedAgentResponse,
             )
 
@@ -322,17 +319,17 @@ class ConversationHandlerTest {
             assertEquals(expectedAgentResponse, result)
 
             // Verify that getRoutingInformation was called with the new subset
-            coVerify(exactly = 1) {
-                agentRegistryService.getRoutingInformation(tenantId, conversation.systemContext.channelId, newSubset)
+            coVerify(exactly = 0) {
+                agentRegistryService.getRoutingInformation(tenantId, conversation.systemContext.channelId, any())
             }
 
             // Verify that the new routing information was cached
-            coVerify(exactly = 1) {
+            coVerify(exactly = 0) {
                 lmosRuntimeTenantAwareCache.save(
                     tenantId,
                     ROUTES,
                     conversationId,
-                    newRoutingInformation,
+                    any(),
                     any(),
                 )
             }
