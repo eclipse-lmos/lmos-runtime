@@ -6,7 +6,7 @@
 
 package org.eclipse.lmos.runtime.core.service.outbound
 
-import org.eclipse.lmos.runtime.outbound.RoutingInformation
+import org.eclipse.lmos.runtime.core.model.registry.RoutingInformation
 
 interface AgentRegistryService {
     suspend fun getRoutingInformation(
