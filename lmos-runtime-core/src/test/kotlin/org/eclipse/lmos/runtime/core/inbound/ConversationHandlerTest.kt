@@ -21,7 +21,7 @@ import org.eclipse.lmos.runtime.core.service.outbound.AgentClientService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentRegistryService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentRoutingService
 import org.eclipse.lmos.runtime.core.service.routing.ExplicitAgentRoutingService
-import org.eclipse.lmos.runtime.outbound.RoutingInformation
+import org.eclipse.lmos.runtime.core.model.registry.RoutingInformation
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows

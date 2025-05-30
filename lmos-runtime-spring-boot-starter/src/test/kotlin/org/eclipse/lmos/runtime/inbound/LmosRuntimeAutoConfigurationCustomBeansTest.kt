@@ -20,7 +20,7 @@ import org.eclipse.lmos.runtime.core.service.outbound.AgentRegistryService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentRoutingService
 import org.eclipse.lmos.runtime.outbound.ArcAgentClientService
 import org.eclipse.lmos.runtime.outbound.LmosAgentRoutingService
-import org.eclipse.lmos.runtime.outbound.RoutingInformation
+import org.eclipse.lmos.runtime.core.model.registry.RoutingInformation
 import org.eclipse.lmos.runtime.properties.LmosRuntimeProperties
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
