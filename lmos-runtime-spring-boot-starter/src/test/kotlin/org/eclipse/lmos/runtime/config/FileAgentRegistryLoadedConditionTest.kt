@@ -17,14 +17,15 @@ import org.springframework.context.ApplicationContext
 import org.springframework.test.context.TestPropertySource
 
 @SpringBootTest(classes = [LmosRuntimeAutoConfiguration::class])
-@TestPropertySource(properties = [
-    "lmos.runtime.agent-registry.type=FILE",
-    "lmos.runtime.agent-registry.file-path=src/test/resources/integration-test-agent-registry.yaml",
-    "lmos.runtime.cache.ttl=600",
-    "lmos.runtime.router.type=EXPLICIT" // Added router type
-])
+@TestPropertySource(
+    properties = [
+        "lmos.runtime.agent-registry.type=FILE",
+        "lmos.runtime.agent-registry.file-path=src/test/resources/integration-test-agent-registry.yaml",
+        "lmos.runtime.cache.ttl=600",
+        "lmos.runtime.router.type=EXPLICIT", // Added router type
+    ],
+)
 class FileAgentRegistryLoadedConditionTest {
-
     @Autowired
     private lateinit var context: ApplicationContext
 

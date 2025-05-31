@@ -11,16 +11,15 @@ import org.eclipse.lmos.runtime.core.cache.LmosRuntimeTenantAwareCache
 import org.eclipse.lmos.runtime.core.cache.TenantAwareInMemoryCache
 import org.eclipse.lmos.runtime.core.inbound.ConversationHandler
 import org.eclipse.lmos.runtime.core.inbound.DefaultConversationHandler
+import org.eclipse.lmos.runtime.core.model.registry.RoutingInformation
 import org.eclipse.lmos.runtime.core.service.outbound.AgentClientService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentRegistryService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentRoutingService
-import org.eclipse.lmos.runtime.core.model.registry.RoutingInformation // Added correct import
 import org.eclipse.lmos.runtime.core.service.outbound.FileBasedAgentRegistryService
 import org.eclipse.lmos.runtime.core.service.routing.ExplicitAgentRoutingService
 import org.eclipse.lmos.runtime.outbound.ArcAgentClientService
 import org.eclipse.lmos.runtime.outbound.LmosAgentRoutingService
 import org.eclipse.lmos.runtime.outbound.LmosOperatorAgentRegistry
-// Removed incorrect import org.eclipse.lmos.runtime.outbound.RoutingInformation
 import org.eclipse.lmos.runtime.properties.LmosRuntimeProperties
 import org.eclipse.lmos.runtime.properties.Type
 import org.springframework.boot.autoconfigure.AutoConfiguration
