@@ -7,16 +7,17 @@
 package org.eclipse.lmos.runtime.core.service.outbound
 
 import com.charleskorn.kaml.Yaml
+import org.eclipse.lmos.runtime.core.exception.NoRoutingInfoFoundException
 import org.eclipse.lmos.runtime.core.model.registry.AgentRegistryDocument
 import org.eclipse.lmos.runtime.core.model.registry.RoutingInformation
 import org.eclipse.lmos.runtime.core.model.registry.toAgent
-import org.eclipse.lmos.runtime.core.exception.NoRoutingInfoFoundException
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.FileNotFoundException
 
-class FileBasedAgentRegistryService(private val filePath: String) : AgentRegistryService {
-
+class FileBasedAgentRegistryService(
+    private val filePath: String,
+) : AgentRegistryService {
     private val log = LoggerFactory.getLogger(FileBasedAgentRegistryService::class.java)
     private val agentRegistryDocument: AgentRegistryDocument
 
@@ -33,7 +34,8 @@ class FileBasedAgentRegistryService(private val filePath: String) : AgentRegistr
         } catch (e: FileNotFoundException) {
             log.error("Agent registry file not found at path: \$filePath", e)
             throw IllegalArgumentException("Agent registry file not found: \$filePath", e)
-        } catch (e: Exception) { // Catching general exception for parsing errors
+        } catch (e: Exception) {
+            // Catching general exception for parsing errors
             log.error("Error parsing agent registry file: \$filePath", e)
             throw IllegalArgumentException("Error parsing agent registry file: \$filePath. Details: \${e.message}", e)
         }
@@ -46,35 +48,36 @@ class FileBasedAgentRegistryService(private val filePath: String) : AgentRegistr
     ): RoutingInformation {
         val effectiveSubset = subset ?: "any"
         log.debug(
-            "Searching for routing information for tenant: $tenantId, channel: $channelId, subset: $effectiveSubset"
+            "Searching for routing information for tenant: $tenantId, channel: $channelId, subset: $effectiveSubset",
         )
 
-        val matchingChannelRouting = agentRegistryDocument.channelRoutings.find { cr ->
-            val labels = cr.metadata.labels
-            val tenantMatch = labels.tenant == tenantId
-            val channelMatch = labels.channel == channelId
-            // If requested subset is null, match only if label's subset is also null.
-            // If requested subset is non-null, match only if label's subset is equal.
-            val subsetMatch = labels.subset == subset
-            tenantMatch && channelMatch && subsetMatch
-        }
+        val matchingChannelRouting =
+            agentRegistryDocument.channelRoutings.find { cr ->
+                val labels = cr.metadata.labels
+                val tenantMatch = labels.tenant == tenantId
+                val channelMatch = labels.channel == channelId
+                // If requested subset is null, match only if label's subset is also null.
+                // If requested subset is non-null, match only if label's subset is equal.
+                val subsetMatch = labels.subset == subset
+                tenantMatch && channelMatch && subsetMatch
+            }
 
         if (matchingChannelRouting == null) {
             log.warn(
-                "No routing information found for tenant: $tenantId, channel: $channelId, subset: $effectiveSubset"
+                "No routing information found for tenant: $tenantId, channel: $channelId, subset: $effectiveSubset",
             )
             throw NoRoutingInfoFoundException(
-                "No routing information found in file for tenant: $tenantId, channel: $channelId, subset: $effectiveSubset"
+                "No routing information found in file for tenant: $tenantId, channel: $channelId, subset: $effectiveSubset",
             )
         }
 
         log.info(
-            "Found routing information for tenant: $tenantId, channel: $channelId, subset: $effectiveSubset: ${matchingChannelRouting.metadata.name}"
+            "Found routing information for tenant: $tenantId, channel: $channelId, subset: $effectiveSubset: ${matchingChannelRouting.metadata.name}",
         )
         // Use the existing toAgent() extension function and RoutingInformation data class
         return RoutingInformation(
             agentList = matchingChannelRouting.toAgent(), // toAgent() is now on ChannelRouting
-            subset = matchingChannelRouting.metadata.labels.subset // Or from the request 'subset' if preferred
+            subset = matchingChannelRouting.metadata.labels.subset, // Or from the request 'subset' if preferred
         )
     }
 }

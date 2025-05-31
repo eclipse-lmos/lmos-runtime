@@ -15,7 +15,7 @@ import org.eclipse.lmos.runtime.core.model.AgentCapability
 @Serializable
 data class ChannelRouting(
     val apiVersion: String? = null, // Made nullable
-    val kind: String? = null,       // Made nullable
+    val kind: String? = null, // Made nullable
     val metadata: Metadata,
     val spec: Spec,
     val subset: String? = null,

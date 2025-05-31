@@ -45,15 +45,16 @@ open class LmosRuntimeAutoConfiguration(
             AgentRegistryType.API -> {
                 agentRegistryConfig.baseUrl
                     ?: throw IllegalArgumentException(
-                        "LMOS runtime agent registry type is API, but 'lmos.runtime.agent-registry.base-url' is not configured."
+                        "LMOS runtime agent registry type is API, but 'lmos.runtime.agent-registry.base-url' is not configured.",
                     )
                 LmosOperatorAgentRegistry(lmosRuntimeProperties)
             }
             AgentRegistryType.FILE -> {
-                val filePath = agentRegistryConfig.filePath
-                    ?: throw IllegalArgumentException(
-                        "LMOS runtime agent registry type is FILE, but 'lmos.runtime.agent-registry.file-path' is not configured."
-                    )
+                val filePath =
+                    agentRegistryConfig.filePath
+                        ?: throw IllegalArgumentException(
+                            "LMOS runtime agent registry type is FILE, but 'lmos.runtime.agent-registry.file-path' is not configured.",
+                        )
                 FileBasedAgentRegistryService(filePath)
             }
         }
