@@ -11,5 +11,5 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter:$springBootVersion")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test:$springBootVersion")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.1")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.2")
 }
