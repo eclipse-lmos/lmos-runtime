@@ -6,18 +6,20 @@
 
 package org.eclipse.lmos.runtime.config
 
+import org.eclipse.lmos.runtime.core.AgentRegistryType
 import org.eclipse.lmos.runtime.core.cache.LmosRuntimeTenantAwareCache
 import org.eclipse.lmos.runtime.core.cache.TenantAwareInMemoryCache
 import org.eclipse.lmos.runtime.core.inbound.ConversationHandler
 import org.eclipse.lmos.runtime.core.inbound.DefaultConversationHandler
+import org.eclipse.lmos.runtime.core.model.registry.RoutingInformation
 import org.eclipse.lmos.runtime.core.service.outbound.AgentClientService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentRegistryService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentRoutingService
+import org.eclipse.lmos.runtime.core.service.outbound.FileBasedAgentRegistryService
 import org.eclipse.lmos.runtime.core.service.routing.ExplicitAgentRoutingService
 import org.eclipse.lmos.runtime.outbound.ArcAgentClientService
 import org.eclipse.lmos.runtime.outbound.LmosAgentRoutingService
 import org.eclipse.lmos.runtime.outbound.LmosOperatorAgentRegistry
-import org.eclipse.lmos.runtime.outbound.RoutingInformation
 import org.eclipse.lmos.runtime.properties.LmosRuntimeProperties
 import org.eclipse.lmos.runtime.properties.Type
 import org.springframework.boot.autoconfigure.AutoConfiguration
@@ -35,8 +37,27 @@ open class LmosRuntimeAutoConfiguration(
     open fun agentClientService(): AgentClientService = ArcAgentClientService()
 
     @Bean
-    @ConditionalOnMissingBean(AgentRoutingService::class)
-    open fun agentRegistryService(): AgentRegistryService = LmosOperatorAgentRegistry(lmosRuntimeProperties)
+    @ConditionalOnMissingBean(AgentRegistryService::class) // Corrected this line
+    open fun agentRegistryService(): AgentRegistryService {
+        val agentRegistryConfig = lmosRuntimeProperties.agentRegistry
+        return when (agentRegistryConfig.type) {
+            AgentRegistryType.API -> {
+                agentRegistryConfig.baseUrl
+                    ?: throw IllegalArgumentException(
+                        "LMOS runtime agent registry type is API, but 'lmos.runtime.agent-registry.base-url' is not configured.",
+                    )
+                LmosOperatorAgentRegistry(lmosRuntimeProperties)
+            }
+            AgentRegistryType.FILE -> {
+                val filePath =
+                    agentRegistryConfig.filePath
+                        ?: throw IllegalArgumentException(
+                            "LMOS runtime agent registry type is FILE, but 'lmos.runtime.agent-registry.file-path' is not configured.",
+                        )
+                FileBasedAgentRegistryService(filePath)
+            }
+        }
+    }
 
     @Bean
     @ConditionalOnMissingBean(LmosRuntimeTenantAwareCache::class)
