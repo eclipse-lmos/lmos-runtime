@@ -20,7 +20,7 @@ open class LmosRuntimeConfig(
         val url: String? = null,
         val key: String? = null,
         val model: String? = null,
-        val maxTokens: Int = 0,
+        val maxTokens: Int = 4000,
         val temperature: Double = 0.0,
         val format: String? = null,
     )
