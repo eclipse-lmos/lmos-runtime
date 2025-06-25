@@ -12,7 +12,7 @@ dependencies {
     val arcVersion = "0.121.0"
     val lmosRouterVersion = "0.2.0"
 
-    val ktorVersion = "3.1.2"
+    val ktorVersion = "3.2.0"
     val junitVersion = "5.12.1"
     val kotlinxSerializationVersion = "1.8.1"
 
