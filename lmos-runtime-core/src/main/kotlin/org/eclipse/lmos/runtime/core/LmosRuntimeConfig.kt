@@ -16,13 +16,13 @@ open class LmosRuntimeConfig(
     )
 
     data class OpenAI(
-        val provider: String,
-        val url: String,
-        val key: String,
-        val model: String,
-        val maxTokens: Int,
-        val temperature: Double,
-        val format: String,
+        val provider: String? = null,
+        val url: String? = null,
+        val key: String? = null,
+        val model: String? = null,
+        val maxTokens: Int? = null,
+        val temperature: Double? = null,
+        val format: String? = null,
     )
 
     data class Cache(
