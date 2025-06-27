@@ -22,7 +22,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter:$springBootVersion")
     implementation("org.springframework.boot:spring-boot-starter-actuator:$springBootVersion")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.2")
 
     implementation("com.expediagroup:graphql-kotlin-spring-server:8.6.2")
 
