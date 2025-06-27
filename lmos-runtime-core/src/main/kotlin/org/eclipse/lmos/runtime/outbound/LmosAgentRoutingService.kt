@@ -61,24 +61,35 @@ class LmosAgentRoutingService(
         }
 
     private fun agentRoutingSpecResolver(agentRoutingSpecsProvider: AgentRoutingSpecsProvider): AgentRoutingSpecsResolver {
-        val openAIConfig = lmosRuntimeConfig.openAi ?: throw IllegalArgumentException("openAI configuration key is null")
-        val defaultModelClientProperties =
-            DefaultModelClientProperties(
-                provider = openAIConfig.provider,
-                openAiUrl = openAIConfig.url,
-                openAiApiKey = openAIConfig.key,
-                model = openAIConfig.model,
-                maxTokens = openAIConfig.maxTokens,
-                temperature = openAIConfig.temperature,
-                format = openAIConfig.format,
+        val openAIConfig = lmosRuntimeConfig.openAi ?: throw IllegalArgumentException("OpenAI configuration is missing")
+
+        fun requireField(
+            value: Any?,
+            name: String,
+        ): Any =
+            when (value) {
+                is String -> if (value.isNotBlank()) value else throw IllegalArgumentException("OpenAI config '$name' is blank")
+                null -> throw IllegalArgumentException("OpenAI config '$name' is null")
+                else -> value
+            }
+
+        with(openAIConfig) {
+            val defaultModelClientProperties =
+                DefaultModelClientProperties(
+                    provider = requireField(provider, "provider") as String,
+                    openAiUrl = requireField(url, "url") as String,
+                    openAiApiKey = requireField(key, "key") as String,
+                    model = requireField(model, "model") as String,
+                    maxTokens = requireField(maxTokens, "maxTokens") as Int,
+                    temperature = requireField(temperature, "temperature") as Double,
+                    format = requireField(format, "format") as String,
+                )
+
+            return LLMAgentRoutingSpecsResolver(
+                agentRoutingSpecsProvider,
+                modelClient = DefaultModelClient(defaultModelClientProperties),
             )
-        return LLMAgentRoutingSpecsResolver(
-            agentRoutingSpecsProvider,
-            modelClient =
-                DefaultModelClient(
-                    defaultModelClientProperties,
-                ),
-        )
+        }
     }
 
     private fun prepareConversationComponents(conversation: Conversation): Pair<Context, UserMessage> {

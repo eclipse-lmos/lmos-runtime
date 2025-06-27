@@ -10,7 +10,7 @@ plugins {
 dependencies {
 
     val arcVersion = "0.121.0"
-    val lmosRouterVersion = "0.2.0"
+    val lmosRouterVersion = "0.3.0"
 
     val ktorVersion = "3.2.0"
     val junitVersion = "5.12.1"
