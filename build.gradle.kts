@@ -62,7 +62,7 @@ subprojects {
 
     dependencies {
         testImplementation(kotlin("test"))
-        testImplementation("io.mockk:mockk:1.14.0")
+        testImplementation("io.mockk:mockk:1.14.4")
     }
 
     tasks.test {
