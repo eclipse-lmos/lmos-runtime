@@ -29,7 +29,7 @@ dependencies {
     testImplementation(testFixtures(project(":lmos-runtime-core")))
     testImplementation("org.springframework.boot:spring-boot-starter-test:$springBootVersion")
     testImplementation("org.junit.jupiter:junit-jupiter")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.1")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
     testImplementation("app.cash.turbine:turbine:1.2.0")
 }
 
