@@ -22,7 +22,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:$kotlinxSerializationVersion")
     implementation("com.charleskorn.kaml:kaml:0.55.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.1")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.3")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.1")
     implementation("org.slf4j:slf4j-api:2.0.17")
     api("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:$kotlinxSerializationVersion")
     api("org.eclipse.lmos:lmos-router-llm:$lmosRouterVersion")
