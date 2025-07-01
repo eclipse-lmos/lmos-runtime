@@ -14,17 +14,15 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import org.eclipse.lmos.runtime.core.LmosRuntimeConfig
 import org.eclipse.lmos.runtime.core.constants.LmosRuntimeConstants.SUBSET
 import org.eclipse.lmos.runtime.core.exception.InternalServerErrorException
 import org.eclipse.lmos.runtime.core.exception.NoRoutingInfoFoundException
 import org.eclipse.lmos.runtime.core.exception.UnexpectedResponseException
-import org.eclipse.lmos.runtime.core.model.Address
-import org.eclipse.lmos.runtime.core.model.Agent
-import org.eclipse.lmos.runtime.core.model.AgentBuilder
-import org.eclipse.lmos.runtime.core.model.AgentCapability
+import org.eclipse.lmos.runtime.core.model.registry.ChannelRouting
+import org.eclipse.lmos.runtime.core.model.registry.RoutingInformation
+import org.eclipse.lmos.runtime.core.model.registry.toAgent
 import org.eclipse.lmos.runtime.core.service.outbound.AgentRegistryService
 import org.slf4j.LoggerFactory
 
@@ -100,80 +98,3 @@ class LmosOperatorAgentRegistry(
 }
 
 private fun ChannelRouting.toRoutingInformation(subset: String?) = RoutingInformation(this.toAgent(), subset)
-
-data class RoutingInformation(
-    val agentList: List<Agent>,
-    val subset: String?,
-)
-
-@Serializable
-data class ChannelRouting(
-    val apiVersion: String,
-    val kind: String,
-    val metadata: Metadata,
-    val spec: Spec,
-    val subset: String? = null,
-)
-
-@Serializable
-data class Metadata(
-    val creationTimestamp: String,
-    val generation: Int,
-    val labels: Labels,
-    val name: String,
-    val namespace: String,
-    val resourceVersion: String,
-    val uid: String,
-)
-
-@Serializable
-data class Labels(
-    val channel: String,
-    val subset: String,
-    val tenant: String,
-    val version: String,
-)
-
-@Serializable
-data class Spec(
-    val capabilityGroups: List<CapabilityGroup>,
-)
-
-@Serializable
-data class CapabilityGroup(
-    val name: String,
-    val description: String,
-    val capabilities: List<Capability>,
-)
-
-@Serializable
-data class Capability(
-    val name: String,
-    val requiredVersion: String,
-    val providedVersion: String,
-    val description: String,
-    val host: String,
-)
-
-fun ChannelRouting.toAgent(): List<Agent> {
-    val agentVersion = this.metadata.labels.version
-    return this.spec.capabilityGroups
-        .map { agent ->
-            AgentBuilder()
-                .name(agent.name)
-                .description(agent.description)
-                .version(agentVersion)
-                .apply {
-                    agent.capabilities.firstOrNull()?.let { addAddress(Address(uri = it.host)) }
-                    agent.capabilities.forEach { capability ->
-                        addCapability(
-                            AgentCapability(
-                                name = capability.name,
-                                version = capability.providedVersion,
-                                description = capability.description,
-                            ),
-                        )
-                    }
-                }.build()
-        }.toList()
-}
