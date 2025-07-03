@@ -7,6 +7,7 @@
 package org.eclipse.lmos.runtime.config
 
 import org.eclipse.lmos.runtime.core.AgentRegistryType
+import org.eclipse.lmos.runtime.core.LmosRuntimeConfig
 import org.eclipse.lmos.runtime.core.cache.LmosRuntimeTenantAwareCache
 import org.eclipse.lmos.runtime.core.cache.TenantAwareInMemoryCache
 import org.eclipse.lmos.runtime.core.inbound.ConversationHandler
@@ -38,7 +39,7 @@ open class LmosRuntimeAutoConfiguration(
 
     @Bean
     @ConditionalOnMissingBean(AgentRegistryService::class) // Corrected this line
-    open fun agentRegistryService(): AgentRegistryService {
+    open fun agentRegistryService(lmosRuntimeConfig: LmosRuntimeConfig): AgentRegistryService {
         val agentRegistryConfig = lmosRuntimeProperties.agentRegistry
         return when (agentRegistryConfig.type) {
             AgentRegistryType.API -> {
@@ -49,12 +50,11 @@ open class LmosRuntimeAutoConfiguration(
                 LmosOperatorAgentRegistry(lmosRuntimeProperties)
             }
             AgentRegistryType.FILE -> {
-                val filePath =
-                    agentRegistryConfig.filePath
-                        ?: throw IllegalArgumentException(
-                            "LMOS runtime agent registry type is FILE, but 'lmos.runtime.agent-registry.file-path' is not configured.",
-                        )
-                FileBasedAgentRegistryService(filePath)
+                agentRegistryConfig.fileName
+                    ?: throw IllegalArgumentException(
+                        "LMOS runtime agent registry type is FILE, but 'lmos.runtime.agent-registry.filename' is not configured.",
+                    )
+                FileBasedAgentRegistryService(lmosRuntimeConfig.agentRegistry)
             }
         }
     }
