@@ -14,7 +14,8 @@ open class LmosRuntimeConfig(
     data class AgentRegistry(
         val baseUrl: String? = null, // Made nullable
         val type: AgentRegistryType = AgentRegistryType.API, // Default to API
-        val filePath: String? = null, // Path to the YAML file
+        val fileName: String? = null, // Path to the YAML file
+        val defaultSubset: String = "stable",
     )
 
     data class OpenAI(

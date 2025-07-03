@@ -28,7 +28,7 @@ channelRoutings:
         version: "1.0.1"
         tenant: "integ-acme"
         channel: "app"
-        # No subset for this one
+        subset: stable
     spec:
       capabilityGroups:
         - name: "integ-app-agent"
