@@ -23,24 +23,6 @@ channelRoutings:
               description: "View a contract"
               host: "contract-agent-stable-svc"
   - metadata:
-      name: "acme-web-generic"
-      namespace: "test"
-      labels:
-        version: "1.0.1"
-        tenant: "acme"
-        channel: "web"
-        # No subset specified, should match if no subset is requested or if it's a fallback
-      # Ensure subset is nullable in Labels or handled if missing
-    spec:
-      capabilityGroups:
-        - name: "contract-agent-generic"
-          description: "Generic Contract agent for acme-web"
-          capabilities:
-            - name: "view-contract"
-              providedVersion: "1.0.0"
-              description: "View a contract (generic)"
-              host: "contract-agent-generic-svc"
-  - metadata:
       name: "another-tenant-app-beta"
       namespace: "test"
       labels:
