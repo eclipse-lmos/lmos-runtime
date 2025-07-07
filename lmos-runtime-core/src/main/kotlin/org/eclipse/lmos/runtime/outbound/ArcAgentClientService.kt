@@ -67,13 +67,14 @@ class ArcAgentClientService : AgentClientService {
                             agentRequest,
                             requestHeaders = subsetHeader,
                         ).collect { response ->
-                            log.info("Agent Response: $response")
-                            emit(
-                                AssistantMessage(
-                                    response.messages[0].content,
-                                    response.anonymizationEntities,
-                                ),
-                            )
+                            if (response.messages.isNotEmpty()) {
+                                emit(
+                                    AssistantMessage(
+                                        response.messages[0].content,
+                                        response.anonymizationEntities,
+                                    ),
+                                )
+                            }
                         }
                 } catch (e: Exception) {
                     log.error("Error response from ArcAgentClient", e)
@@ -83,11 +84,18 @@ class ArcAgentClientService : AgentClientService {
         }.flowOn(Dispatchers.IO)
 
     fun createGraphQlAgentClient(agentAddress: Address): GraphQlAgentClient {
-        // TODO - remove hardcoded parts of agent url
-        val agentUrl = "ws://${agentAddress.uri}:8080/subscriptions"
+        val hostAndPort =
+            if (hasPort(agentAddress.uri)) {
+                agentAddress.uri
+            } else {
+                "${agentAddress.uri}:8080"
+            }
 
+        val agentUrl = "ws://$hostAndPort/subscriptions"
         log.info("Creating GraphQlAgentClient with url $agentUrl")
-        val graphQlAgentClient = GraphQlAgentClient(agentUrl)
-        return graphQlAgentClient
+
+        return GraphQlAgentClient(agentUrl)
     }
+
+    private fun hasPort(urlString: String) = urlString.matches(Regex(""".+:\d+"""))
 }

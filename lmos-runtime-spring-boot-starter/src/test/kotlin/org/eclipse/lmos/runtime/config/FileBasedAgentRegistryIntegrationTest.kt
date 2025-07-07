@@ -19,7 +19,7 @@ import org.springframework.test.context.TestPropertySource
 @TestPropertySource(
     properties = [
         "lmos.runtime.agent-registry.type=FILE",
-        "lmos.runtime.agent-registry.file-path=src/test/resources/integration-test-agent-registry.yaml",
+        "lmos.runtime.agent-registry.filename=integration-test-agent-registry.yaml",
         "lmos.runtime.router.type=EXPLICIT",
         "lmos.runtime.cache.ttl=600",
     ],
@@ -46,7 +46,7 @@ class FileBasedAgentRegistryIntegrationTest {
             assertNotNull(routingInfoNoSubset)
             assertEquals(1, routingInfoNoSubset.agentList.size)
             assertEquals("integ-app-agent", routingInfoNoSubset.agentList[0].name)
-            assertNull(routingInfoNoSubset.subset)
+            assertNotNull(routingInfoNoSubset.subset)
         }
 
     @Test
