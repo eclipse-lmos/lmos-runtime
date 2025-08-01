@@ -7,6 +7,7 @@
 package org.eclipse.lmos.runtime.config
 
 import kotlinx.coroutines.runBlocking
+import org.eclipse.lmos.classifier.llm.starter.ModelAgentClassifierAutoConfiguration
 import org.eclipse.lmos.runtime.core.exception.NoRoutingInfoFoundException
 import org.eclipse.lmos.runtime.core.service.outbound.AgentRegistryService
 import org.junit.jupiter.api.Assertions.*
@@ -15,13 +16,16 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.TestPropertySource
 
-@SpringBootTest(classes = [LmosRuntimeAutoConfiguration::class]) // Minimal context
+@SpringBootTest(classes = [LmosRuntimeAutoConfiguration::class, ModelAgentClassifierAutoConfiguration::class]) // Minimal context
 @TestPropertySource(
     properties = [
         "lmos.runtime.agent-registry.type=FILE",
         "lmos.runtime.agent-registry.filename=integration-test-agent-registry.yaml",
         "lmos.runtime.router.type=EXPLICIT",
         "lmos.runtime.cache.ttl=600",
+        "lmos.router.classifier.llm.enabled=true",
+        "lmos.router.llm.provider=openai",
+        "lmos.router.llm.model=dummy-model",
     ],
 )
 class FileBasedAgentRegistryIntegrationTest {

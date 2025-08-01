@@ -30,7 +30,7 @@ class ConversationController(
         @RequestBody conversation: Conversation,
         @PathVariable conversationId: String,
         @PathVariable tenantId: String,
-        @RequestHeader(name = SUBSET) subsetHeader: String,
+        @RequestHeader(name = SUBSET, required = false) subsetHeader: String?,
         @RequestHeader(TURN_ID) turnId: String,
     ): ResponseEntity<AssistantMessage> {
         val assistantMessage = conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId, subsetHeader).first()

@@ -6,6 +6,7 @@
 
 package org.eclipse.lmos.runtime.config
 
+import org.eclipse.lmos.classifier.llm.starter.ModelAgentClassifierAutoConfiguration
 import org.eclipse.lmos.runtime.core.service.outbound.AgentRegistryService
 import org.eclipse.lmos.runtime.outbound.LmosOperatorAgentRegistry
 import org.junit.jupiter.api.Assertions.assertInstanceOf
@@ -16,13 +17,16 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.ApplicationContext
 import org.springframework.test.context.TestPropertySource
 
-@SpringBootTest(classes = [LmosRuntimeAutoConfiguration::class])
+@SpringBootTest(classes = [LmosRuntimeAutoConfiguration::class, ModelAgentClassifierAutoConfiguration::class])
 @TestPropertySource(
     properties = [
         "lmos.runtime.agent-registry.type=API",
         "lmos.runtime.agent-registry.base-url=http://dummy-api.com",
         "lmos.runtime.cache.ttl=600",
         "lmos.runtime.router.type=EXPLICIT", // Added router type
+        "lmos.router.classifier.llm.enabled=true",
+        "lmos.router.llm.provider=openai",
+        "lmos.router.llm.model=dummy-model",
     ],
 )
 class ApiAgentRegistryLoadedConditionTest {
