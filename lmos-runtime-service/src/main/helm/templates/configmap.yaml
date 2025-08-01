@@ -3,62 +3,142 @@ kind: ConfigMap
 metadata:
   name: {{ include "lmos-runtime.fullname" . }}-config
 data:
-  {{- if .Values.openaiApiProvider }}
-  LMOS_RUNTIME_OPENAI_PROVIDER: {{ .Values.openaiApiProvider | quote }}
-  {{- end }}
-
-  {{- if .Values.openaiApiUrl }}
-  LMOS_RUNTIME_OPENAI_URL: {{ .Values.openaiApiUrl | quote }}
-  {{- end }}
-
-  {{- if .Values.openaiApiModel }}
-  LMOS_RUNTIME_OPENAI_MODEL: {{ .Values.openaiApiModel | quote }}
-  {{- end }}
-
-  {{- if .Values.openaiApiTemperature }}
-  LMOS_RUNTIME_OPENAI_TEMPERATURE: {{ .Values.openaiApiTemperature | quote }}
-  {{- end }}
-
-  {{- if .Values.openaiApiFormat }}
-  LMOS_RUNTIME_OPENAI_FORMAT: {{ .Values.openaiApiFormat | quote }}
-  {{- end }}
-
-  {{- if .Values.openaiApiMaxTokens }}
-  LMOS_RUNTIME_OPENAI_MAX-TOKENS: {{ .Values.openaiApiMaxTokens | quote }}
-  {{- end }}
+  {{- /* ---------- Agent Registry Configuration ---------- */ -}}
 
   {{- if .Values.agentRegistryUrl }}
-  LMOS_RUNTIME_AGENTREGISTRY_BASEURL: {{ .Values.agentRegistryUrl | quote }}
-  {{- end }}
+  AGENT_REGISTRY_URL: {{ .Values.agentRegistryUrl | quote }}
+  {{- end -}}
 
   {{- if .Values.cacheTtl }}
-  LMOS_RUNTIME_CACHE_TTL: {{ .Values.cacheTtl | quote }}
-  {{- end }}
+  CACHE_TTL: {{ .Values.cacheTtl | quote }}
+  {{- end -}}
+
+  {{/* ---------- Routing Type Configuration - "old" classifier ---------- */}}
 
   {{- if .Values.routerType }}
-  LMOS_RUNTIME_ROUTER_TYPE: {{ .Values.routerType | quote }}
-  {{- end }}
+  ROUTER_TYPE: {{ .Values.routerType | quote }}
+  {{- end -}}
+
+  {{/* ---------- Routing Type Configuration - "new" classifier ---------- */}}
+
+  {{- if .Values.classifierVectorEnabled }}
+  CLASSIFIER_VECTOR_ENABLED: {{ .Values.clssifierVectorEnabled | quote }}
+  {{- end -}}
+
+  {{- if .Values.classifierLlmEnabled }}
+  CLASSIFIER_LLM_ENABLED: {{ .Values.classifierLlmEnabled | quote }}
+  {{- end -}}
+
+  {{- if .Values.classifierHybridRagEnabled }}
+  CLASSIFIER_HYBRID_RAG_ENABLED: {{ .Values.classifierHybridRagEnabled | quote }}
+  {{- end -}}
+
+  {{- if .Values.classifierHybridFastTrackEnabled }}
+  CLASSIFIER_HYBRID_FASTTRACK_ENABLED: {{ .Values.classifierHybridFastTrackEnabled | quote }}
+  {{- end -}}
+
+  {{/* ---------- LLM Configuration ---------- */}}
+
+  {{- if .Values.llmProvider }}
+  LLM_PROVIDER: {{ .Values.llmProvider | quote }}
+  {{- end -}}
+
+  {{- if .Values.llmBaseUrl }}
+  LLM_BASE_URL: {{ .Values.llmBaseUrl | quote }}
+  {{- end -}}
+
+  {{- if .Values.llmModelName }}
+  LLM_MODEL_NAME: {{ .Values.llmModelName | quote }}
+  {{- end -}}
+
+  {{- if .Values.llmSystemPrompt }}
+  LLM_SYSTEM_PROMPT: {{ .Values.llmSystemPrompt | quote }}
+  {{- end -}}
+
+  {{- if .Values.llmTemperature }}
+  LLM_TEMPERATURE: {{ .Values.llmTemperature | quote }}
+  {{- end -}}
+
+  {{- if .Values.llmFormat }}
+  LLM_FORMAT: {{ .Values.openaiApiFormat | quote }}
+  {{- end -}}
+
+  {{- if .Values.llmMaxTokens }}
+  LLM_MAX_TOKENS: {{ .Values.llmMaxTokens | quote }}
+  {{- end -}}
+
+  {{/* ---------- Embedding Model Configuration ---------- */}}
+
+  {{- if .Values.embeddingModelProvider }}
+  EMBEDDING_MODEL_PROVIDER: {{ .Values.embeddingModelProvider | quote }}
+  {{- end -}}
+
+  {{- if .Values.embeddingModelOpenAiUrl }}
+  EMBEDDING_MODEL_OPENAI_BASE_URL: {{ .Values.embeddingModelOpenAiUrl | quote }}
+  {{- end -}}
+
+  {{- if .Values.embeddingModelHuggingfaceModelName }}
+  EMBEDDING_MODEL_HUGGINGFACE_MODEL_NAME: {{ .Values.embeddingModelHuggingfaceModelName | quote }}
+  {{- end -}}
+
+  {{/* ---------- Embedding Store Configuration ---------- */}}
+
+  {{- if .Values.embeddingStoreHost }}
+  EMBEDDING_STORE_HOST: {{ .Values.embeddingStoreHost | quote }}
+  {{- end -}}
+
+  {{- if .Values.embeddingStorePort }}
+  EMBEDDING_STORE_PORT: {{ .Values.embeddingStorePort | quote }}
+  {{- end -}}
+
+  {{- if .Values.embeddingStoreTlsEnabled }}
+  EMBEDDING_STORE_TLS_ENABLED: {{ .Values.embeddingStoreTlsEnabled | quote }}
+  {{- end -}}
+
+  {{/* ---------- Embedding Ranking Configuration ---------- */}}
+
+  {{- if .Values.embeddingRankingMaxEmbeddings }}
+  EMBEDDING_RANKING_MAX_EMBEDDINGS: {{ .Values.embeddingRankingMaxEmbeddings | quote }}
+  {{- end -}}
+
+  {{- if .Values.embeddingRankingMinWeight }}
+  EMBEDDING_RANKING_MIN_WEIGHT: {{ .Values.embeddingRankingMinWeight | quote }}
+  {{- end -}}
+
+  {{- if .Values.embeddingRankingMinDistance }}
+  EMBEDDING_RANKING_MIN_DISTANCE: {{ .Values.embeddingRankingMinDistance | quote }}
+  {{- end -}}
+
+  {{- if .Values.embeddingRankingMinMeanScore }}
+  EMBEDDING_RANKING_MIN_MEAN_SCORE: {{ .Values.embeddingRankingMinMeanScore | quote }}
+  {{- end -}}
+
+  {{- if .Values.embeddingRankingMinRealDistance }}
+  EMBEDDING_RANKING_MIN_REAL_DISTANCE: {{ .Values.embeddingRankingMinRealDistance | quote }}
+  {{- end -}}
+
+  {{/* ---------- CORS Configuration ---------- */}}
 
   {{- if .Values.corsEnabled }}
   CORS_ENABLED: {{ .Values.corsEnabled | quote }}
-  {{- end }}
+  {{- end -}}
 
   {{- if .Values.corsAllowedOrigins }}
   CORS_ALLOWED_ORIGINS: {{ .Values.corsAllowedOrigins | toYaml | quote }}
-  {{- end }}
+  {{- end -}}
 
   {{- if .Values.corsAllowedMethods }}
   CORS_ALLOWED_METHODS: {{ .Values.corsAllowedMethods | toYaml | quote }}
-  {{- end }}
+  {{- end -}}
 
   {{- if .Values.corsAllowedHeaders }}
   CORS_ALLOWED_HEADERS: {{ .Values.corsAllowedHeaders | toYaml | quote }}
-  {{- end }}
+  {{- end -}}
 
   {{- if .Values.corsPatterns }}
   CORS_PATTERNS: {{ .Values.corsPatterns | toYaml | quote }}
-  {{- end }}
+  {{- end -}}
 
   {{- if .Values.corsMaxAge }}
   CORS_MAX_AGE: {{ .Values.corsMaxAge | quote }}
-  {{- end }}
+  {{- end -}}

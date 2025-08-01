@@ -10,7 +10,7 @@ plugins {
 dependencies {
 
     val arcVersion = "0.121.0"
-    val lmosRouterVersion = "0.3.0"
+    val lmosRouterVersion: String by project
 
     val ktorVersion = "3.2.0"
     val junitVersion = "5.12.1"
@@ -24,6 +24,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.1")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.3")
     implementation("org.slf4j:slf4j-api:2.0.17")
+    implementation("org.eclipse.lmos:lmos-classifier-core:$lmosRouterVersion")
     api("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:$kotlinxSerializationVersion")
     api("org.eclipse.lmos:lmos-router-llm:$lmosRouterVersion")
     api("org.eclipse.lmos:arc-agent-client:$arcVersion")

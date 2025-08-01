@@ -149,7 +149,7 @@ fun AgentRoutingSpec.toAgent(): Agent =
         ).apply {
             capabilities(
                 capabilities.map { capability ->
-                    AgentCapability(capability.name, capability.version, capability.description)
+                    AgentCapability("na", capability.name, capability.version, capability.description)
                 },
             )
         }.build()

@@ -21,6 +21,7 @@ import org.eclipse.lmos.runtime.core.exception.AgentNotFoundException
 import org.eclipse.lmos.runtime.core.exception.NoRoutingInfoFoundException
 import org.eclipse.lmos.runtime.core.model.*
 import org.eclipse.lmos.runtime.core.model.registry.RoutingInformation
+import org.eclipse.lmos.runtime.core.service.outbound.AgentClassifierService
 import org.eclipse.lmos.runtime.core.service.routing.ExplicitAgentRoutingService
 import org.eclipse.lmos.runtime.outbound.ArcAgentClientService
 import org.eclipse.lmos.runtime.outbound.LmosOperatorAgentRegistry
@@ -38,12 +39,14 @@ class ConversationHandlerIntegrationTest : BaseWireMockTest() {
     private val lmosRuntimeTenantAwareCache = TenantAwareInMemoryCache<RoutingInformation>()
     private val agentRegistryService = LmosOperatorAgentRegistry(lmosRuntimeConfig)
     private val agentRoutingService = ExplicitAgentRoutingService()
+    private val agentClassifierService = mockk<AgentClassifierService>()
     private val agentClientService = spyk(ArcAgentClientService())
 
     private val conversationHandler =
         DefaultConversationHandler(
             agentRegistryService,
             agentRoutingService,
+            agentClassifierService,
             agentClientService,
             lmosRuntimeConfig,
             lmosRuntimeTenantAwareCache,
@@ -103,6 +106,7 @@ class ConversationHandlerIntegrationTest : BaseWireMockTest() {
                 DefaultConversationHandler(
                     spyAgentRegistryService,
                     agentRoutingService,
+                    agentClassifierService,
                     agentClientService,
                     lmosRuntimeConfig,
                     lmosRuntimeTenantAwareCache,

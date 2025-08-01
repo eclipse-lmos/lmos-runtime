@@ -9,15 +9,15 @@ lmos:
     agent-registry:
       base-url: ${AGENT_REGISTRY_URL:http://lmos-operator:8080}
     router:
-      type: EXPLICIT
+      type: ${ROUTER_TYPE:EXPLICIT}
     open-ai:
-      provider: ${OPENAI_API_PROVIDER:openai}
-      url: ${OPENAI_API_URL:https://api.openai.com/v1}
-      key: ${OPENAI_API_KEY:}
-      model: ${OPENAI_API_MODEL:"gpt-3.5-turbo"}
-      max-tokens: ${OPENAI_API_MAX_TOKENS:2000}
-      temperature: ${OPENAI_API_TEMP:0.0}
-      format: ${OPENAI_API_FORMAT:json_object}
+      provider: ${LLM_PROVIDER:openai}
+      url: ${LLM_BASE_URL:https://api.openai.com/v1}
+      key: ${LLM_API_KEY:}
+      model: ${LLM_MODEL_NAME:"gpt-3.5-turbo"}
+      max-tokens: ${LLM_MAX_TOKENS:2000}
+      temperature: ${LLM_TEMPERATURE:0.0}
+      format: ${LLM_FORMAT:json_object}
     cache:
       ttl: ${CACHE_TTL:1800}
     cors:
@@ -27,6 +27,39 @@ lmos:
       allowed-headers: ${CORS_ALLOWED_HEADERS:*}
       patterns: ${CORS_PATTERNS:/**}
       max-age: ${CORS_MAX_AGE:8000}
+  router:
+    classifier:
+      vector:
+        enabled: ${CLASSIFIER_VECTOR_ENABLED:false}
+      llm:
+        enabled: ${CLASSIFIER_LLM_ENABLED:true}
+      hybrid-rag:
+        enabled: ${CLASSIFIER_HYBRID_RAG_ENABLED:false}
+      hybrid-fast-track:
+        enabled: ${CLASSIFIER_HYBRID_FASTTRACK_ENABLED:false}
+    llm:
+      provider: ${LLM_PROVIDER:openai}
+      base-url: ${LLM_BASE_URL:https://api.openai.com/v1}
+      model: ${LLM_MODEL_NAME:"gpt-3.5-turbo"}
+      api-key: ${LLM_API_KEY:}
+      system-prompt: ${LLM_SYSTEM_PROMPT:}
+    embedding:
+      store:
+        host: ${EMBEDDING_STORE_HOST:localhost}
+        port: ${EMBEDDING_STORE_PORT:6334}
+        tlsEnabled: ${EMBEDDING_STORE_TLS_ENABLED:false}
+        apiKey:  ${EMBEDDING_STORE_API_KEY:}
+      model:
+        provider: ${EMBEDDING_MODEL_PROVIDER:openai} # Options: openai, huggingface
+        api-key: ${EMBEDDING_MODEL_API_KEY:}
+        base-url: ${EMBEDDING_MODEL_OPENAI_BASE_URL:https://api.openai.com/v1/embeddings} # Only required for provider openai
+        model-name: ${EMBEDDING_MODEL_HUGGINGFACE_MODEL_NAME:intfloat/multilingual-e5-large} # Only required for provider huggingface
+      ranking:
+        maxEmbeddings: ${EMBEDDING_RANKING_MAX_EMBEDDINGS:15}
+        minWeight: ${EMBEDDING_RANKING_MIN_WEIGHT:5.0}
+        minDistance: ${EMBEDDING_RANKING_MIN_DISTANCE:4.0}
+        minMeanScore: ${EMBEDDING_RANKING_MIN_MEAN_SCORE:0.5}
+        minRealDistance: ${EMBEDDING_RANKING_MIN_REAL_DISTANCE:0.3}
 
 server:
   port: 8081
@@ -42,6 +75,8 @@ logging:
     root: INFO
     org:
       springframework: WARN
+    sun:
+      rmi: ERROR
 
 management:
   server:

@@ -96,4 +96,3 @@ tolerations: []
 affinity: {}
 
 secretName: "lmos-runtime"
-secretKey: "OPENAI_API_KEY"

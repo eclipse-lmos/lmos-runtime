@@ -16,6 +16,7 @@ plugins {
 dependencies {
 
     val springBootVersion: String by rootProject.extra
+    val lmosRouterVersion: String by project
 
     implementation(project(":lmos-runtime-spring-boot-starter"))
 
@@ -29,6 +30,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test:$springBootVersion")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("com.marcinziolo:kotlin-wiremock:2.1.1")
+    testImplementation("org.eclipse.lmos:lmos-classifier-llm-spring-boot-starter:$lmosRouterVersion")
 }
 
 // Set kotlinx-serialization version in dependencyManagement to overrule the dependency management of spring boot plugin.

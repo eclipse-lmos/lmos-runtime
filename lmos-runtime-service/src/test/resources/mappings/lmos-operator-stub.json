@@ -25,10 +25,12 @@
       "spec": {
         "capabilityGroups": [
           {
+            "id": "SummaryAgentId",
             "name": "SummaryAgent",
             "description": "Summarize content",
             "capabilities": [
               {
+                "id": "summarizeId",
                 "name": "summarize",
                 "requiredVersion": "1.0",
                 "providedVersion": "1.1",
@@ -39,10 +41,12 @@
             ]
           },
           {
+            "id": "NotificationAgentId",
             "name": "NotificationAgent",
             "description": "Handles advanced web features",
             "capabilities": [
               {
+                "id": "real-time-notificationId",
                 "name": "real-time-notification",
                 "requiredVersion": "2.0",
                 "providedVersion": "2.1",

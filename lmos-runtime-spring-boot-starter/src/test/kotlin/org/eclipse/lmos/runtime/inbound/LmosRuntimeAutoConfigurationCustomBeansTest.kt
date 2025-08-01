@@ -6,6 +6,7 @@
 package org.eclipse.lmos.runtime.inbound
 
 import kotlinx.coroutines.flow.Flow
+import org.eclipse.lmos.classifier.core.ClassificationResult
 import org.eclipse.lmos.runtime.config.LmosRuntimeAutoConfiguration
 import org.eclipse.lmos.runtime.core.cache.LmosRuntimeTenantAwareCache
 import org.eclipse.lmos.runtime.core.cache.TenantAwareInMemoryCache
@@ -16,10 +17,12 @@ import org.eclipse.lmos.runtime.core.model.Agent
 import org.eclipse.lmos.runtime.core.model.AssistantMessage
 import org.eclipse.lmos.runtime.core.model.Conversation
 import org.eclipse.lmos.runtime.core.model.registry.RoutingInformation
+import org.eclipse.lmos.runtime.core.service.outbound.AgentClassifierService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentClientService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentRegistryService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentRoutingService
 import org.eclipse.lmos.runtime.outbound.ArcAgentClientService
+import org.eclipse.lmos.runtime.outbound.LmosAgentClassifierService
 import org.eclipse.lmos.runtime.outbound.LmosAgentRoutingService
 import org.eclipse.lmos.runtime.properties.LmosRuntimeProperties
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -35,7 +38,9 @@ import org.springframework.test.context.TestPropertySource
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, classes = [LmosRuntimeAutoConfiguration::class])
 @ActiveProfiles("test")
-@TestPropertySource(properties = ["lmos.runtime.router.type=LLM", "lmos.runtime.openAi=dummyOpenAiKey"])
+@TestPropertySource(
+    properties = ["lmos.runtime.router.type=LLM", "lmos.runtime.openAi=dummyOpenAiKey", "lmos.router.classifier.llm.enabled=true"],
+)
 @Import(LmosRuntimeAutoConfigurationCustomBeansTest.CustomBeanConfig::class)
 class LmosRuntimeAutoConfigurationCustomBeansTest {
     @Autowired
@@ -54,6 +59,12 @@ class LmosRuntimeAutoConfigurationCustomBeansTest {
     fun `should not load LmosAgentRoutingService as AgentRoutingService`() {
         val agentRoutingService = applicationContext.getBean(AgentRoutingService::class.java)
         assertFalse(agentRoutingService is LmosAgentRoutingService)
+    }
+
+    @Test
+    fun `should not load LmosAgentClassifierService as AgentClassifierService`() {
+        val agentClassifierService = applicationContext.getBean(AgentClassifierService::class.java)
+        assertFalse(agentClassifierService is LmosAgentClassifierService)
     }
 
     @Test
@@ -81,6 +92,18 @@ class LmosRuntimeAutoConfigurationCustomBeansTest {
                     agentAddress: Address,
                     subset: String?,
                 ): Flow<AssistantMessage> {
+                    TODO("Not yet implemented")
+                }
+            }
+
+        @Bean
+        open fun agentClassifierService(): AgentClassifierService =
+            object : AgentClassifierService {
+                override suspend fun classify(
+                    conversation: Conversation,
+                    agents: List<Agent>,
+                    tenant: String,
+                ): ClassificationResult {
                     TODO("Not yet implemented")
                 }
             }

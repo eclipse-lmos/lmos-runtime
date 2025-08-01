@@ -20,3 +20,14 @@ lmos:
       type: EXPLICIT
     cache:
       ttl: 6000
+  router:
+    classifier:
+      llm:
+        enabled: true
+    llm:
+      provider: ${LLM_PROVIDER:openai}
+      api-key: ${LLM_API_KEY:your-api-key}
+      base-url: ${LLM_BASE_URL:https://model-base-url.com}
+      model: ${LLM_MODEL_NAME:your-model}
+      maxChatHistory: ${LLM_MAX_CHAT_HISTORY:10}
+      system-prompt: ${LLM_SYSTEM_PROMPT:}

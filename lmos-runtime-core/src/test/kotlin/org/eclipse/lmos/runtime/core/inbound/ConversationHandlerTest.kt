@@ -18,6 +18,7 @@ import org.eclipse.lmos.runtime.core.exception.AgentClientException
 import org.eclipse.lmos.runtime.core.exception.NoRoutingInfoFoundException
 import org.eclipse.lmos.runtime.core.model.*
 import org.eclipse.lmos.runtime.core.model.registry.RoutingInformation
+import org.eclipse.lmos.runtime.core.service.outbound.AgentClassifierService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentClientService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentRegistryService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentRoutingService
@@ -30,6 +31,7 @@ import kotlin.test.assertEquals
 class ConversationHandlerTest {
     private lateinit var agentRegistryService: AgentRegistryService
     private lateinit var agentRoutingService: AgentRoutingService
+    private lateinit var agentClassifierService: AgentClassifierService
     private lateinit var agentClientService: AgentClientService
     private lateinit var lmosRuntimeTenantAwareCache: LmosRuntimeTenantAwareCache<RoutingInformation>
     private lateinit var conversationHandler: ConversationHandler
@@ -41,6 +43,7 @@ class ConversationHandlerTest {
         agentRegistryService = mockk<AgentRegistryService>()
 
         agentRoutingService = ExplicitAgentRoutingService()
+        agentClassifierService = mockk<AgentClassifierService>()
         lmosRuntimeTenantAwareCache = spyk(TenantAwareInMemoryCache())
         lmosRuntimeConfig =
             LmosRuntimeConfig(
@@ -51,6 +54,7 @@ class ConversationHandlerTest {
             DefaultConversationHandler(
                 agentRegistryService,
                 agentRoutingService,
+                agentClassifierService,
                 agentClientService,
                 lmosRuntimeConfig,
                 lmosRuntimeTenantAwareCache,
@@ -434,7 +438,7 @@ class ConversationHandlerTest {
     private fun routingInformation(subset: String? = null): RoutingInformation {
         val routingInformation =
             RoutingInformation(
-                agentList = listOf(Agent("agent1", "v1", "desc", listOf(), listOf(Address(uri = "http://localhost:8080/")))),
+                agentList = listOf(Agent("agent1Id", "agent1", "v1", "desc", listOf(), listOf(Address(uri = "http://localhost:8080/")))),
                 subset = subset,
             )
         return routingInformation

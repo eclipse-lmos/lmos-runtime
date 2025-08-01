@@ -12,14 +12,19 @@ import kotlinx.coroutines.flow.onEach
 import org.eclipse.lmos.runtime.core.LmosRuntimeConfig
 import org.eclipse.lmos.runtime.core.cache.LmosRuntimeTenantAwareCache
 import org.eclipse.lmos.runtime.core.constants.LmosRuntimeConstants.Cache.ROUTES
-import org.eclipse.lmos.runtime.core.model.Agent
+import org.eclipse.lmos.runtime.core.exception.AgentNotFoundException
+import org.eclipse.lmos.runtime.core.model.Address
 import org.eclipse.lmos.runtime.core.model.AssistantMessage
 import org.eclipse.lmos.runtime.core.model.Conversation
 import org.eclipse.lmos.runtime.core.model.registry.RoutingInformation
+import org.eclipse.lmos.runtime.core.service.outbound.AgentClassifierService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentClientService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentRegistryService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentRoutingService
 import org.slf4j.LoggerFactory
+
+private const val ACTIVE_FEATURES_KEY = "activeFeatures"
+private const val ACTIVE_FEATURE_KEY_CLASSIFIER = "classifier"
 
 interface ConversationHandler {
     suspend fun handleConversation(
@@ -34,6 +39,7 @@ interface ConversationHandler {
 class DefaultConversationHandler(
     private val agentRegistryService: AgentRegistryService,
     private val agentRoutingService: AgentRoutingService,
+    private val agentClassifierService: AgentClassifierService,
     private val agentClientService: AgentClientService,
     private val lmosRuntimeConfig: LmosRuntimeConfig,
     private val lmosRuntimeTenantAwareCache: LmosRuntimeTenantAwareCache<RoutingInformation>,
@@ -80,16 +86,35 @@ class DefaultConversationHandler(
                         }
                 }
             log.info("routingInformation: $routingInformation")
-            val agent: Agent = agentRoutingService.resolveAgentForConversation(conversation, routingInformation.agentList)
-            log.info("Resolved agent: $agent")
 
+            val agentName: String
+            val agentAddress: Address
+            // The feature flag is only needed during the transition period until
+            // the old classifier is fully replaced by the new classifier.
+            val activeFeatures = conversation.systemContext.contextParams.firstOrNull { it.key == ACTIVE_FEATURES_KEY }
+            if (activeFeatures?.value?.contains(ACTIVE_FEATURE_KEY_CLASSIFIER) == true) {
+                log.info("Classifier feature is active, using new classifier for agent routing")
+                val result = agentClassifierService.classify(conversation, routingInformation.agentList, tenantId)
+                val classifiedAgent =
+                    result.agents.firstOrNull()
+                        ?: throw AgentNotFoundException("Failed to classify agent for conversationId '$conversationId'.")
+                agentName = classifiedAgent.name
+                agentAddress = Address(uri = classifiedAgent.address)
+            } else {
+                log.info("Classifier feature is not active, using old classifier for agent routing")
+                val agent = agentRoutingService.resolveAgentForConversation(conversation, routingInformation.agentList)
+                agentName = agent.name
+                agentAddress = agent.addresses.random()
+            }
+
+            log.info("Resolved agent: $agentName")
             agentClientService
                 .askAgent(
                     conversation,
                     conversationId,
                     turnId,
-                    agent.name,
-                    agent.addresses.random(),
+                    agentName,
+                    agentAddress,
                     routingInformation.subset,
                 ).onEach {
                     log.info("Agent Response: ${it.content}")
