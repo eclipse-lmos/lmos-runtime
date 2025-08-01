@@ -47,6 +47,7 @@ data class Spec(
 
 @Serializable
 data class CapabilityGroup(
+    val id: String = "",
     val name: String,
     val description: String,
     val capabilities: List<Capability>,
@@ -54,6 +55,7 @@ data class CapabilityGroup(
 
 @Serializable
 data class Capability(
+    val id: String = "",
     val name: String,
     val providedVersion: String,
     val description: String,
@@ -79,6 +81,7 @@ fun ChannelRouting.toAgent(): List<Agent> {
                     agent.capabilities.forEach { capability ->
                         addCapability(
                             AgentCapability(
+                                id = capability.id,
                                 name = capability.name,
                                 version = capability.providedVersion,
                                 description = capability.description,

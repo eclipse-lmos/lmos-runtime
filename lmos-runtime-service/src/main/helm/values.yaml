@@ -96,9 +96,7 @@ tolerations: []
 affinity: {}
 
 # Set to true if the secret containing the LLM API key should be created by helm.
-# If set to false, a secret named <secretName> and providing the LLM API key in <secretKey> must be available in the cluster.
-# If set to true, a secret named <secretName> containing the LLM API key <secretApiKey> will be created.
+# If set to false, a secret named <secretName> must be available in the cluster.
+# If set to true, a secret named <secretName> will be created.
 createSecret: false
 secretName: "lmos-runtime"
-secretKey: "OPENAI_API_KEY"
-# secretApiKey: API key to be used with LLM for LLM-based routing

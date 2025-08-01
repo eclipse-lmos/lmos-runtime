@@ -90,6 +90,7 @@ class ExplicitAgentRoutingServiceTest {
     private fun getAgents() =
         listOf(
             Agent(
+                id = "AgentX",
                 name = "AgentX",
                 version = "1.0",
                 description = "Test Agent",
@@ -97,6 +98,7 @@ class ExplicitAgentRoutingServiceTest {
                 addresses = listOf(),
             ),
             Agent(
+                id = "AgentY",
                 name = "AgentY",
                 version = "1.0",
                 description = "Another Agent",

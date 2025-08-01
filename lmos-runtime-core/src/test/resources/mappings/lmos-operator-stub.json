@@ -25,10 +25,12 @@
       "spec": {
         "capabilityGroups": [
           {
+            "id": "UserManagementAgentId",
             "name": "UserManagementAgent",
             "description": "Handles basic web capabilities",
             "capabilities": [
               {
+                "id": "user-auth-id",
                 "name": "user-auth",
                 "requiredVersion": "1.0",
                 "providedVersion": "1.1",
@@ -37,6 +39,7 @@
                 "subset": "stable"
               },
               {
+                "id": "user-profile-id",
                 "name": "user-profile",
                 "requiredVersion": "1.0",
                 "providedVersion": "1.0",
@@ -47,10 +50,12 @@
             ]
           },
           {
+            "id": "NotificationAgentId",
             "name": "NotificationAgent",
             "description": "Handles advanced web features",
             "capabilities": [
               {
+                "id": "real-time-notification-id",
                 "name": "real-time-notification",
                 "requiredVersion": "2.0",
                 "providedVersion": "2.1",

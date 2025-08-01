@@ -41,18 +41,13 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "lmos-runtime.fullname" . }}-config
+            - secretRef:
+                name: {{ .Values.secretName }}
           env:
           {{- if eq .Values.logging.format "json" }}
             - name: SPRING_PROFILES_ACTIVE
               value: "logformat-json"
           {{- end }}
-          {{- if .Values.secretName }}
-            - name: LMOS_RUNTIME_OPENAI_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.secretName }}
-                  key: {{ .Values.secretKey }}
-          {{ end }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

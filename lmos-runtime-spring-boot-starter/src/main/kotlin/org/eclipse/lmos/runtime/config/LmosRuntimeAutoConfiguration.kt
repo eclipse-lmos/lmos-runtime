@@ -6,6 +6,7 @@
 
 package org.eclipse.lmos.runtime.config
 
+import org.eclipse.lmos.classifier.core.AgentClassifier
 import org.eclipse.lmos.runtime.core.AgentRegistryType
 import org.eclipse.lmos.runtime.core.LmosRuntimeConfig
 import org.eclipse.lmos.runtime.core.cache.LmosRuntimeTenantAwareCache
@@ -13,12 +14,14 @@ import org.eclipse.lmos.runtime.core.cache.TenantAwareInMemoryCache
 import org.eclipse.lmos.runtime.core.inbound.ConversationHandler
 import org.eclipse.lmos.runtime.core.inbound.DefaultConversationHandler
 import org.eclipse.lmos.runtime.core.model.registry.RoutingInformation
+import org.eclipse.lmos.runtime.core.service.outbound.AgentClassifierService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentClientService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentRegistryService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentRoutingService
 import org.eclipse.lmos.runtime.core.service.outbound.FileBasedAgentRegistryService
 import org.eclipse.lmos.runtime.core.service.routing.ExplicitAgentRoutingService
 import org.eclipse.lmos.runtime.outbound.ArcAgentClientService
+import org.eclipse.lmos.runtime.outbound.LmosAgentClassifierService
 import org.eclipse.lmos.runtime.outbound.LmosAgentRoutingService
 import org.eclipse.lmos.runtime.outbound.LmosOperatorAgentRegistry
 import org.eclipse.lmos.runtime.properties.LmosRuntimeProperties
@@ -78,10 +81,15 @@ open class LmosRuntimeAutoConfiguration(
         }
 
     @Bean
+    @ConditionalOnMissingBean(AgentClassifierService::class)
+    open fun agentClassifierService(classifier: AgentClassifier): AgentClassifierService = LmosAgentClassifierService(classifier)
+
+    @Bean
     @ConditionalOnMissingBean(ConversationHandler::class)
     open fun conversationHandler(
         agentRegistryService: AgentRegistryService,
         agentRoutingService: AgentRoutingService,
+        agentClassifierService: AgentClassifierService,
         agentClientService: AgentClientService,
         lmosRuntimeProperties: LmosRuntimeProperties,
         lmosRuntimeTenantAwareCache: LmosRuntimeTenantAwareCache<RoutingInformation>,
@@ -89,6 +97,7 @@ open class LmosRuntimeAutoConfiguration(
         DefaultConversationHandler(
             agentRegistryService,
             agentRoutingService,
+            agentClassifierService,
             agentClientService,
             lmosRuntimeProperties,
             lmosRuntimeTenantAwareCache,

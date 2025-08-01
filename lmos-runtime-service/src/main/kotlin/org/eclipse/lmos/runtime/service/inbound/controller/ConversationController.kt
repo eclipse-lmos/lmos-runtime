@@ -12,6 +12,7 @@ import org.eclipse.lmos.runtime.core.model.AssistantMessage
 import org.eclipse.lmos.runtime.core.model.Conversation
 import org.eclipse.lmos.runtime.service.constants.LmosServiceConstants.Endpoints.BASE_PATH
 import org.eclipse.lmos.runtime.service.constants.LmosServiceConstants.Endpoints.CHAT_URL
+import org.eclipse.lmos.runtime.service.constants.LmosServiceConstants.Headers.SUBSET
 import org.eclipse.lmos.runtime.service.constants.LmosServiceConstants.Headers.TURN_ID
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
@@ -29,9 +30,10 @@ class ConversationController(
         @RequestBody conversation: Conversation,
         @PathVariable conversationId: String,
         @PathVariable tenantId: String,
+        @RequestHeader(name = SUBSET, required = false) subsetHeader: String?,
         @RequestHeader(TURN_ID) turnId: String,
     ): ResponseEntity<AssistantMessage> {
-        val assistantMessage = conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId).first()
+        val assistantMessage = conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId, subsetHeader).first()
         log.info("Response generated: ${assistantMessage.content}")
         return ResponseEntity.ok(assistantMessage)
     }

@@ -6,15 +6,16 @@
 
 package org.eclipse.lmos.runtime.inbound
 
-import org.eclipse.lmos.runtime.config.LmosRuntimeAutoConfiguration
 import org.eclipse.lmos.runtime.core.cache.LmosRuntimeTenantAwareCache
 import org.eclipse.lmos.runtime.core.cache.TenantAwareInMemoryCache
 import org.eclipse.lmos.runtime.core.inbound.ConversationHandler
 import org.eclipse.lmos.runtime.core.inbound.DefaultConversationHandler
+import org.eclipse.lmos.runtime.core.service.outbound.AgentClassifierService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentClientService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentRoutingService
 import org.eclipse.lmos.runtime.core.service.routing.ExplicitAgentRoutingService
 import org.eclipse.lmos.runtime.outbound.ArcAgentClientService
+import org.eclipse.lmos.runtime.outbound.LmosAgentClassifierService
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,7 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.ApplicationContext
 import org.springframework.test.context.ActiveProfiles
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, classes = [LmosRuntimeAutoConfiguration::class])
+@SpringBootTest
 @ActiveProfiles("test")
 class LmosRuntimeAutoConfigurationTest {
     @Autowired
@@ -38,6 +39,12 @@ class LmosRuntimeAutoConfigurationTest {
     fun `should load ExplicitAgentRoutingService as AgentRoutingService`() {
         val agentRoutingService = applicationContext.getBean(AgentRoutingService::class.java)
         assertTrue(agentRoutingService is ExplicitAgentRoutingService)
+    }
+
+    @Test
+    fun `should not load LmosAgentClassifierService as AgentClassifierService`() {
+        val agentClassifierService = applicationContext.getBean(AgentClassifierService::class.java)
+        assertTrue(agentClassifierService is LmosAgentClassifierService)
     }
 
     @Test

@@ -7,6 +7,7 @@
 package org.eclipse.lmos.runtime.core.model
 
 data class Agent(
+    val id: String,
     val name: String,
     val version: String,
     val description: String,
@@ -20,6 +21,7 @@ data class Address(
 )
 
 data class AgentCapability(
+    val id: String,
     val name: String,
     val version: String,
     val description: String,
@@ -27,11 +29,14 @@ data class AgentCapability(
 )
 
 class AgentBuilder {
+    private var id: String = ""
     private var name: String = ""
     private var version: String = ""
     private var description: String = ""
     private var capabilities: MutableList<AgentCapability> = mutableListOf()
     private var addresses: MutableList<Address> = mutableListOf()
+
+    fun id(id: String) = apply { this.id = id }
 
     fun name(name: String) = apply { this.name = name }
 
@@ -49,6 +54,7 @@ class AgentBuilder {
 
     fun build(): Agent =
         Agent(
+            id = id,
             name = name,
             version = version,
             description = description,

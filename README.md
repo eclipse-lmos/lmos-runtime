@@ -69,15 +69,55 @@ To customize the settings, create a ConfigMap or Secret and mount it to the LMOS
 
 You can adjust the following properties:
 
-| Property                             | Kubernetes ConfigMaps/ Secrets     | Description                                               | Default                     |
-|--------------------------------------|------------------------------------|-----------------------------------------------------------|-----------------------------|
-| `lmos.runtime.agentRegistry.baseUrl` | LMOS_RUNTIME_AGENTREGISTRY_BASEURL | URL of the agent registry service                         | `http://lmos-operator:8080` |
-| `lmos.runtime.openAI.url`            | LMOS_RUNTIME_OPENAI_URL            | OpenAI API URL                                            | `https://api.openai.com/v1` |
-| `lmos.runtime.openAI.model`          | LMOS_RUNTIME_OPENAI_MODEL          | OpenAI model to use                                       | `GPT35T-1106`               |
-| `lmos.runtime.openAI.maxTokens`      | LMOS_RUNTIME_OPENAI_MAX-TOKENS     | Maximum tokens for OpenAI requests                        | `10000`                     |
-| `lmos.runtime.openAI.temperature`    | LMOS_RUNTIME_OPENAI_TEMPERATURE    | Temperature for OpenAI requests                           | `0.0`                       |
-| `lmos.runtime.openAI.format`         | LMOS_RUNTIME_OPENAI_FORMAT         | Output format for OpenAI requests                         | `json_format`               |
-| `lmos.runtime.openAI.key`            | LMOS_RUNTIME_OPENAI_KEY            | OpenAI API key (**should be set as a Kubernetes secret**) | `null`                      |
+| Property                                | Kubernetes ConfigMaps/ Secrets | Description                                            | Default                     |
+|-----------------------------------------|--------------------------------|--------------------------------------------------------|-----------------------------|
+| `lmos.runtime.agentRegistry.baseUrl`    | AGENT_REGISTRY_URL             | URL of the agent registry service                      | `http://lmos-operator:8080` |
+| `lmos.runtime.openAI.url`               | LLM_BASE_URL                   | LLM Base URL                                           | `https://api.openai.com/v1` |
+| `lmos.runtime.openAI.model`             | LLM_MODEL_NAME                 | LLM to use                                             | `gpt-3.5-turbo`             |
+| `lmos.runtime.openAI.maxTokens`         | LLM_MAX_TOKENS                 | Maximum tokens for model requests                      | `20000`                     |
+| `lmos.runtime.openAI.temperature`       | LLM_TEMPERATURE                | Temperature for model requests                         | `0.0`                       |
+| `lmos.runtime.openAI.format`            | LLM_FORMAT                     | Output format for model requests                       | `json_format`               |
+| `lmos.runtime.openAI.key`               | LLM_API_KEY                    | LLM API key (**should be set as a Kubernetes secret**) | `null`                      |
+| `lmos.router.classifier.vector.enabled` | CLASSIFIER_VECTOR_ENABLED      | LLM API key (**should be set as a Kubernetes secret**) | `null`                      |
+
+### Classifier Configuration
+The [LMOS Agent Classifier library](https://github.com/eclipse-lmos/lmos-router?tab=readme-ov-file#agent-classifier) is used to identify the most appropriate agent based on the conversation and system context. Four classifier strategies can be enabled, as described below:
+
+| Property                                           | Kubernetes ConfigMaps/ Secrets      | Description                              | Default |
+|----------------------------------------------------|-------------------------------------|------------------------------------------|---------|
+| `lmos.router.classifier.vector.enabled`            | CLASSIFIER_VECTOR_ENABLED           | Enables vector classification            | `false` |
+| `lmos.router.classifier.llm.enabled`               | CLASSIFIER_LLM_ENABLED              | Enables LLM classification               | `true`  |
+| `lmos.router.classifier.hybrid-rag.enabled`        | CLASSIFIER_HYBRID_RAG_ENABLED       | Enables Hybrid-RAG classification        | `false` |
+| `lmos.router.classifier.hybrid-fast-track.enabled` | CLASSIFIER_HYBRID_FASTTRACK_ENABLED | Enables Hybrid-Fast-Track classification | `false` |
+
+If a LLM is involved in the classification process, it must be configured accordingly.
+
+| Property                        | Kubernetes ConfigMaps/ Secrets | Description                                                | Default                     |
+|---------------------------------|--------------------------------|------------------------------------------------------------|-----------------------------|
+| `lmos.router.llm.provider`      | LLM_PROVIDER                   | LLM provider (e.g. openai, azure_openai)                   | `openai`                    |
+| `lmos.router.llm.base-url`      | LLM_BASE_URL                   | Base URL of the LLM provider                               | `https://api.openai.com/v1` |
+| `lmos.router.llm.model`         | LLM_MODEL_NAME                 | Model to be used                                           | `gpt-3.5-turbo`             |
+| `lmos.router.llm.api-key`       | LLM_API_KEY                    | API key to access the model (should be stored as a secret) | `null`                      |
+
+If semantic classification is involved, an embedding model must be configured.
+
+| Property                                 | Kubernetes ConfigMaps/ Secrets         | Description                                                                      | Default                                |
+|------------------------------------------|----------------------------------------|----------------------------------------------------------------------------------|----------------------------------------|
+| `lmos.router.embedding.model.provider`   | EMBEDDING_MODEL_PROVIDER               | Embedding model provider (openai, huggingface)                                   | `openai`                               |
+| `lmos.router.embedding.model.api-key`    | EMBEDDING_MODEL_API_KEY                | API key for OpenAI or Huggingface embedding model (should be stored as a secret) | `null`                                 |
+| `lmos.router.embedding.model.base-url`   | EMBEDDING_MODEL_OPENAI_BASE_URL        | OpenAI Base URL, if OpenAI embedding model is used                               | `https://api.openai.com/v1/embeddings` |
+| `lmos.router.embedding.model.model-name` | EMBEDDING_MODEL_HUGGINGFACE_MODEL_NAME | Huggingface model name, if Huggingface embedding model is used                   | `intfloat/multilingual-e5-large`       |
+
+In addition to the embedding model, a vector store must be configured to persist and query the embeddings.
+
+| Property                                 | Kubernetes ConfigMaps/ Secrets | Description                                                | Default     |
+|------------------------------------------|--------------------------------|------------------------------------------------------------|-------------|
+| `lmos.router.embedding.store.host`       | EMBEDDING_STORE_HOST           | Host of the embedding store                                | `localhost` |
+| `lmos.router.embedding.store.port`       | EMBEDDING_STORE_PORT           | Port of the embedding store                                | `6334`      |
+| `lmos.router.embedding.store.tlsEnabled` | EMBEDDING_STORE_TLS_ENABLED    | Enable TLS for embedding store                             | `false`     |
+| `lmos.router.embedding.store.apiKey`     | EMBEDDING_STORE_API_KEY        | API key for embedding store (should be stored as a secret) | `null`      |
+
+
 
 ## Setup and Installation
 ### How to install on a Kubernetes cluster:
