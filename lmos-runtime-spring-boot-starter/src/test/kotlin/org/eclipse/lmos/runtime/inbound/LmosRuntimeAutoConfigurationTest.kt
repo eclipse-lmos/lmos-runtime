@@ -8,6 +8,8 @@ package org.eclipse.lmos.runtime.inbound
 
 import org.eclipse.lmos.runtime.core.cache.LmosRuntimeTenantAwareCache
 import org.eclipse.lmos.runtime.core.cache.TenantAwareInMemoryCache
+import org.eclipse.lmos.runtime.core.disambiguation.DefaultDisambiguationHandler
+import org.eclipse.lmos.runtime.core.disambiguation.DisambiguationHandler
 import org.eclipse.lmos.runtime.core.inbound.ConversationHandler
 import org.eclipse.lmos.runtime.core.inbound.DefaultConversationHandler
 import org.eclipse.lmos.runtime.core.service.outbound.AgentClassifierService
@@ -45,6 +47,12 @@ class LmosRuntimeAutoConfigurationTest {
     fun `should not load LmosAgentClassifierService as AgentClassifierService`() {
         val agentClassifierService = applicationContext.getBean(AgentClassifierService::class.java)
         assertTrue(agentClassifierService is LmosAgentClassifierService)
+    }
+
+    @Test
+    fun `should load DefaultDisambiguationHandler as DisambiguationHandler`() {
+        val disambiguationHandler = applicationContext.getBean(DisambiguationHandler::class.java)
+        assertTrue(disambiguationHandler is DefaultDisambiguationHandler)
     }
 
     @Test

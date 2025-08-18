@@ -117,6 +117,34 @@ data:
   EMBEDDING_RANKING_MIN_REAL_DISTANCE: {{ .Values.embeddingRankingMinRealDistance | quote }}
   {{- end -}}
 
+  {{/* ---------- Disambiguation Configuration ---------- */}}
+
+  {{- if .Values.disambiguationEnabled }}
+  DISAMBIGUATION_ENABLED: {{ .Values.disambiguationEnabled | quote }}
+  {{- end -}}
+
+  {{- if .Values.disambiguationIntroductionPrompt }}
+  DISAMBIGUATION_INTRODUCTION_PROMPT: |-
+  {{ .Values.disambiguationIntroductionPrompt | nindent 4 }}
+  {{- end -}}
+
+  {{- if .Values.disambiguationClarificationPrompt }}
+  DISAMBIGUATION_CLARIFICATION_PROMPT: |
+  {{ .Values.disambiguationClarificationPrompt | nindent 4 }}
+  {{- end -}}
+
+  {{- if .Values.disambiguationLlmProvider }}
+  DISAMBIGUATION_LLM_PROVIDER: {{ .Values.disambiguationLlmProvider | quote }}
+  {{- end -}}
+
+  {{- if .Values.disambiguationLlmBaseUrl }}
+  DISAMBIGUATION_LLM_BASE_URL: {{ .Values.disambiguationLlmBaseUrl | quote }}
+  {{- end -}}
+
+  {{- if .Values.disambiguationLlmModelName }}
+  DISAMBIGUATION_LLM_MODEL_NAME: {{ .Values.disambiguationLlmModelName | quote }}
+  {{- end -}}
+
   {{/* ---------- CORS Configuration ---------- */}}
 
   {{- if .Values.corsEnabled }}

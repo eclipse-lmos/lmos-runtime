@@ -27,6 +27,15 @@ lmos:
       allowed-headers: ${CORS_ALLOWED_HEADERS:*}
       patterns: ${CORS_PATTERNS:/**}
       max-age: ${CORS_MAX_AGE:8000}
+    disambiguation:
+      enabled: ${DISAMBIGUATION_ENABLED:true}
+      introduction-prompt: ${DISAMBIGUATION_INTRODUCTION_PROMPT:}
+      clarification-prompt: ${DISAMBIGUATION_CLARIFICATION_PROMPT:}
+      llm:
+        provider: ${DISAMBIGUATION_LLM_PROVIDER:openai}
+        base-url: ${DISAMBIGUATION_LLM_BASE_URL:https://api.openai.com/v1}
+        model: ${DISAMBIGUATION_LLM_MODEL_NAME:"gpt-3.5-turbo"}
+        api-key: ${DISAMBIGUATION_LLM_API_KEY:}
   router:
     classifier:
       vector:
