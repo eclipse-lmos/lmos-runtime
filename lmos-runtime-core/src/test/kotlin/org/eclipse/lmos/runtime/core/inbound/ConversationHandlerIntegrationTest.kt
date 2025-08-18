@@ -16,6 +16,7 @@ import org.eclipse.lmos.arc.api.AgentResult
 import org.eclipse.lmos.arc.api.Message
 import org.eclipse.lmos.runtime.core.LmosRuntimeConfig
 import org.eclipse.lmos.runtime.core.cache.TenantAwareInMemoryCache
+import org.eclipse.lmos.runtime.core.disambiguation.DisambiguationHandler
 import org.eclipse.lmos.runtime.core.exception.AgentClientException
 import org.eclipse.lmos.runtime.core.exception.AgentNotFoundException
 import org.eclipse.lmos.runtime.core.exception.NoRoutingInfoFoundException
@@ -35,12 +36,22 @@ class ConversationHandlerIntegrationTest : BaseWireMockTest() {
         LmosRuntimeConfig(
             agentRegistry = LmosRuntimeConfig.AgentRegistry(baseUrl = "http://localhost:$mockPort/agentRegistry"),
             cache = LmosRuntimeConfig.Cache(ttl = 6000),
+            disambiguation =
+                LmosRuntimeConfig.Disambiguation(
+                    enabled = false,
+                    llm =
+                        LmosRuntimeConfig.ChatModel(
+                            provider = "openai",
+                            model = "some-model",
+                        ),
+                ),
         )
     private val lmosRuntimeTenantAwareCache = TenantAwareInMemoryCache<RoutingInformation>()
     private val agentRegistryService = LmosOperatorAgentRegistry(lmosRuntimeConfig)
     private val agentRoutingService = ExplicitAgentRoutingService()
     private val agentClassifierService = mockk<AgentClassifierService>()
     private val agentClientService = spyk(ArcAgentClientService())
+    private val disambiguationHandler = mockk<DisambiguationHandler>()
 
     private val conversationHandler =
         DefaultConversationHandler(
@@ -50,6 +61,7 @@ class ConversationHandlerIntegrationTest : BaseWireMockTest() {
             agentClientService,
             lmosRuntimeConfig,
             lmosRuntimeTenantAwareCache,
+            disambiguationHandler,
         )
 
     @Test
@@ -110,6 +122,7 @@ class ConversationHandlerIntegrationTest : BaseWireMockTest() {
                     agentClientService,
                     lmosRuntimeConfig,
                     lmosRuntimeTenantAwareCache,
+                    disambiguationHandler,
                 )
 
             val assistantMessage =

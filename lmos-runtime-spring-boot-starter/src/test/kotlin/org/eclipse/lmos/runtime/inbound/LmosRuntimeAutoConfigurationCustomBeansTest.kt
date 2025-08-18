@@ -39,7 +39,11 @@ import org.springframework.test.context.TestPropertySource
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, classes = [LmosRuntimeAutoConfiguration::class])
 @ActiveProfiles("test")
 @TestPropertySource(
-    properties = ["lmos.runtime.router.type=LLM", "lmos.runtime.openAi=dummyOpenAiKey", "lmos.router.classifier.llm.enabled=true"],
+    properties = [
+        "lmos.runtime.router.type=LLM", "lmos.runtime.openAi=dummyOpenAiKey", "lmos.runtime.disambiguation.enabled=false",
+        "lmos.runtime.disambiguation.llm.provider=openai", "lmos.runtime.disambiguation.llm.model=dummy-model",
+        "lmos.router.classifier.llm.enabled=true",
+    ],
 )
 @Import(LmosRuntimeAutoConfigurationCustomBeansTest.CustomBeanConfig::class)
 class LmosRuntimeAutoConfigurationCustomBeansTest {

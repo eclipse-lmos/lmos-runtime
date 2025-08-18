@@ -16,6 +16,9 @@ dependencies {
     val junitVersion = "5.12.1"
     val kotlinxSerializationVersion = "1.8.1"
 
+    val langChain4jCoreVersion: String by project
+    val jacksonVersion: String by project
+
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
@@ -25,6 +28,9 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.3")
     implementation("org.slf4j:slf4j-api:2.0.17")
     implementation("org.eclipse.lmos:lmos-classifier-core:$lmosRouterVersion")
+    implementation("dev.langchain4j:langchain4j:$langChain4jCoreVersion")
+    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     api("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:$kotlinxSerializationVersion")
     api("org.eclipse.lmos:lmos-router-llm:$lmosRouterVersion")
     api("org.eclipse.lmos:arc-agent-client:$arcVersion")

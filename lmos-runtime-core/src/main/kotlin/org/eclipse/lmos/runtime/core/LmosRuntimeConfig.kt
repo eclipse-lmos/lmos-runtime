@@ -6,10 +6,14 @@
 
 package org.eclipse.lmos.runtime.core
 
+import org.eclipse.lmos.runtime.core.disambiguation.defaultDisambiguationClarificationPrompt
+import org.eclipse.lmos.runtime.core.disambiguation.defaultDisambiguationIntroductionPrompt
+
 open class LmosRuntimeConfig(
     val agentRegistry: AgentRegistry,
     val openAi: OpenAI? = null,
     val cache: Cache,
+    val disambiguation: Disambiguation,
 ) {
     data class AgentRegistry(
         val baseUrl: String? = null, // Made nullable
@@ -26,6 +30,29 @@ open class LmosRuntimeConfig(
         val maxTokens: Int? = null,
         val temperature: Double? = null,
         val format: String? = null,
+    )
+
+    data class Disambiguation(
+        val enabled: Boolean = false,
+        val introductionPrompt: String? = null,
+        val clarificationPrompt: String? = null,
+        val llm: ChatModel,
+    ) {
+        fun introductionPrompt() = if (introductionPrompt.isNullOrEmpty()) defaultDisambiguationIntroductionPrompt() else introductionPrompt
+
+        fun clarificationPrompt() =
+            if (clarificationPrompt.isNullOrEmpty()) defaultDisambiguationClarificationPrompt() else clarificationPrompt
+    }
+
+    data class ChatModel(
+        val provider: String,
+        val apiKey: String? = null,
+        val baseUrl: String? = null,
+        val model: String,
+        val maxTokens: Int = 2000,
+        val temperature: Double = 0.0,
+        val logRequestsAndResponses: Boolean = false,
+        val systemPrompt: String = "",
     )
 
     data class Cache(

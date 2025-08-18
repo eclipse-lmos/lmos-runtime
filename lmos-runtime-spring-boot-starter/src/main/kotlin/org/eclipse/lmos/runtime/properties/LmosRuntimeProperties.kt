@@ -15,8 +15,9 @@ class LmosRuntimeProperties(
     agentRegistry: AgentRegistry,
     openAi: OpenAI? = null,
     cache: Cache,
+    disambiguation: Disambiguation,
     val router: Router,
-) : LmosRuntimeConfig(agentRegistry, openAi, cache) {
+) : LmosRuntimeConfig(agentRegistry, openAi, cache, disambiguation) {
     private val log = LoggerFactory.getLogger(LmosRuntimeProperties::class.java)
 
     init {

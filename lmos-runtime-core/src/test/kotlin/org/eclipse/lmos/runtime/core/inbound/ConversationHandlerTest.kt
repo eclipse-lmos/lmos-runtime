@@ -10,11 +10,14 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
 import org.eclipse.lmos.arc.api.Message
+import org.eclipse.lmos.classifier.core.ClassificationResult
 import org.eclipse.lmos.runtime.core.LmosRuntimeConfig
 import org.eclipse.lmos.runtime.core.cache.LmosRuntimeTenantAwareCache
 import org.eclipse.lmos.runtime.core.cache.TenantAwareInMemoryCache
 import org.eclipse.lmos.runtime.core.constants.LmosRuntimeConstants.Cache.ROUTES
+import org.eclipse.lmos.runtime.core.disambiguation.DisambiguationHandler
 import org.eclipse.lmos.runtime.core.exception.AgentClientException
+import org.eclipse.lmos.runtime.core.exception.AgentNotFoundException
 import org.eclipse.lmos.runtime.core.exception.NoRoutingInfoFoundException
 import org.eclipse.lmos.runtime.core.model.*
 import org.eclipse.lmos.runtime.core.model.registry.RoutingInformation
@@ -36,6 +39,7 @@ class ConversationHandlerTest {
     private lateinit var lmosRuntimeTenantAwareCache: LmosRuntimeTenantAwareCache<RoutingInformation>
     private lateinit var conversationHandler: ConversationHandler
     private lateinit var lmosRuntimeConfig: LmosRuntimeConfig
+    private lateinit var disambiguationHandler: DisambiguationHandler
 
     @BeforeEach
     fun setUp() {
@@ -49,7 +53,17 @@ class ConversationHandlerTest {
             LmosRuntimeConfig(
                 mockk<LmosRuntimeConfig.AgentRegistry>(),
                 cache = LmosRuntimeConfig.Cache(ttl = 6000),
+                disambiguation =
+                    LmosRuntimeConfig.Disambiguation(
+                        enabled = false,
+                        llm =
+                            LmosRuntimeConfig.ChatModel(
+                                provider = "openai",
+                                model = "some-model",
+                            ),
+                    ),
             )
+        disambiguationHandler = mockk<DisambiguationHandler>()
         conversationHandler =
             DefaultConversationHandler(
                 agentRegistryService,
@@ -58,6 +72,7 @@ class ConversationHandlerTest {
                 agentClientService,
                 lmosRuntimeConfig,
                 lmosRuntimeTenantAwareCache,
+                disambiguationHandler,
             )
     }
 
@@ -421,7 +436,69 @@ class ConversationHandlerTest {
             assertEquals(expectedAgentResponse, result)
         }
 
-    private fun conversation(): Conversation {
+    @Test
+    fun `disambiguation is executed when disambiguation is activated`() =
+        runBlocking {
+            // given
+            val conversationId = "conv-124"
+            val tenantId = "tenant-1"
+            val turnId = "turn-1"
+            val conversation = conversation(listOf(KeyValuePair(ACTIVE_FEATURES_KEY, ACTIVE_FEATURE_KEY_CLASSIFIER)))
+            val routingInformation = routingInformation()
+            val expectedDisambiguationResponse = AssistantMessage(content = "Please give me more details.")
+
+            mockAgentRegistry(tenantId, conversation.systemContext.channelId, routingInformation)
+            mockAgentClassifierService(conversation, routingInformation.agentList, tenantId, ClassificationResult(emptyList(), emptyList()))
+            mockDisambiguationHandler(conversation, emptyList(), expectedDisambiguationResponse)
+
+            // when
+            val result = conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId, null).first()
+
+            // then
+            assertEquals(expectedDisambiguationResponse, result)
+
+            coVerify(exactly = 1) {
+                disambiguationHandler.disambiguate(conversation, any())
+            }
+        }
+
+    @Test
+    fun `AgentNotFoundException is thrown when disambiguation is deactivated`() =
+        runBlocking {
+            // given
+            val conversationId = "conv-124"
+            val tenantId = "tenant-1"
+            val turnId = "turn-1"
+            val conversation = conversation(listOf(KeyValuePair(ACTIVE_FEATURES_KEY, ACTIVE_FEATURE_KEY_CLASSIFIER)))
+            val routingInformation = routingInformation()
+
+            mockAgentRegistry(tenantId, conversation.systemContext.channelId, routingInformation)
+            mockAgentClassifierService(conversation, routingInformation.agentList, tenantId, ClassificationResult(emptyList(), emptyList()))
+
+            val conversationHandler =
+                DefaultConversationHandler(
+                    agentRegistryService,
+                    agentRoutingService,
+                    agentClassifierService,
+                    agentClientService,
+                    lmosRuntimeConfig,
+                    lmosRuntimeTenantAwareCache,
+                    null, // Disambiguation handler is not provided
+                )
+
+            // then
+            assertThrows<AgentNotFoundException> {
+                runBlocking {
+                    conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId, null).first()
+                }
+            }
+
+            coVerify(exactly = 0) {
+                disambiguationHandler.disambiguate(conversation, any())
+            }
+        }
+
+    private fun conversation(contextParams: List<KeyValuePair> = emptyList()): Conversation {
         val conversation =
             Conversation(
                 inputContext =
@@ -429,7 +506,11 @@ class ConversationHandlerTest {
                         messages = listOf(Message("user", "Hello")),
                         explicitAgent = "agent1",
                     ),
-                systemContext = SystemContext(channelId = "channel1"),
+                systemContext =
+                    SystemContext(
+                        channelId = "channel1",
+                        contextParams = contextParams,
+                    ),
                 userContext = UserContext(userId = "user1", userToken = "token1"),
             )
         return conversation
@@ -464,5 +545,22 @@ class ConversationHandlerTest {
         routingInformation: RoutingInformation,
     ) {
         coEvery { agentRegistryService.getRoutingInformation(tenantId, channelId, any()) } returns routingInformation
+    }
+
+    private fun mockAgentClassifierService(
+        conversation: Conversation,
+        agents: List<Agent>,
+        tenantId: String,
+        classificationResult: ClassificationResult,
+    ) {
+        coEvery { agentClassifierService.classify(conversation, agents, tenantId) } returns classificationResult
+    }
+
+    private fun mockDisambiguationHandler(
+        conversation: Conversation,
+        candidateAgents: List<org.eclipse.lmos.classifier.core.Agent>,
+        assistantMessage: AssistantMessage,
+    ) {
+        coEvery { disambiguationHandler.disambiguate(conversation, candidateAgents) } returns assistantMessage
     }
 }

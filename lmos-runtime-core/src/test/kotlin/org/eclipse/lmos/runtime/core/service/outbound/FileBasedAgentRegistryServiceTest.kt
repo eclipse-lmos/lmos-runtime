@@ -45,6 +45,15 @@ class FileBasedAgentRegistryServiceTest {
                         fileName = fileName,
                     ),
                 cache = LmosRuntimeConfig.Cache(ttl = 6000),
+                disambiguation =
+                    LmosRuntimeConfig.Disambiguation(
+                        enabled = false,
+                        llm =
+                            LmosRuntimeConfig.ChatModel(
+                                provider = "openai",
+                                model = "some-model",
+                            ),
+                    ),
             )
         return lmosRuntimeConfig
     }
