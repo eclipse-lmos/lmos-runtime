@@ -37,7 +37,7 @@ dependencies {
 // Can be omitted again when spring boot has upgraded to more recent kotlinx-serialization version.
 dependencyManagement {
     dependencies {
-        val kotlinxSerializationVersion = "1.8.1"
+        val kotlinxSerializationVersion = "1.9.0"
         dependency("org.jetbrains.kotlinx:kotlinx-serialization-bom:$kotlinxSerializationVersion")
         dependency("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationVersion")
         dependency("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:$kotlinxSerializationVersion")
