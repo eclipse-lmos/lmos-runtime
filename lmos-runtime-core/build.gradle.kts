@@ -38,7 +38,7 @@ dependencies {
 
     testImplementation(kotlin("test-junit5"))
     testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
 
     testFixturesImplementation("com.marcinziolo:kotlin-wiremock:2.1.1")
     testFixturesImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")

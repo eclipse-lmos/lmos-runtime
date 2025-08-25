@@ -27,6 +27,6 @@ dependencies {
 
     testImplementation("org.springframework.boot:spring-boot-starter-test:$springBootVersion")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.2")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
     testImplementation("org.eclipse.lmos:lmos-classifier-llm-spring-boot-starter:$lmosRouterVersion")
 }
