@@ -14,7 +14,7 @@ dependencies {
 
     val ktorVersion = "3.2.3"
     val junitVersion = "5.13.4"
-    val kotlinxSerializationVersion = "1.8.1"
+    val kotlinxSerializationVersion = "1.9.0"
 
     val langChain4jCoreVersion: String by project
     val jacksonVersion: String by project
