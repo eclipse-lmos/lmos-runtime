@@ -23,7 +23,7 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:$kotlinxSerializationVersion")
-    implementation("com.charleskorn.kaml:kaml:0.92.0")
+    implementation("com.charleskorn.kaml:kaml:0.93.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.2")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.2")
     implementation("org.slf4j:slf4j-api:2.0.17")
