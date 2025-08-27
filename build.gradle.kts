@@ -3,7 +3,6 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-import com.vanniktech.maven.publish.SonatypeHost
 import java.lang.System.getenv
 import java.net.URI
 
@@ -16,7 +15,7 @@ plugins {
     id("com.citi.helm") version "2.2.0"
     id("com.citi.helm-publish") version "2.2.0"
     id("net.researchgate.release") version "3.1.0"
-    id("com.vanniktech.maven.publish") version "0.31.0"
+    id("com.vanniktech.maven.publish") version "0.34.0"
     val kotlinVersion = "2.2.10"
     kotlin("jvm") version kotlinVersion
     kotlin("kapt") version kotlinVersion
@@ -70,7 +69,7 @@ subprojects {
     }
 
     mavenPublishing {
-        publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, automaticRelease = true)
+        publishToMavenCentral(automaticRelease = true)
         signAllPublications()
 
         pom {
