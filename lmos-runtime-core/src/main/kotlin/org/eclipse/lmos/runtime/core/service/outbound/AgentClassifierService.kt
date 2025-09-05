@@ -15,5 +15,6 @@ interface AgentClassifierService {
         conversation: Conversation,
         agents: List<Agent>,
         tenant: String,
+        subset: String?,
     ): ClassificationResult
 }

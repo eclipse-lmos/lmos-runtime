@@ -107,6 +107,7 @@ class LmosRuntimeAutoConfigurationCustomBeansTest {
                     conversation: Conversation,
                     agents: List<Agent>,
                     tenant: String,
+                    subset: String?,
                 ): ClassificationResult {
                     TODO("Not yet implemented")
                 }

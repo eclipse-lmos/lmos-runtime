@@ -97,7 +97,7 @@ class DefaultConversationHandler(
             val activeFeatures = conversation.systemContext.contextParams.firstOrNull { it.key == ACTIVE_FEATURES_KEY }
             if (activeFeatures?.value?.contains(ACTIVE_FEATURE_KEY_CLASSIFIER) == true) {
                 log.info("Classifier feature is active, using new classifier for agent routing")
-                val classificationResult = agentClassifierService.classify(conversation, routingInformation.agentList, tenantId)
+                val classificationResult = agentClassifierService.classify(conversation, routingInformation.agentList, tenantId, subset)
                 if (classificationResult.agents.isEmpty()) {
                     if (disambiguationHandler != null) {
                         return@coroutineScope flow {
