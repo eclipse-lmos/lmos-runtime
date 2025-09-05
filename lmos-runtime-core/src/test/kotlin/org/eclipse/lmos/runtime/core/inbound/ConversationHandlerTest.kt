@@ -452,7 +452,7 @@ class ConversationHandlerTest {
             mockDisambiguationHandler(conversation, emptyList(), expectedDisambiguationResponse)
 
             // when
-            val result = conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId, "beta").first()
+            val result = conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId, null).first()
 
             // then
             assertEquals(expectedDisambiguationResponse, result)
@@ -489,7 +489,7 @@ class ConversationHandlerTest {
             // then
             assertThrows<AgentNotFoundException> {
                 runBlocking {
-                    conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId, "beta").first()
+                    conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId, null).first()
                 }
             }
 
@@ -553,7 +553,7 @@ class ConversationHandlerTest {
         tenantId: String,
         classificationResult: ClassificationResult,
     ) {
-        coEvery { agentClassifierService.classify(conversation, agents, tenantId, "beta") } returns classificationResult
+        coEvery { agentClassifierService.classify(conversation, agents, tenantId, null) } returns classificationResult
     }
 
     private fun mockDisambiguationHandler(
