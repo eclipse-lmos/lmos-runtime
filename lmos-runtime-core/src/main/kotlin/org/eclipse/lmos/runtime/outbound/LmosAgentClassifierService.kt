@@ -20,6 +20,7 @@ class LmosAgentClassifierService(
         conversation: Conversation,
         agents: List<Agent>,
         tenant: String,
+        subset: String?,
     ): ClassificationResult {
         val (userMessage, historyMessages) = prepareMessages(conversation)
         val classifierAgents = prepareAgents(agents)
@@ -36,6 +37,7 @@ class LmosAgentClassifierService(
                         SystemContext(
                             tenantId = tenant,
                             channelId = conversation.systemContext.channelId,
+                            subset = if (subset.isNullOrEmpty()) "stable" else subset,
                         ),
                 ),
             )

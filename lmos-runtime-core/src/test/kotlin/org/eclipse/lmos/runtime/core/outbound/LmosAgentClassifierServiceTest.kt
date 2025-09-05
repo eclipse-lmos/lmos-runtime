@@ -26,6 +26,7 @@ class LmosAgentClassifierServiceTest {
 
     private val defaultTenantId = "myTenantId"
     private val defaultChannelId = "myChannelId"
+    private val defaultSubset = "beta"
     private val defaultConversationMessages =
         listOf(
             Message("user", "Hi"),
@@ -68,7 +69,7 @@ class LmosAgentClassifierServiceTest {
             }
 
             // When
-            underTest.classify(conversation, agents, defaultTenantId)
+            underTest.classify(conversation, agents, defaultTenantId, defaultSubset)
 
             // Then
             assertNotNull(capturedRequest)
@@ -98,5 +99,8 @@ class LmosAgentClassifierServiceTest {
 
             val channelId = capturedRequest!!.systemContext.channelId
             assertEquals(defaultChannelId, channelId)
+
+            val subset = capturedRequest!!.systemContext.subset
+            assertEquals(defaultSubset, subset)
         }
 }
