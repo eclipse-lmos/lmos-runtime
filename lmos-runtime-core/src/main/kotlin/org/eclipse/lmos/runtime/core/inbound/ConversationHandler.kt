@@ -55,85 +55,89 @@ class DefaultConversationHandler(
         tenantId: String,
         turnId: String,
         subset: String?,
-    ): Flow<AssistantMessage> =
-        coroutineScope {
-            log.info("Request Received, conversationId: $conversationId, turnId: $turnId, subset: $subset")
-            val cachedRoutingInformation = lmosRuntimeTenantAwareCache.get(tenantId, ROUTES, conversationId)
-            val routingInformation =
-                if (subset == null && cachedRoutingInformation?.subset == subset) {
-                    agentRegistryService
-                        .getRoutingInformation(tenantId, conversation.systemContext.channelId, subset)
-                        .also { result ->
-                            log.debug("Caching routing information with new subset: {}", result)
-                            lmosRuntimeTenantAwareCache.save(
-                                tenantId,
-                                ROUTES,
-                                conversationId,
-                                result,
-                                lmosRuntimeConfig.cache.ttl,
-                            )
-                        }
-                } else {
-                    val existingSubset = cachedRoutingInformation?.subset ?: subset
-                    cachedRoutingInformation ?: agentRegistryService
-                        .getRoutingInformation(tenantId, conversation.systemContext.channelId, existingSubset)
-                        .also { result ->
-                            log.debug("Caching routing information: {}", result)
-                            lmosRuntimeTenantAwareCache.save(
-                                tenantId,
-                                ROUTES,
-                                conversationId,
-                                result,
-                                lmosRuntimeConfig.cache.ttl,
-                            )
-                        }
-                }
-            log.info("routingInformation: $routingInformation")
+    ): Flow<AssistantMessage> = coroutineScope {
+        log.info("Request Received, conversationId: $conversationId, turnId: $turnId, subset: $subset")
 
-            val agentName: String
-            val agentAddress: Address
-            // The feature flag is only needed during the transition period until
-            // the old classifier is fully replaced by the new classifier.
-            val activeFeatures = conversation.systemContext.contextParams.firstOrNull { it.key == ACTIVE_FEATURES_KEY }
-            if (activeFeatures?.value?.contains(ACTIVE_FEATURE_KEY_CLASSIFIER) == true) {
-                log.info("Classifier feature is active, using new classifier for agent routing")
-                val classificationResult =
-                    agentClassifierService.classify(
-                        conversation,
-                        routingInformation.agentList,
-                        tenantId,
-                        routingInformation.subset,
-                    )
-                if (classificationResult.agents.isEmpty()) {
-                    if (disambiguationHandler != null) {
-                        return@coroutineScope flow {
-                            emit(disambiguationHandler.disambiguate(conversation, classificationResult.topRankedEmbeddings))
-                        }
-                    } else {
-                        throw AgentNotFoundException("Failed to classify agent for conversationId '$conversationId'.")
+        // Retrieve RoutingInformation from Cache or AgentRegistry
+        val routingInformation = retrieveRoutingInformation(tenantId, conversationId, subset, conversation)
+
+        val activeFeatures = conversation.systemContext.contextParams.firstOrNull { it.key == ACTIVE_FEATURES_KEY }
+        val useClassifier = activeFeatures?.value?.contains(ACTIVE_FEATURE_KEY_CLASSIFIER) == true
+        val agentName: String
+        val agentAddress: Address
+
+        if (useClassifier) {
+            log.info("Classifier feature is active, using new classifier for agent routing")
+            val classificationResult = agentClassifierService.classify(
+                conversation,
+                routingInformation.agentList,
+                tenantId,
+                routingInformation.subset,
+            )
+            if (classificationResult.agents.isEmpty()) {
+                if (disambiguationHandler != null) {
+                    return@coroutineScope flow {
+                        emit(disambiguationHandler.disambiguate(conversation, classificationResult.topRankedEmbeddings))
                     }
+                } else {
+                    throw AgentNotFoundException("Failed to classify agent for conversationId '$conversationId'.")
                 }
-                val classifiedAgent = classificationResult.agents.first()
-                agentName = classifiedAgent.name
-                agentAddress = Address(uri = classifiedAgent.address)
-            } else {
-                log.info("Classifier feature is not active, using old classifier for agent routing")
-                val agent = agentRoutingService.resolveAgentForConversation(conversation, routingInformation.agentList)
-                agentName = agent.name
-                agentAddress = agent.addresses.random()
             }
-
-            log.info("Resolved agent: '$agentName'")
-            agentClientService
-                .askAgent(
-                    conversation,
-                    conversationId,
-                    turnId,
-                    agentName,
-                    agentAddress,
-                    routingInformation.subset,
-                ).onEach {
-                    log.info("Agent Response: ${it.content}")
-                }
+            val classifiedAgent = classificationResult.agents.first()
+            agentName = classifiedAgent.name
+            agentAddress = Address(uri = classifiedAgent.address)
+        } else {
+            log.info("Classifier feature is not active, using old classifier for agent routing")
+            val agent = agentRoutingService.resolveAgentForConversation(conversation, routingInformation.agentList)
+            agentName = agent.name
+            agentAddress = agent.addresses.random()
         }
+
+        log.info("Resolved agent: '$agentName'")
+        agentClientService
+            .askAgent(
+                conversation,
+                conversationId,
+                turnId,
+                agentName,
+                agentAddress,
+                routingInformation.subset,
+            ).onEach {
+                log.info("Agent Response: ${'$'}{it.content}")
+            }
+    }
+
+    private suspend fun retrieveRoutingInformation(
+        tenantId: String,
+        conversationId: String,
+        subset: String?,
+        conversation: Conversation
+    ): RoutingInformation {
+        // Lookup cached RoutingInformation
+        val cachedRoutingInformation = lmosRuntimeTenantAwareCache.get(tenantId, ROUTES, conversationId)
+        // Subset from parameter has precedence over cached subset
+        val effectiveSubset = subset ?: cachedRoutingInformation?.subset
+        // Check if cached RoutingInformation can be reused and subset has not changed
+        val routingInformation =
+            if (cachedRoutingInformation != null && effectiveSubset == cachedRoutingInformation.subset) {
+                cachedRoutingInformation
+            } else {
+                val fetched = agentRegistryService.getRoutingInformation(
+                    tenantId,
+                    conversation.systemContext.channelId,
+                    effectiveSubset
+                )
+                log.debug("Caching routing information: {}", fetched)
+                lmosRuntimeTenantAwareCache.save(
+                    tenantId,
+                    ROUTES,
+                    conversationId,
+                    fetched,
+                    lmosRuntimeConfig.cache.ttl
+                )
+                fetched
+            }
+        log.info("Using routingInformation: $routingInformation")
+        return routingInformation
+    }
 }
