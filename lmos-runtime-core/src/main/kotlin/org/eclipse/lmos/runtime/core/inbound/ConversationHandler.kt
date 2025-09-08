@@ -55,63 +55,65 @@ class DefaultConversationHandler(
         tenantId: String,
         turnId: String,
         subset: String?,
-    ): Flow<AssistantMessage> = coroutineScope {
-        log.info("Request Received, conversationId: $conversationId, turnId: $turnId, subset: $subset")
+    ): Flow<AssistantMessage> =
+        coroutineScope {
+            log.info("Request Received, conversationId: $conversationId, turnId: $turnId, subset: $subset")
 
-        // Retrieve RoutingInformation from Cache or AgentRegistry
-        val routingInformation = retrieveRoutingInformation(tenantId, conversationId, subset, conversation)
+            // Retrieve RoutingInformation from Cache or AgentRegistry
+            val routingInformation = retrieveRoutingInformation(tenantId, conversationId, subset, conversation)
 
-        val activeFeatures = conversation.systemContext.contextParams.firstOrNull { it.key == ACTIVE_FEATURES_KEY }
-        val useClassifier = activeFeatures?.value?.contains(ACTIVE_FEATURE_KEY_CLASSIFIER) == true
-        val agentName: String
-        val agentAddress: Address
+            val activeFeatures = conversation.systemContext.contextParams.firstOrNull { it.key == ACTIVE_FEATURES_KEY }
+            val useClassifier = activeFeatures?.value?.contains(ACTIVE_FEATURE_KEY_CLASSIFIER) == true
+            val agentName: String
+            val agentAddress: Address
 
-        if (useClassifier) {
-            log.info("Classifier feature is active, using new classifier for agent routing")
-            val classificationResult = agentClassifierService.classify(
-                conversation,
-                routingInformation.agentList,
-                tenantId,
-                routingInformation.subset,
-            )
-            if (classificationResult.agents.isEmpty()) {
-                if (disambiguationHandler != null) {
-                    return@coroutineScope flow {
-                        emit(disambiguationHandler.disambiguate(conversation, classificationResult.topRankedEmbeddings))
+            if (useClassifier) {
+                log.info("Classifier feature is active, using new classifier for agent routing")
+                val classificationResult =
+                    agentClassifierService.classify(
+                        conversation,
+                        routingInformation.agentList,
+                        tenantId,
+                        routingInformation.subset,
+                    )
+                if (classificationResult.agents.isEmpty()) {
+                    if (disambiguationHandler != null) {
+                        return@coroutineScope flow {
+                            emit(disambiguationHandler.disambiguate(conversation, classificationResult.topRankedEmbeddings))
+                        }
+                    } else {
+                        throw AgentNotFoundException("Failed to classify agent for conversationId '$conversationId'.")
                     }
-                } else {
-                    throw AgentNotFoundException("Failed to classify agent for conversationId '$conversationId'.")
                 }
+                val classifiedAgent = classificationResult.agents.first()
+                agentName = classifiedAgent.name
+                agentAddress = Address(uri = classifiedAgent.address)
+            } else {
+                log.info("Classifier feature is not active, using old classifier for agent routing")
+                val agent = agentRoutingService.resolveAgentForConversation(conversation, routingInformation.agentList)
+                agentName = agent.name
+                agentAddress = agent.addresses.random()
             }
-            val classifiedAgent = classificationResult.agents.first()
-            agentName = classifiedAgent.name
-            agentAddress = Address(uri = classifiedAgent.address)
-        } else {
-            log.info("Classifier feature is not active, using old classifier for agent routing")
-            val agent = agentRoutingService.resolveAgentForConversation(conversation, routingInformation.agentList)
-            agentName = agent.name
-            agentAddress = agent.addresses.random()
-        }
 
-        log.info("Resolved agent: '$agentName'")
-        agentClientService
-            .askAgent(
-                conversation,
-                conversationId,
-                turnId,
-                agentName,
-                agentAddress,
-                routingInformation.subset,
-            ).onEach {
-                log.info("Agent Response: ${'$'}{it.content}")
-            }
-    }
+            log.info("Resolved agent: '$agentName'")
+            agentClientService
+                .askAgent(
+                    conversation,
+                    conversationId,
+                    turnId,
+                    agentName,
+                    agentAddress,
+                    routingInformation.subset,
+                ).onEach {
+                    log.info("Agent Response: ${'$'}{it.content}")
+                }
+        }
 
     private suspend fun retrieveRoutingInformation(
         tenantId: String,
         conversationId: String,
         subset: String?,
-        conversation: Conversation
+        conversation: Conversation,
     ): RoutingInformation {
         // Lookup cached RoutingInformation
         val cachedRoutingInformation = lmosRuntimeTenantAwareCache.get(tenantId, ROUTES, conversationId)
@@ -122,18 +124,19 @@ class DefaultConversationHandler(
             if (cachedRoutingInformation != null && effectiveSubset == cachedRoutingInformation.subset) {
                 cachedRoutingInformation
             } else {
-                val fetched = agentRegistryService.getRoutingInformation(
-                    tenantId,
-                    conversation.systemContext.channelId,
-                    effectiveSubset
-                )
+                val fetched =
+                    agentRegistryService.getRoutingInformation(
+                        tenantId,
+                        conversation.systemContext.channelId,
+                        effectiveSubset,
+                    )
                 log.debug("Caching routing information: {}", fetched)
                 lmosRuntimeTenantAwareCache.save(
                     tenantId,
                     ROUTES,
                     conversationId,
                     fetched,
-                    lmosRuntimeConfig.cache.ttl
+                    lmosRuntimeConfig.cache.ttl,
                 )
                 fetched
             }
