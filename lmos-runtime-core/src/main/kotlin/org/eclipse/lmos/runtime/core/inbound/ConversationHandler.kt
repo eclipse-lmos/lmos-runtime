@@ -109,6 +109,19 @@ class DefaultConversationHandler(
                 }
         }
 
+    /**
+     * Retrieves a RoutingInformation for a conversation.
+     * <p>
+     * First, this method attempts to load the routing information from the cache.
+     * If no cached data is available, it fetches the routing information from the {@code AgentRegistryService},
+     * stores it in the cache, and then returns it.
+     *
+     * @param tenantId        the tenant ID
+     * @param conversationId  the conversation ID
+     * @param subset          optional subset parameter for agent selection
+     * @param conversation    the current conversation
+     * @return                the routing information for the conversation
+     */
     private suspend fun retrieveRoutingInformation(
         tenantId: String,
         conversationId: String,
@@ -117,18 +130,16 @@ class DefaultConversationHandler(
     ): RoutingInformation {
         // Lookup cached RoutingInformation
         val cachedRoutingInformation = lmosRuntimeTenantAwareCache.get(tenantId, ROUTES, conversationId)
-        // Subset from parameter has precedence over cached subset
-        val effectiveSubset = subset ?: cachedRoutingInformation?.subset
         // Check if cached RoutingInformation can be reused and subset has not changed
         val routingInformation =
-            if (cachedRoutingInformation != null && effectiveSubset == cachedRoutingInformation.subset) {
+            if (cachedRoutingInformation != null) {
                 cachedRoutingInformation
             } else {
                 val fetched =
                     agentRegistryService.getRoutingInformation(
                         tenantId,
                         conversation.systemContext.channelId,
-                        effectiveSubset,
+                        subset,
                     )
                 log.debug("Caching routing information: {}", fetched)
                 lmosRuntimeTenantAwareCache.save(
