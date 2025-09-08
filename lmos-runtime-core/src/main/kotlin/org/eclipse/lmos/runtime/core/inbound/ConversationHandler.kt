@@ -58,44 +58,16 @@ class DefaultConversationHandler(
     ): Flow<AssistantMessage> =
         coroutineScope {
             log.info("Request Received, conversationId: $conversationId, turnId: $turnId, subset: $subset")
-            val cachedRoutingInformation = lmosRuntimeTenantAwareCache.get(tenantId, ROUTES, conversationId)
-            val routingInformation =
-                if (subset == null && cachedRoutingInformation?.subset == subset) {
-                    agentRegistryService
-                        .getRoutingInformation(tenantId, conversation.systemContext.channelId, subset)
-                        .also { result ->
-                            log.debug("Caching routing information with new subset: {}", result)
-                            lmosRuntimeTenantAwareCache.save(
-                                tenantId,
-                                ROUTES,
-                                conversationId,
-                                result,
-                                lmosRuntimeConfig.cache.ttl,
-                            )
-                        }
-                } else {
-                    val existingSubset = cachedRoutingInformation?.subset ?: subset
-                    cachedRoutingInformation ?: agentRegistryService
-                        .getRoutingInformation(tenantId, conversation.systemContext.channelId, existingSubset)
-                        .also { result ->
-                            log.debug("Caching routing information: {}", result)
-                            lmosRuntimeTenantAwareCache.save(
-                                tenantId,
-                                ROUTES,
-                                conversationId,
-                                result,
-                                lmosRuntimeConfig.cache.ttl,
-                            )
-                        }
-                }
-            log.info("routingInformation: $routingInformation")
 
+            // Retrieve RoutingInformation from Cache or AgentRegistry
+            val routingInformation = retrieveRoutingInformation(tenantId, conversationId, subset, conversation)
+
+            val activeFeatures = conversation.systemContext.contextParams.firstOrNull { it.key == ACTIVE_FEATURES_KEY }
+            val useClassifier = activeFeatures?.value?.contains(ACTIVE_FEATURE_KEY_CLASSIFIER) == true
             val agentName: String
             val agentAddress: Address
-            // The feature flag is only needed during the transition period until
-            // the old classifier is fully replaced by the new classifier.
-            val activeFeatures = conversation.systemContext.contextParams.firstOrNull { it.key == ACTIVE_FEATURES_KEY }
-            if (activeFeatures?.value?.contains(ACTIVE_FEATURE_KEY_CLASSIFIER) == true) {
+
+            if (useClassifier) {
                 log.info("Classifier feature is active, using new classifier for agent routing")
                 val classificationResult =
                     agentClassifierService.classify(
@@ -133,7 +105,53 @@ class DefaultConversationHandler(
                     agentAddress,
                     routingInformation.subset,
                 ).onEach {
-                    log.info("Agent Response: ${it.content}")
+                    log.info("Agent Response: ${'$'}{it.content}")
                 }
         }
+
+    /**
+     * Retrieves a RoutingInformation for a conversation.
+     * <p>
+     * First, this method attempts to load the routing information from the cache.
+     * If no cached data is available, it fetches the routing information from the {@code AgentRegistryService},
+     * stores it in the cache, and then returns it.
+     *
+     * @param tenantId        the tenant ID
+     * @param conversationId  the conversation ID
+     * @param subset          optional subset parameter for agent selection
+     * @param conversation    the current conversation
+     * @return the routing information for the conversation
+     */
+    private suspend fun retrieveRoutingInformation(
+        tenantId: String,
+        conversationId: String,
+        subset: String?,
+        conversation: Conversation,
+    ): RoutingInformation {
+        // Lookup cached RoutingInformation
+        val cachedRoutingInformation = lmosRuntimeTenantAwareCache.get(tenantId, ROUTES, conversationId)
+        // Check if cached RoutingInformation can be reused and subset has not changed
+        val routingInformation =
+            if (cachedRoutingInformation != null) {
+                cachedRoutingInformation
+            } else {
+                val fetched =
+                    agentRegistryService.getRoutingInformation(
+                        tenantId,
+                        conversation.systemContext.channelId,
+                        subset,
+                    )
+                log.debug("Caching routing information: {}", fetched)
+                lmosRuntimeTenantAwareCache.save(
+                    tenantId,
+                    ROUTES,
+                    conversationId,
+                    fetched,
+                    lmosRuntimeConfig.cache.ttl,
+                )
+                fetched
+            }
+        log.info("Using routingInformation: $routingInformation")
+        return routingInformation
+    }
 }
