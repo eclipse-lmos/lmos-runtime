@@ -120,7 +120,7 @@ class DefaultConversationHandler(
      * @param conversationId  the conversation ID
      * @param subset          optional subset parameter for agent selection
      * @param conversation    the current conversation
-     * @return                the routing information for the conversation
+     * @return the routing information for the conversation
      */
     private suspend fun retrieveRoutingInformation(
         tenantId: String,
