@@ -9,11 +9,10 @@ package org.eclipse.lmos.runtime.outbound
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.eclipse.lmos.router.core.*
-import org.eclipse.lmos.router.core.Capability
 import org.eclipse.lmos.router.llm.DefaultModelClient
 import org.eclipse.lmos.router.llm.DefaultModelClientProperties
 import org.eclipse.lmos.router.llm.LLMAgentRoutingSpecsResolver
-import org.eclipse.lmos.runtime.core.LmosRuntimeConfig
+import org.eclipse.lmos.runtime.core.RuntimeConfiguration
 import org.eclipse.lmos.runtime.core.model.Agent
 import org.eclipse.lmos.runtime.core.model.AgentBuilder
 import org.eclipse.lmos.runtime.core.model.AgentCapability
@@ -22,7 +21,7 @@ import org.eclipse.lmos.runtime.core.service.outbound.AgentRoutingService
 import org.slf4j.LoggerFactory
 
 class LmosAgentRoutingService(
-    private val lmosRuntimeConfig: LmosRuntimeConfig,
+    private val lmosRuntimeConfig: RuntimeConfiguration,
 ) : AgentRoutingService {
     private val log = LoggerFactory.getLogger(LmosAgentRoutingService::class.java)
 

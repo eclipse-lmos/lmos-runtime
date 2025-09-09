@@ -1,13 +1,13 @@
 /*
- * // SPDX-FileCopyrightText: 2025 Deutsche Telekom AG and others
- * //
- * // SPDX-License-Identifier: Apache-2.0
+ * SPDX-FileCopyrightText: 2025 Deutsche Telekom AG and others
+ *
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 package org.eclipse.lmos.runtime.core.service.outbound
 
 import com.charleskorn.kaml.Yaml
-import org.eclipse.lmos.runtime.core.LmosRuntimeConfig
+import org.eclipse.lmos.runtime.core.RuntimeConfiguration
 import org.eclipse.lmos.runtime.core.exception.NoRoutingInfoFoundException
 import org.eclipse.lmos.runtime.core.model.registry.AgentRegistryDocument
 import org.eclipse.lmos.runtime.core.model.registry.RoutingInformation
@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory
 import java.io.FileNotFoundException
 
 class FileBasedAgentRegistryService(
-    private val agentRegistryConfig: LmosRuntimeConfig.AgentRegistry,
+    private val agentRegistryConfig: RuntimeConfiguration.AgentRegistry,
 ) : AgentRegistryService {
     private val log = LoggerFactory.getLogger(FileBasedAgentRegistryService::class.java)
     private val agentRegistryDocument: AgentRegistryDocument

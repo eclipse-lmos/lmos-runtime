@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import org.eclipse.lmos.arc.agent.client.graphql.GraphQlAgentClient
 import org.eclipse.lmos.arc.api.*
-import org.eclipse.lmos.runtime.core.constants.LmosRuntimeConstants
+import org.eclipse.lmos.runtime.core.constants.RuntimeConstants
 import org.eclipse.lmos.runtime.core.exception.AgentClientException
 import org.eclipse.lmos.runtime.core.model.Address
 import org.eclipse.lmos.runtime.core.model.AssistantMessage
@@ -34,7 +34,7 @@ class ArcAgentClientService : AgentClientService {
         flow {
             createGraphQlAgentClient(agentAddress).use { graphQlAgentClient ->
 
-                val subsetHeader = subset?.let { mapOf(LmosRuntimeConstants.SUBSET to subset) } ?: emptyMap()
+                val subsetHeader = subset?.let { mapOf(RuntimeConstants.SUBSET to subset) } ?: emptyMap()
 
                 val agentRequest =
                     AgentRequest(

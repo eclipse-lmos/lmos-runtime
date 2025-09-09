@@ -1,13 +1,14 @@
 /*
- * // SPDX-FileCopyrightText: 2025 Deutsche Telekom AG and others
- * //
- * // SPDX-License-Identifier: Apache-2.0
+ * SPDX-FileCopyrightText: 2025 Deutsche Telekom AG and others
+ *
+ * SPDX-License-Identifier: Apache-2.0
  */
+
 package org.eclipse.lmos.runtime.inbound
 
 import kotlinx.coroutines.flow.Flow
 import org.eclipse.lmos.classifier.core.ClassificationResult
-import org.eclipse.lmos.runtime.config.LmosRuntimeAutoConfiguration
+import org.eclipse.lmos.runtime.config.RuntimeAutoConfiguration
 import org.eclipse.lmos.runtime.core.cache.LmosRuntimeTenantAwareCache
 import org.eclipse.lmos.runtime.core.cache.TenantAwareInMemoryCache
 import org.eclipse.lmos.runtime.core.inbound.ConversationHandler
@@ -24,7 +25,7 @@ import org.eclipse.lmos.runtime.core.service.outbound.AgentRoutingService
 import org.eclipse.lmos.runtime.outbound.ArcAgentClientService
 import org.eclipse.lmos.runtime.outbound.LmosAgentClassifierService
 import org.eclipse.lmos.runtime.outbound.LmosAgentRoutingService
-import org.eclipse.lmos.runtime.properties.LmosRuntimeProperties
+import org.eclipse.lmos.runtime.properties.RuntimeProperties
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -36,7 +37,7 @@ import org.springframework.context.annotation.Import
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, classes = [LmosRuntimeAutoConfiguration::class])
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, classes = [RuntimeAutoConfiguration::class])
 @ActiveProfiles("test")
 @TestPropertySource(
     properties = [
@@ -51,7 +52,7 @@ class LmosRuntimeAutoConfigurationCustomBeansTest {
     lateinit var applicationContext: ApplicationContext
 
     @Autowired
-    lateinit var lmosRuntimeProperties: LmosRuntimeProperties
+    lateinit var runtimeProperties: RuntimeProperties
 
     @Test
     fun `should not load ArcAgentClientService as AgentClientService`() {

@@ -1,14 +1,14 @@
 /*
- * // SPDX-FileCopyrightText: 2025 Deutsche Telekom AG and others
- * //
- * // SPDX-License-Identifier: Apache-2.0
+ * SPDX-FileCopyrightText: 2025 Deutsche Telekom AG and others
+ *
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 package org.eclipse.lmos.runtime.core.service.outbound
 
 import kotlinx.coroutines.runBlocking
 import org.eclipse.lmos.runtime.core.AgentRegistryType
-import org.eclipse.lmos.runtime.core.LmosRuntimeConfig
+import org.eclipse.lmos.runtime.core.RuntimeConfiguration
 import org.eclipse.lmos.runtime.core.exception.NoRoutingInfoFoundException
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
@@ -36,20 +36,20 @@ class FileBasedAgentRegistryServiceTest {
             assertEquals("stable", routingInfo.subset)
         }
 
-    private fun getLmosRuntimeConfig(fileName: String): LmosRuntimeConfig {
+    private fun getLmosRuntimeConfig(fileName: String): RuntimeConfiguration {
         val lmosRuntimeConfig =
-            LmosRuntimeConfig(
+            RuntimeConfiguration(
                 agentRegistry =
-                    LmosRuntimeConfig.AgentRegistry(
+                    RuntimeConfiguration.AgentRegistry(
                         type = AgentRegistryType.FILE,
                         fileName = fileName,
                     ),
-                cache = LmosRuntimeConfig.Cache(ttl = 6000),
+                cache = RuntimeConfiguration.Cache(ttl = 6000),
                 disambiguation =
-                    LmosRuntimeConfig.Disambiguation(
+                    RuntimeConfiguration.Disambiguation(
                         enabled = false,
                         llm =
-                            LmosRuntimeConfig.ChatModel(
+                            RuntimeConfiguration.ChatModel(
                                 provider = "openai",
                                 model = "some-model",
                             ),

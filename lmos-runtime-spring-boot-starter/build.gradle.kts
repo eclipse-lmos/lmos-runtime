@@ -14,6 +14,8 @@ dependencies {
     api(project(":lmos-runtime-core"))
     implementation("org.springframework.boot:spring-boot-starter:$springBootVersion")
 
+    implementation("org.springframework.boot:spring-boot-starter-cache:$springBootVersion")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis:$springBootVersion")
     implementation("org.eclipse.lmos:lmos-classifier-llm-spring-boot-starter:$lmosRouterVersion")
     implementation("org.eclipse.lmos:lmos-classifier-vector-spring-boot-starter:$lmosRouterVersion")
     implementation("org.eclipse.lmos:lmos-classifier-hybrid-spring-boot-starter:$lmosRouterVersion")

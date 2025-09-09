@@ -15,8 +15,8 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
-import org.eclipse.lmos.runtime.core.LmosRuntimeConfig
-import org.eclipse.lmos.runtime.core.constants.LmosRuntimeConstants.SUBSET
+import org.eclipse.lmos.runtime.core.RuntimeConfiguration
+import org.eclipse.lmos.runtime.core.constants.RuntimeConstants.SUBSET
 import org.eclipse.lmos.runtime.core.exception.InternalServerErrorException
 import org.eclipse.lmos.runtime.core.exception.NoRoutingInfoFoundException
 import org.eclipse.lmos.runtime.core.exception.UnexpectedResponseException
@@ -27,7 +27,7 @@ import org.eclipse.lmos.runtime.core.service.outbound.AgentRegistryService
 import org.slf4j.LoggerFactory
 
 class LmosOperatorAgentRegistry(
-    private val lmosRuntimeConfig: LmosRuntimeConfig,
+    private val lmosRuntimeConfig: RuntimeConfiguration,
 ) : AgentRegistryService {
     @OptIn(ExperimentalSerializationApi::class)
     private val json =
@@ -89,7 +89,7 @@ class LmosOperatorAgentRegistry(
                 .let {
                     log.debug("Get agents from operator response: $it")
                     json.decodeFromString<ChannelRouting>(it)
-                }.toRoutingInformation(response.headers[SUBSET])
+                }.toRoutingInformation()
         } catch (e: Exception) {
             log.error("Unexpected response body from operator: ${response.bodyAsText()}, exception: ${e.printStackTrace()}")
             throw UnexpectedResponseException("Unexpected response body from operator: ${e.message}")
@@ -97,4 +97,4 @@ class LmosOperatorAgentRegistry(
     }
 }
 
-private fun ChannelRouting.toRoutingInformation(subset: String?) = RoutingInformation(this.toAgent(), subset)
+fun ChannelRouting.toRoutingInformation() = RoutingInformation(this.toAgent(), this.metadata.labels.subset)

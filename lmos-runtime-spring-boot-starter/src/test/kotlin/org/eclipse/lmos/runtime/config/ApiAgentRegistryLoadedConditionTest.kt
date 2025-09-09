@@ -1,7 +1,7 @@
 /*
- * // SPDX-FileCopyrightText: 2025 Deutsche Telekom AG and others
- * //
- * // SPDX-License-Identifier: Apache-2.0
+ * SPDX-FileCopyrightText: 2025 Deutsche Telekom AG and others
+ *
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 package org.eclipse.lmos.runtime.config
@@ -17,7 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.ApplicationContext
 import org.springframework.test.context.TestPropertySource
 
-@SpringBootTest(classes = [LmosRuntimeAutoConfiguration::class, ModelAgentClassifierAutoConfiguration::class])
+@SpringBootTest(classes = [RuntimeAutoConfiguration::class, ModelAgentClassifierAutoConfiguration::class])
 @TestPropertySource(
     properties = [
         "lmos.runtime.agent-registry.type=API",

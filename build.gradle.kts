@@ -43,10 +43,25 @@ subprojects {
     apply(plugin = "org.jetbrains.kotlinx.kover")
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
     apply(plugin = "com.vanniktech.maven.publish")
+    apply(plugin = "org.cadixdev.licenser")
 
     repositories {
         mavenCentral()
         mavenLocal()
+    }
+
+    license {
+        header(rootProject.file("LICENSE"))
+        include("**/*.java")
+        include("**/*.kt")
+        include("**/*.yaml")
+        exclude("**/*.properties")
+    }
+
+    kotlin {
+        compilerOptions {
+            freeCompilerArgs.add("-Xcontext-receivers")
+        }
     }
 
     java {
@@ -111,6 +126,8 @@ subprojects {
 }
 
 dependencies {
+    kover(project("lmos-kernel"))
+    kover(project("lmos-kernel-impl"))
     kover(project("lmos-runtime-core"))
     kover(project("lmos-runtime-spring-boot-starter"))
     kover(project("lmos-runtime-service"))

@@ -1,8 +1,9 @@
 /*
- * // SPDX-FileCopyrightText: 2025 Deutsche Telekom AG and others
- * //
- * // SPDX-License-Identifier: Apache-2.0
+ * SPDX-FileCopyrightText: 2025 Deutsche Telekom AG and others
+ *
+ * SPDX-License-Identifier: Apache-2.0
  */
+
 package org.eclipse.lmos.runtime.core.inbound
 
 import io.mockk.*
@@ -11,10 +12,9 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
 import org.eclipse.lmos.arc.api.Message
 import org.eclipse.lmos.classifier.core.ClassificationResult
-import org.eclipse.lmos.runtime.core.LmosRuntimeConfig
-import org.eclipse.lmos.runtime.core.cache.LmosRuntimeTenantAwareCache
-import org.eclipse.lmos.runtime.core.cache.TenantAwareInMemoryCache
-import org.eclipse.lmos.runtime.core.constants.LmosRuntimeConstants.Cache.ROUTES
+import org.eclipse.lmos.runtime.core.RuntimeConfiguration
+import org.eclipse.lmos.runtime.core.channelrouting.ChannelRoutingRepository
+import org.eclipse.lmos.runtime.core.constants.RuntimeConstants.Cache.ROUTES
 import org.eclipse.lmos.runtime.core.disambiguation.DisambiguationHandler
 import org.eclipse.lmos.runtime.core.exception.AgentClientException
 import org.eclipse.lmos.runtime.core.exception.AgentNotFoundException
@@ -32,13 +32,14 @@ import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
 
 class ConversationHandlerTest {
+
     private lateinit var agentRegistryService: AgentRegistryService
     private lateinit var agentRoutingService: AgentRoutingService
     private lateinit var agentClassifierService: AgentClassifierService
     private lateinit var agentClientService: AgentClientService
-    private lateinit var lmosRuntimeTenantAwareCache: LmosRuntimeTenantAwareCache<RoutingInformation>
+    private lateinit var channelRoutingRepository: ChannelRoutingRepository
     private lateinit var conversationHandler: ConversationHandler
-    private lateinit var lmosRuntimeConfig: LmosRuntimeConfig
+    private lateinit var lmosRuntimeConfig: RuntimeConfiguration
     private lateinit var disambiguationHandler: DisambiguationHandler
 
     @BeforeEach
@@ -48,16 +49,16 @@ class ConversationHandlerTest {
 
         agentRoutingService = ExplicitAgentRoutingService()
         agentClassifierService = mockk<AgentClassifierService>()
-        lmosRuntimeTenantAwareCache = spyk(TenantAwareInMemoryCache())
+        channelRoutingRepository = mockk<ChannelRoutingRepository>()
         lmosRuntimeConfig =
-            LmosRuntimeConfig(
-                mockk<LmosRuntimeConfig.AgentRegistry>(),
-                cache = LmosRuntimeConfig.Cache(ttl = 6000),
+            RuntimeConfiguration(
+                mockk<RuntimeConfiguration.AgentRegistry>(),
+                cache = RuntimeConfiguration.Cache(ttl = 6000),
                 disambiguation =
-                    LmosRuntimeConfig.Disambiguation(
+                    RuntimeConfiguration.Disambiguation(
                         enabled = false,
                         llm =
-                            LmosRuntimeConfig.ChatModel(
+                            RuntimeConfiguration.ChatModel(
                                 provider = "openai",
                                 model = "some-model",
                             ),
@@ -66,12 +67,10 @@ class ConversationHandlerTest {
         disambiguationHandler = mockk<DisambiguationHandler>()
         conversationHandler =
             DefaultConversationHandler(
-                agentRegistryService,
                 agentRoutingService,
                 agentClassifierService,
+                channelRoutingRepository,
                 agentClientService,
-                lmosRuntimeConfig,
-                lmosRuntimeTenantAwareCache,
                 disambiguationHandler,
             )
     }

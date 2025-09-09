@@ -1,7 +1,7 @@
 /*
- * // SPDX-FileCopyrightText: 2025 Deutsche Telekom AG and others
- * //
- * // SPDX-License-Identifier: Apache-2.0
+ * SPDX-FileCopyrightText: 2025 Deutsche Telekom AG and others
+ *
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 package org.eclipse.lmos.runtime.core.inbound
@@ -14,14 +14,13 @@ import org.eclipse.lmos.arc.agent.client.graphql.GraphQlAgentClient
 import org.eclipse.lmos.arc.api.AgentRequest
 import org.eclipse.lmos.arc.api.AgentResult
 import org.eclipse.lmos.arc.api.Message
-import org.eclipse.lmos.runtime.core.LmosRuntimeConfig
-import org.eclipse.lmos.runtime.core.cache.TenantAwareInMemoryCache
+import org.eclipse.lmos.runtime.core.RuntimeConfiguration
+import org.eclipse.lmos.runtime.core.channelrouting.ChannelRoutingRepository
 import org.eclipse.lmos.runtime.core.disambiguation.DisambiguationHandler
 import org.eclipse.lmos.runtime.core.exception.AgentClientException
 import org.eclipse.lmos.runtime.core.exception.AgentNotFoundException
 import org.eclipse.lmos.runtime.core.exception.NoRoutingInfoFoundException
 import org.eclipse.lmos.runtime.core.model.*
-import org.eclipse.lmos.runtime.core.model.registry.RoutingInformation
 import org.eclipse.lmos.runtime.core.service.outbound.AgentClassifierService
 import org.eclipse.lmos.runtime.core.service.routing.ExplicitAgentRoutingService
 import org.eclipse.lmos.runtime.outbound.ArcAgentClientService
@@ -33,20 +32,20 @@ import kotlin.test.assertEquals
 
 class ConversationHandlerIntegrationTest : BaseWireMockTest() {
     private val lmosRuntimeConfig =
-        LmosRuntimeConfig(
-            agentRegistry = LmosRuntimeConfig.AgentRegistry(baseUrl = "http://localhost:$mockPort/agentRegistry"),
-            cache = LmosRuntimeConfig.Cache(ttl = 6000),
+        RuntimeConfiguration(
+            agentRegistry = RuntimeConfiguration.AgentRegistry(baseUrl = "http://localhost:$mockPort/agentRegistry"),
+            cache = RuntimeConfiguration.Cache(ttl = 6000),
             disambiguation =
-                LmosRuntimeConfig.Disambiguation(
+                RuntimeConfiguration.Disambiguation(
                     enabled = false,
                     llm =
-                        LmosRuntimeConfig.ChatModel(
+                        RuntimeConfiguration.ChatModel(
                             provider = "openai",
                             model = "some-model",
                         ),
                 ),
         )
-    private val lmosRuntimeTenantAwareCache = TenantAwareInMemoryCache<RoutingInformation>()
+    private val channelRoutingRepository = mockk<ChannelRoutingRepository>()
     private val agentRegistryService = LmosOperatorAgentRegistry(lmosRuntimeConfig)
     private val agentRoutingService = ExplicitAgentRoutingService()
     private val agentClassifierService = mockk<AgentClassifierService>()
@@ -55,12 +54,10 @@ class ConversationHandlerIntegrationTest : BaseWireMockTest() {
 
     private val conversationHandler =
         DefaultConversationHandler(
-            agentRegistryService,
             agentRoutingService,
             agentClassifierService,
+            channelRoutingRepository,
             agentClientService,
-            lmosRuntimeConfig,
-            lmosRuntimeTenantAwareCache,
             disambiguationHandler,
         )
 
@@ -116,12 +113,10 @@ class ConversationHandlerIntegrationTest : BaseWireMockTest() {
             // Create a new conversation handler with the spy
             val handlerWithSpy =
                 DefaultConversationHandler(
-                    spyAgentRegistryService,
                     agentRoutingService,
                     agentClassifierService,
+                    channelRoutingRepository,
                     agentClientService,
-                    lmosRuntimeConfig,
-                    lmosRuntimeTenantAwareCache,
                     disambiguationHandler,
                 )
 
