@@ -1,5 +1,5 @@
 apiVersion: v2
-name: ${chartName}
+name: lmos-runtime
 description: The LMOS Runtime is a Kubernetes runtime built to help you manage Channels and Agents in the LMOS Control Plane.
 
 # A chart can be either an 'application' or a 'library' chart.
