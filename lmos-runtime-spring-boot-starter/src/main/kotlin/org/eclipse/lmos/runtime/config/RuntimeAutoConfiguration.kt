@@ -13,14 +13,12 @@ import org.eclipse.lmos.classifier.llm.LangChainChatModelFactory
 import org.eclipse.lmos.runtime.channelrouting.CachedChannelRoutingRepository
 import org.eclipse.lmos.runtime.core.AgentRegistryType
 import org.eclipse.lmos.runtime.core.RuntimeConfiguration
-import org.eclipse.lmos.runtime.core.cache.TenantAwareCache
 import org.eclipse.lmos.runtime.core.channelrouting.ChannelRoutingRepository
 import org.eclipse.lmos.runtime.core.channelrouting.LmosOperatorChannelRoutingRepository
 import org.eclipse.lmos.runtime.core.disambiguation.DefaultDisambiguationHandler
 import org.eclipse.lmos.runtime.core.disambiguation.DisambiguationHandler
 import org.eclipse.lmos.runtime.core.inbound.ConversationHandler
 import org.eclipse.lmos.runtime.core.inbound.DefaultConversationHandler
-import org.eclipse.lmos.runtime.core.model.registry.RoutingInformation
 import org.eclipse.lmos.runtime.core.service.outbound.AgentClassifierService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentClientService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentRegistryService
@@ -46,12 +44,12 @@ import org.springframework.context.annotation.Bean
 open class RuntimeAutoConfiguration(
     private val runtimeProperties: RuntimeProperties,
 ) {
-
     @Bean
     @ConditionalOnMissingBean(AgentClientService::class)
-    open fun channelRoutingRepository(runtimeConfig: RuntimeConfiguration): ChannelRoutingRepository = CachedChannelRoutingRepository(
-        LmosOperatorChannelRoutingRepository(runtimeConfig)
-    )
+    open fun channelRoutingRepository(runtimeConfig: RuntimeConfiguration): ChannelRoutingRepository =
+        CachedChannelRoutingRepository(
+            LmosOperatorChannelRoutingRepository(runtimeConfig),
+        )
 
     @Bean
     @ConditionalOnMissingBean(AgentClientService::class)

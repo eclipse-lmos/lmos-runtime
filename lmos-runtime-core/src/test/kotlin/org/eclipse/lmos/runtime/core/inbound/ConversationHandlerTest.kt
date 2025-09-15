@@ -34,7 +34,6 @@ import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
 
 class ConversationHandlerTest {
-
     private lateinit var agentRegistryService: AgentRegistryService
     private lateinit var agentRoutingService: AgentRoutingService
     private lateinit var agentClassifierService: AgentClassifierService
@@ -75,30 +74,49 @@ class ConversationHandlerTest {
                 disambiguationHandler,
             )
 
-        val channelRouting = ChannelRouting(
-            metadata = org.eclipse.lmos.runtime.core.model.registry.Metadata(
-                name = "dummy-name",
-                namespace = "dummy-namespace",
-                labels = org.eclipse.lmos.runtime.core.model.registry.Labels(
-                    channel = "web",
-                    subset = "stable",
-                    tenant = "de",
-                    version = "1.0.0"
-                ),
-                creationTimestamp = "2024-01-01T00:00:00Z",
-                generation = 1,
-                resourceVersion = "1",
-                uid = "uid-123"
-            ),
-            spec = Spec(
-                capabilityGroups = listOf(CapabilityGroup(id = "agent1", name = "agent1", description = "First Agent",
-                    capabilities = listOf(Capability(id = "cap1", name = "cap1", providedVersion = "1.0.0", description = "Capability 1", host = "http://localhost:8080")))),
+        val channelRouting =
+            ChannelRouting(
+                metadata =
+                    org.eclipse.lmos.runtime.core.model.registry.Metadata(
+                        name = "dummy-name",
+                        namespace = "dummy-namespace",
+                        labels =
+                            org.eclipse.lmos.runtime.core.model.registry.Labels(
+                                channel = "web",
+                                subset = "stable",
+                                tenant = "de",
+                                version = "1.0.0",
+                            ),
+                        creationTimestamp = "2024-01-01T00:00:00Z",
+                        generation = 1,
+                        resourceVersion = "1",
+                        uid = "uid-123",
+                    ),
+                spec =
+                    Spec(
+                        capabilityGroups =
+                            listOf(
+                                CapabilityGroup(
+                                    id = "agent1",
+                                    name = "agent1",
+                                    description = "First Agent",
+                                    capabilities =
+                                        listOf(
+                                            Capability(
+                                                id = "cap1",
+                                                name = "cap1",
+                                                providedVersion = "1.0.0",
+                                                description = "Capability 1",
+                                                host = "http://localhost:8080",
+                                            ),
+                                        ),
+                                ),
+                            ),
+                    ),
             )
-        )
 
         // ChannelRoutingRepository Mock: Standardverhalten
         coEvery { channelRoutingRepository.getChannelRouting(any(), any(), any(), any()) } returns channelRouting
-
     }
 
     @Test
@@ -253,13 +271,13 @@ class ConversationHandlerTest {
             assertEquals(expectedAgentResponse, result)
 
             coVerify(exactly = 1) {
-                //lmosRuntimeTenantAwareCache.save(
+                // lmosRuntimeTenantAwareCache.save(
                 //    tenantId,
                 //    ROUTES,
                 //    conversationId,
                 //    routingInformation,
                 //    any(),
-                //)
+                // )
             }
         }
 
@@ -278,7 +296,7 @@ class ConversationHandlerTest {
             val resolvedAgent = routingInformation.agentList[0]
             val expectedAgentResponse = AssistantMessage(content = "Test response")
 
-            //lmosRuntimeTenantAwareCache.save(tenantId, ROUTES, conversationId, routingInformation)
+            // lmosRuntimeTenantAwareCache.save(tenantId, ROUTES, conversationId, routingInformation)
             clearAllMocks()
 
             mockAgentRegistry(tenantId, conversation.systemContext.channelId, routingInformation)
@@ -305,12 +323,12 @@ class ConversationHandlerTest {
             assertEquals(expectedAgentResponse, result)
 
             coVerify(exactly = 0) {
-                //lmosRuntimeTenantAwareCache.save(
+                // lmosRuntimeTenantAwareCache.save(
                 //    tenantId,
                 //    ROUTES,
                 //    conversationId,
                 //    routingInformation,
-                //)
+                // )
             }
 
             // Verify that getRoutingInformation was not called
@@ -336,7 +354,7 @@ class ConversationHandlerTest {
             val expectedAgentResponse = AssistantMessage(content = "Test response with new subset")
 
             // Save the cached routing information
-            //lmosRuntimeTenantAwareCache.save(tenantId, ROUTES, conversationId, cachedRoutingInformation)
+            // lmosRuntimeTenantAwareCache.save(tenantId, ROUTES, conversationId, cachedRoutingInformation)
             clearAllMocks()
 
             mockAgentClient(
@@ -369,13 +387,13 @@ class ConversationHandlerTest {
 
             // Verify that the new routing information was cached
             coVerify(exactly = 0) {
-                //lmosRuntimeTenantAwareCache.save(
+                // lmosRuntimeTenantAwareCache.save(
                 //    tenantId,
                 //    ROUTES,
                 //    conversationId,
                 //    any(),
                 //    any(),
-                //)
+                // )
             }
         }
 
@@ -506,7 +524,7 @@ class ConversationHandlerTest {
                     agentClassifierService,
                     channelRoutingRepository,
                     agentClientService,
-                    null // Disambiguation handler is not provided
+                    null, // Disambiguation handler is not provided
                 )
 
             // then

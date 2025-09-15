@@ -1,3 +1,9 @@
+/*
+ * SPDX-FileCopyrightText: 2025 Deutsche Telekom AG and others
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 package org.eclipse.lmos.runtime.core.channelrouting
 
 import io.ktor.client.*
@@ -20,39 +26,39 @@ import org.eclipse.lmos.runtime.core.model.registry.ChannelRouting
 import org.slf4j.LoggerFactory
 
 interface ChannelRoutingRepository {
-
     fun getChannelRouting(
         conversationId: String,
         tenantId: String,
         channelId: String,
-        subset: String?
+        subset: String?,
     ): ChannelRouting
 }
 
 class InMemoryChannelRoutingRepository(
-    private val channelRoutings: List<ChannelRouting>
+    private val channelRoutings: List<ChannelRouting>,
 ) : ChannelRoutingRepository {
-
     override fun getChannelRouting(
         conversationId: String,
         tenantId: String,
         channelId: String,
-        subset: String?
+        subset: String?,
     ): ChannelRouting {
-        val channelRouting = channelRoutings.firstOrNull{ channelRouting ->
-            channelRouting.metadata.labels.tenant == tenantId &&
-            channelRouting.metadata.labels.channel== channelId &&
-            channelRouting.metadata.labels.subset == subset
-        }
-        if(channelRouting == null) {
+        val channelRouting =
+            channelRoutings.firstOrNull { channelRouting ->
+                channelRouting.metadata.labels.tenant == tenantId &&
+                    channelRouting.metadata.labels.channel == channelId &&
+                    channelRouting.metadata.labels.subset == subset
+            }
+        if (channelRouting == null) {
             throw NoRoutingInfoFoundException("No routing info found for tenant: $tenantId, channel: $channelId, subset: $subset")
         }
         return channelRouting
     }
 }
 
-open class LmosOperatorChannelRoutingRepository(private val runtimeConfig: RuntimeConfiguration) : ChannelRoutingRepository {
-
+open class LmosOperatorChannelRoutingRepository(
+    private val runtimeConfig: RuntimeConfiguration,
+) : ChannelRoutingRepository {
     private val log = LoggerFactory.getLogger(LmosOperatorChannelRoutingRepository::class.java)
 
     @OptIn(ExperimentalSerializationApi::class)
@@ -81,15 +87,16 @@ open class LmosOperatorChannelRoutingRepository(private val runtimeConfig: Runti
         conversationId: String,
         tenantId: String,
         channelId: String,
-        subset: String?
-    ): ChannelRouting = runBlocking {
-        getChannelRoutingSuspend(tenantId, channelId, subset)
-    }
+        subset: String?,
+    ): ChannelRouting =
+        runBlocking {
+            getChannelRoutingSuspend(tenantId, channelId, subset)
+        }
 
     suspend fun getChannelRoutingSuspend(
         tenantId: String,
         channelId: String,
-        subset: String?
+        subset: String?,
     ): ChannelRouting {
         val urlString =
             "${runtimeConfig.agentRegistry.baseUrl}/apis/v1/tenants/$tenantId/channels/$channelId/routing"
@@ -97,9 +104,8 @@ open class LmosOperatorChannelRoutingRepository(private val runtimeConfig: Runti
 
         val response =
             try {
-
-                client.get(urlString) { subset?.let { headers.append(SUBSET, it) }
-
+                client.get(urlString) {
+                    subset?.let { headers.append(SUBSET, it) }
                 }
             } catch (e: Exception) {
                 log.error("Exception from Operator with url $urlString is $e")
@@ -127,6 +133,4 @@ open class LmosOperatorChannelRoutingRepository(private val runtimeConfig: Runti
             throw UnexpectedResponseException("Unexpected response body from operator: ${e.message}")
         }
     }
-
-
 }

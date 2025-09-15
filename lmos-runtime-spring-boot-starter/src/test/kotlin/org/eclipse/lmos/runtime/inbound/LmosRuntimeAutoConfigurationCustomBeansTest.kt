@@ -9,8 +9,7 @@ package org.eclipse.lmos.runtime.inbound
 import kotlinx.coroutines.flow.Flow
 import org.eclipse.lmos.classifier.core.ClassificationResult
 import org.eclipse.lmos.runtime.config.RuntimeAutoConfiguration
-import org.eclipse.lmos.runtime.core.cache.LmosRuntimeTenantAwareCache
-import org.eclipse.lmos.runtime.core.cache.TenantAwareInMemoryCache
+import org.eclipse.lmos.runtime.core.cache.TenantAwareCache
 import org.eclipse.lmos.runtime.core.inbound.ConversationHandler
 import org.eclipse.lmos.runtime.core.inbound.DefaultConversationHandler
 import org.eclipse.lmos.runtime.core.model.Address
@@ -36,6 +35,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Import
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
+import kotlin.jvm.java
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, classes = [RuntimeAutoConfiguration::class])
 @ActiveProfiles("test")
@@ -76,12 +76,6 @@ class LmosRuntimeAutoConfigurationCustomBeansTest {
     fun `should not load DefaultConversationHandler as ConversationService`() {
         val conversationService = applicationContext.getBean(ConversationHandler::class.java)
         assertFalse(conversationService is DefaultConversationHandler)
-    }
-
-    @Test
-    fun `should not load TenantAwareInMemoryCache as LmosRuntimeTenantAwareCache`() {
-        val cache = applicationContext.getBean(LmosRuntimeTenantAwareCache::class.java)
-        assertFalse(cache is TenantAwareInMemoryCache)
     }
 
     @TestConfiguration
@@ -137,44 +131,6 @@ class LmosRuntimeAutoConfigurationCustomBeansTest {
                 }
             }
 
-        @Bean
-        open fun lmosRuntimeTenantAwareCache(): LmosRuntimeTenantAwareCache<String> =
-            object : LmosRuntimeTenantAwareCache<String> {
-                override fun save(
-                    tenantId: String,
-                    prefix: String,
-                    key: String,
-                    value: String,
-                ) {
-                    TODO("Not yet implemented")
-                }
-
-                override fun save(
-                    tenantId: String,
-                    prefix: String,
-                    key: String,
-                    value: String,
-                    timeout: Long,
-                ) {
-                    TODO("Not yet implemented")
-                }
-
-                override fun get(
-                    tenantId: String,
-                    prefix: String,
-                    key: String,
-                ): String? {
-                    TODO("Not yet implemented")
-                }
-
-                override fun delete(
-                    tenantId: String,
-                    prefix: String,
-                    key: String,
-                ) {
-                    TODO("Not yet implemented")
-                }
-            }
 
         @Bean
         open fun conversationService(): ConversationHandler =

@@ -55,7 +55,13 @@ class DefaultConversationHandler(
             log.info("Request Received, conversationId: $conversationId, turnId: $turnId, subset: $subset")
 
             // Retrieve ChannelRouting from cached Repository
-            val channelRouting = channelRoutingRepository.getChannelRouting(conversationId, tenantId, conversation.systemContext.channelId, subset)
+            val channelRouting =
+                channelRoutingRepository.getChannelRouting(
+                    conversationId,
+                    tenantId,
+                    conversation.systemContext.channelId,
+                    subset,
+                )
             val routingInformation = channelRouting.toRoutingInformation()
             log.info("Using routingInformation: $routingInformation")
 
@@ -109,6 +115,4 @@ class DefaultConversationHandler(
         val useClassifier = activeFeatures?.value?.contains(ACTIVE_FEATURE_KEY_CLASSIFIER) == true
         return useClassifier
     }
-
 }
-
