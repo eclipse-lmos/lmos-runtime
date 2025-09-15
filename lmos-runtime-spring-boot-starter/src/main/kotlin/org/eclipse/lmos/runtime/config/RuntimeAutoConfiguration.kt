@@ -10,10 +10,12 @@ import dev.langchain4j.model.chat.ChatModel
 import org.eclipse.lmos.classifier.core.AgentClassifier
 import org.eclipse.lmos.classifier.llm.ChatModelClientProperties
 import org.eclipse.lmos.classifier.llm.LangChainChatModelFactory
+import org.eclipse.lmos.runtime.channelrouting.CachedChannelRoutingRepository
 import org.eclipse.lmos.runtime.core.AgentRegistryType
 import org.eclipse.lmos.runtime.core.RuntimeConfiguration
 import org.eclipse.lmos.runtime.core.cache.TenantAwareCache
 import org.eclipse.lmos.runtime.core.channelrouting.ChannelRoutingRepository
+import org.eclipse.lmos.runtime.core.channelrouting.LmosOperatorChannelRoutingRepository
 import org.eclipse.lmos.runtime.core.disambiguation.DefaultDisambiguationHandler
 import org.eclipse.lmos.runtime.core.disambiguation.DisambiguationHandler
 import org.eclipse.lmos.runtime.core.inbound.ConversationHandler
@@ -44,6 +46,13 @@ import org.springframework.context.annotation.Bean
 open class RuntimeAutoConfiguration(
     private val runtimeProperties: RuntimeProperties,
 ) {
+
+    @Bean
+    @ConditionalOnMissingBean(AgentClientService::class)
+    open fun channelRoutingRepository(runtimeConfig: RuntimeConfiguration): ChannelRoutingRepository = CachedChannelRoutingRepository(
+        LmosOperatorChannelRoutingRepository(runtimeConfig)
+    )
+
     @Bean
     @ConditionalOnMissingBean(AgentClientService::class)
     open fun agentClientService(): AgentClientService = ArcAgentClientService()

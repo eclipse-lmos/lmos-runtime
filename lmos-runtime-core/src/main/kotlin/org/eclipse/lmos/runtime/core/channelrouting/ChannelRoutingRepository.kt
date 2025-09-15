@@ -51,7 +51,7 @@ class InMemoryChannelRoutingRepository(
     }
 }
 
-open class LmosOperatorChannelRoutingRepository(private val lmosRuntimeConfig: RuntimeConfiguration) : ChannelRoutingRepository {
+open class LmosOperatorChannelRoutingRepository(private val runtimeConfig: RuntimeConfiguration) : ChannelRoutingRepository {
 
     private val log = LoggerFactory.getLogger(LmosOperatorChannelRoutingRepository::class.java)
 
@@ -92,7 +92,7 @@ open class LmosOperatorChannelRoutingRepository(private val lmosRuntimeConfig: R
         subset: String?
     ): ChannelRouting {
         val urlString =
-            "${lmosRuntimeConfig.agentRegistry.baseUrl}/apis/v1/tenants/$tenantId/channels/$channelId/routing"
+            "${runtimeConfig.agentRegistry.baseUrl}/apis/v1/tenants/$tenantId/channels/$channelId/routing"
         log.debug("Calling operator: $urlString with subset: $subset")
 
         val response =
