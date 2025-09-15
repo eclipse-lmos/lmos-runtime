@@ -23,6 +23,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter:$springBootVersion")
     implementation("org.springframework.boot:spring-boot-starter-webflux:$springBootVersion")
     implementation("org.springframework.boot:spring-boot-starter-actuator:$springBootVersion")
+    implementation("io.micrometer:micrometer-registry-prometheus")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.2")
 
