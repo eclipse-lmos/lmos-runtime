@@ -16,7 +16,7 @@ plugins {
     id("com.citi.helm-publish") version "2.2.0"
     id("net.researchgate.release") version "3.1.0"
     id("com.vanniktech.maven.publish") version "0.34.0"
-    val kotlinVersion = "2.2.10"
+    val kotlinVersion = "2.2.20"
     kotlin("jvm") version kotlinVersion
     kotlin("kapt") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion apply false
