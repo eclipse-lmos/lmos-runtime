@@ -6,19 +6,20 @@
 
 plugins {
     kotlin("plugin.spring") version "2.1.20"
-    id("io.spring.dependency-management")
 }
 
 dependencies {
     val lmosRouterVersion: String by project
+    val langChain4jCoreVersion: String by project
     val langChain4jModulesVersion: String by project
     val langChain4jOpenAiVersion: String by project
+    val springBootVersion: String by rootProject.extra
 
     api(project(":lmos-runtime-core"))
-    implementation("org.springframework.boot:spring-boot-starter")
+    implementation("org.springframework.boot:spring-boot-starter:$springBootVersion")
 
-    implementation("org.springframework.boot:spring-boot-starter-cache")
-    implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation("org.springframework.boot:spring-boot-starter-cache:$springBootVersion")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis:$springBootVersion")
     implementation("org.eclipse.lmos:lmos-classifier-llm-spring-boot-starter:$lmosRouterVersion")
     implementation("org.eclipse.lmos:lmos-classifier-vector-spring-boot-starter:$lmosRouterVersion")
     implementation("org.eclipse.lmos:lmos-classifier-hybrid-spring-boot-starter:$lmosRouterVersion")
@@ -30,6 +31,6 @@ dependencies {
     implementation("dev.langchain4j:langchain4j-ollama:$langChain4jModulesVersion")
     implementation("com.azure:azure-identity:1.17.0")
 
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-test:$springBootVersion")
     testImplementation("org.eclipse.lmos:lmos-classifier-llm-spring-boot-starter:$lmosRouterVersion")
 }
