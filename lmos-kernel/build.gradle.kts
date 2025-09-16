@@ -1,3 +1,10 @@
+/*
+* SPDX-FileCopyrightText: 2025 Deutsche Telekom AG and others
+*
+* SPDX-License-Identifier: Apache-2.0
+*/
+
+
 dependencies {
     api("org.slf4j:slf4j-api:2.0.17")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
