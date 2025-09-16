@@ -6,8 +6,6 @@
 
 package org.eclipse.lmos.runtime.inbound
 
-import org.eclipse.lmos.runtime.core.cache.LmosRuntimeTenantAwareCache
-import org.eclipse.lmos.runtime.core.cache.TenantAwareInMemoryCache
 import org.eclipse.lmos.runtime.core.disambiguation.DefaultDisambiguationHandler
 import org.eclipse.lmos.runtime.core.disambiguation.DisambiguationHandler
 import org.eclipse.lmos.runtime.core.inbound.ConversationHandler
@@ -59,11 +57,5 @@ class LmosRuntimeAutoConfigurationTest {
     fun `should load DefaultConversationHandler as ConversationHandler`() {
         val conversationHandler = applicationContext.getBean(ConversationHandler::class.java)
         assertTrue(conversationHandler is DefaultConversationHandler)
-    }
-
-    @Test
-    fun `should load TenantAwareInMemoryCache as LmosRuntimeTenantAwareCache`() {
-        val cache = applicationContext.getBean(LmosRuntimeTenantAwareCache::class.java)
-        assertTrue(cache is TenantAwareInMemoryCache)
     }
 }

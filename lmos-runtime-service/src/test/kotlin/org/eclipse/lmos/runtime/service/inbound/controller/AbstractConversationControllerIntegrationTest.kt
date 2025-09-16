@@ -32,6 +32,7 @@ import org.springframework.test.web.reactive.server.expectBody
 import java.util.*
 
 abstract class AbstractConversationControllerIntegrationTest : BaseWireMockTest() {
+
     @Autowired
     private lateinit var webTestClient: WebTestClient
 
