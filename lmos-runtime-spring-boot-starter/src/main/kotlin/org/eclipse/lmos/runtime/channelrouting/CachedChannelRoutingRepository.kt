@@ -9,9 +9,7 @@ package org.eclipse.lmos.runtime.channelrouting
 import org.eclipse.lmos.runtime.core.channelrouting.ChannelRoutingRepository
 import org.eclipse.lmos.runtime.core.model.registry.ChannelRouting
 import org.springframework.cache.annotation.Cacheable
-import org.springframework.stereotype.Repository
 
-@Repository
 open class CachedChannelRoutingRepository(
     private val channelRoutingRepository: ChannelRoutingRepository,
 ) : ChannelRoutingRepository {
@@ -21,5 +19,5 @@ open class CachedChannelRoutingRepository(
         tenantId: String,
         channelId: String,
         subset: String?,
-    ): ChannelRouting = channelRoutingRepository.getChannelRouting(conversationId, channelId, tenantId, subset)
+    ): ChannelRouting = channelRoutingRepository.getChannelRouting(conversationId, tenantId, channelId, subset)
 }

@@ -18,4 +18,4 @@ fun main(args: Array<String>) {
 }
 
 @SpringBootApplication
-open class TestApplication
+class TestApplication

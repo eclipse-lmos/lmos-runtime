@@ -6,7 +6,7 @@
 
 package org.eclipse.lmos.runtime.config
 
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.eclipse.lmos.classifier.llm.starter.ModelAgentClassifierAutoConfiguration
 import org.eclipse.lmos.runtime.core.exception.NoRoutingInfoFoundException
 import org.eclipse.lmos.runtime.core.service.outbound.AgentRegistryService
@@ -41,7 +41,7 @@ class FileBasedAgentRegistryIntegrationTest {
 
     @Test
     fun `should retrieve routing information using FileBasedAgentRegistryService via Spring context`() =
-        runBlocking {
+        runTest {
             val routingInfo = agentRegistryService.getRoutingInformation("integ-acme", "web", "stable")
             assertNotNull(routingInfo)
             assertEquals(1, routingInfo.agentList.size)
@@ -58,11 +58,9 @@ class FileBasedAgentRegistryIntegrationTest {
 
     @Test
     fun `should throw NoRoutingInfoFoundException for non-existent entry via Spring context`() =
-        runBlocking {
-            assertThrows(NoRoutingInfoFoundException::class.java) {
-                runBlocking {
-                    agentRegistryService.getRoutingInformation("non-existent", "channel", null)
-                }
+        assertThrows(NoRoutingInfoFoundException::class.java) {
+            runTest {
+                agentRegistryService.getRoutingInformation("non-existent", "channel", null)
             }
         }
 }

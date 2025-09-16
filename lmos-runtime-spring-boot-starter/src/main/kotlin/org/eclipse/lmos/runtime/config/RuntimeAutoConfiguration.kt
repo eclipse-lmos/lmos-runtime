@@ -41,23 +41,23 @@ import org.springframework.context.annotation.Bean
 
 @AutoConfiguration
 @EnableConfigurationProperties(RuntimeProperties::class)
-open class RuntimeAutoConfiguration(
+class RuntimeAutoConfiguration(
     private val runtimeProperties: RuntimeProperties,
 ) {
     @Bean
-    @ConditionalOnMissingBean(AgentClientService::class)
-    open fun channelRoutingRepository(runtimeConfig: RuntimeConfiguration): ChannelRoutingRepository =
+    @ConditionalOnMissingBean(ChannelRoutingRepository::class)
+    fun channelRoutingRepository(runtimeConfig: RuntimeConfiguration): ChannelRoutingRepository =
         CachedChannelRoutingRepository(
             LmosOperatorChannelRoutingRepository(runtimeConfig),
         )
 
     @Bean
     @ConditionalOnMissingBean(AgentClientService::class)
-    open fun agentClientService(): AgentClientService = ArcAgentClientService()
+    fun agentClientService(): AgentClientService = ArcAgentClientService()
 
     @Bean
     @ConditionalOnMissingBean(AgentRegistryService::class) // Corrected this line
-    open fun agentRegistryService(lmosRuntimeConfig: RuntimeConfiguration): AgentRegistryService {
+    fun agentRegistryService(lmosRuntimeConfig: RuntimeConfiguration): AgentRegistryService {
         val agentRegistryConfig = runtimeProperties.agentRegistry
         return when (agentRegistryConfig.type) {
             AgentRegistryType.API -> {
@@ -79,7 +79,7 @@ open class RuntimeAutoConfiguration(
 
     @Bean
     @ConditionalOnMissingBean(AgentRoutingService::class)
-    open fun agentRoutingService(): AgentRoutingService =
+    fun agentRoutingService(): AgentRoutingService =
         when (runtimeProperties.router.type) {
             Type.EXPLICIT -> ExplicitAgentRoutingService()
             Type.LLM -> {
@@ -93,7 +93,7 @@ open class RuntimeAutoConfiguration(
 
     @Bean
     @ConditionalOnMissingBean(AgentClassifierService::class)
-    open fun agentClassifierService(classifier: AgentClassifier): AgentClassifierService = LmosAgentClassifierService(classifier)
+    fun agentClassifierService(classifier: AgentClassifier): AgentClassifierService = LmosAgentClassifierService(classifier)
 
     @Bean
     @Qualifier("disambiguationChatModel")
@@ -103,7 +103,7 @@ open class RuntimeAutoConfiguration(
         havingValue = "true",
         matchIfMissing = false,
     )
-    open fun disambiguationChatModel(runtimeProperties: RuntimeProperties): ChatModel =
+    fun disambiguationChatModel(runtimeProperties: RuntimeProperties): ChatModel =
         // Registers a dedicated ChatModel for disambiguation, so that we can use
         // different models for disambiguation and agent classification.
         LangChainChatModelFactory.createClient(
@@ -126,7 +126,7 @@ open class RuntimeAutoConfiguration(
         havingValue = "true",
         matchIfMissing = false,
     )
-    open fun disambiguationHandler(
+    fun disambiguationHandler(
         @Qualifier("disambiguationChatModel") chatModel: ChatModel,
         lmosRuntimeProperties: RuntimeProperties,
     ): DisambiguationHandler =
@@ -138,7 +138,7 @@ open class RuntimeAutoConfiguration(
 
     @Bean
     @ConditionalOnMissingBean(ConversationHandler::class)
-    open fun conversationHandler(
+    fun conversationHandler(
         agentRoutingService: AgentRoutingService,
         agentClassifierService: AgentClassifierService,
         channelRoutingRepository: ChannelRoutingRepository,

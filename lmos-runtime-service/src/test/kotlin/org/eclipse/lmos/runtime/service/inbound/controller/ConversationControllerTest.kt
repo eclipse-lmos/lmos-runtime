@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.eclipse.lmos.arc.api.Message
 import org.eclipse.lmos.runtime.core.exception.ErrorMessage
 import org.eclipse.lmos.runtime.core.exception.NoRoutingInfoFoundException
@@ -70,7 +70,7 @@ class ConversationControllerTest {
 
     @Test
     fun `chat endpoint returns successful response`(): Unit =
-        runBlocking {
+        runTest {
             val conversationId = "test-conversation-id"
             val tenantId = "test-tenant-id"
             val turnId = "test-turn-id"
@@ -99,7 +99,7 @@ class ConversationControllerTest {
 
     @Test
     fun `chat endpoint handles empty conversation`(): Unit =
-        runBlocking {
+        runTest {
             val conversationId = "empty-conversation-id"
             val tenantId = "empty-tenant-id"
             val turnId = "empty-turn-id"
@@ -138,7 +138,7 @@ class ConversationControllerTest {
 
     @Test
     fun `chat endpoint handles missing turn id`(): Unit =
-        runBlocking {
+        runTest {
             val conversationId = "no-turn-id-conversation"
             val tenantId = "no-turn-id-tenant"
 
@@ -154,7 +154,7 @@ class ConversationControllerTest {
 
     @Test
     fun `chat endpoint handles invalid request body`(): Unit =
-        runBlocking {
+        runTest {
             val conversationId = "invalid-body-conversation"
             val tenantId = "invalid-body-tenant"
             val turnId = "invalid-turn-id"
@@ -172,7 +172,7 @@ class ConversationControllerTest {
 
     @Test
     fun `chat endpoint handles NoRoutingInfoFoundException`(): Unit =
-        runBlocking {
+        runTest {
             val conversationId = "invalid-body-conversation"
             val tenantId = "invalid-body-tenant"
             val turnId = "invalid-turn-id"

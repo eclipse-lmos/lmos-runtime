@@ -8,9 +8,8 @@ package org.eclipse.lmos.runtime.service.inbound.controller
 
 import io.mockk.*
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.eclipse.lmos.arc.agent.client.graphql.GraphQlAgentClient
-import org.eclipse.lmos.arc.api.AgentRequest
 import org.eclipse.lmos.arc.api.AgentResult
 import org.eclipse.lmos.arc.api.Message
 import org.eclipse.lmos.runtime.core.model.*
@@ -32,7 +31,6 @@ import org.springframework.test.web.reactive.server.expectBody
 import java.util.*
 
 abstract class AbstractConversationControllerIntegrationTest : BaseWireMockTest() {
-
     @Autowired
     private lateinit var webTestClient: WebTestClient
 
@@ -48,7 +46,7 @@ abstract class AbstractConversationControllerIntegrationTest : BaseWireMockTest(
 
     @Test
     fun `successful conversation handling with single message`(): Unit =
-        runBlocking {
+        runTest {
             // Arrange
             val conversationId = UUID.randomUUID().toString()
             val tenantId = "en"
@@ -79,7 +77,7 @@ abstract class AbstractConversationControllerIntegrationTest : BaseWireMockTest(
 
     @Test
     fun `conversation handling with multiple messages`(): Unit =
-        runBlocking {
+        runTest {
             val conversationId = UUID.randomUUID().toString()
             val tenantId = "en"
             val turnId = UUID.randomUUID().toString()
@@ -118,7 +116,7 @@ abstract class AbstractConversationControllerIntegrationTest : BaseWireMockTest(
 
     @Test
     fun `multi-turn conversation`(): Unit =
-        runBlocking {
+        runTest {
             // Arrange
             val conversationId = UUID.randomUUID().toString()
             val tenantId = "en"
@@ -176,7 +174,14 @@ abstract class AbstractConversationControllerIntegrationTest : BaseWireMockTest(
     private fun mockAgentCall(agentAddress: Address) {
         val mockGraphQlAgentClient = mockk<GraphQlAgentClient>()
         coEvery { agentClientService.createGraphQlAgentClient(agentAddress) } returns mockGraphQlAgentClient
-        coEvery { mockGraphQlAgentClient.callAgent(any<AgentRequest>()) } returns
+        coEvery {
+            mockGraphQlAgentClient.callAgent(
+                any(),
+                isNull(),
+                isNull(),
+                match { it["x-subset"] == "stable" },
+            )
+        } returns
             flow {
                 emit(
                     AgentResult(
@@ -205,8 +210,8 @@ abstract class AbstractConversationControllerIntegrationTest : BaseWireMockTest(
         )
 
     @TestConfiguration
-    open class TestConfig {
+    class TestConfig {
         @Bean
-        open fun agentClientService() = spyk<ArcAgentClientService>()
+        fun agentClientService() = spyk<ArcAgentClientService>()
     }
 }

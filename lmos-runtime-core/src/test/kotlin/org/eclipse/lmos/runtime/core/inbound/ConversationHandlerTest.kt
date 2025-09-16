@@ -77,20 +77,22 @@ class ConversationHandlerTest {
 
         channelRouting =
             ChannelRouting(
-                metadata = Metadata(
-                    name = "dummy-name",
-                    namespace = "dummy-namespace",
-                    labels = Labels(
-                        channel = "web",
-                        subset = "stable",
-                        tenant = "de",
-                        version = "1.0.0",
+                metadata =
+                    Metadata(
+                        name = "dummy-name",
+                        namespace = "dummy-namespace",
+                        labels =
+                            Labels(
+                                channel = "web",
+                                subset = "stable",
+                                tenant = "de",
+                                version = "1.0.0",
+                            ),
+                        creationTimestamp = "2024-01-01T00:00:00Z",
+                        generation = 1,
+                        resourceVersion = "1",
+                        uid = "uid-123",
                     ),
-                    creationTimestamp = "2024-01-01T00:00:00Z",
-                    generation = 1,
-                    resourceVersion = "1",
-                    uid = "uid-123",
-                ),
                 spec =
                     Spec(
                         capabilityGroups =
@@ -117,7 +119,6 @@ class ConversationHandlerTest {
         // ChannelRoutingRepository Mock: Standardverhalten
         coEvery { channelRoutingRepository.getChannelRouting(any(), "de", any(), any()) } returns channelRouting
     }
-
 
     @Test
     fun `handleConversation with non-null subset should use subset from channel routing`() =
@@ -175,7 +176,6 @@ class ConversationHandlerTest {
                     ).first()
 
             assertEquals(expectedAgentResponse, result)
-
 
             // Verify that getRoutingInformation was not called
             coVerify(exactly = 0) {
@@ -266,7 +266,12 @@ class ConversationHandlerTest {
             val conversation = conversation(listOf(KeyValuePair(ACTIVE_FEATURES_KEY, ACTIVE_FEATURE_KEY_CLASSIFIER)))
             val expectedDisambiguationResponse = AssistantMessage(content = "Please give me more details.")
 
-            mockAgentClassifierService(conversation, channelRouting.toRoutingInformation().agentList, tenantId, ClassificationResult(emptyList(), emptyList()))
+            mockAgentClassifierService(
+                conversation,
+                channelRouting.toRoutingInformation().agentList,
+                tenantId,
+                ClassificationResult(emptyList(), emptyList()),
+            )
             mockDisambiguationHandler(conversation, emptyList(), expectedDisambiguationResponse)
 
             // when
@@ -289,7 +294,12 @@ class ConversationHandlerTest {
             val turnId = "turn-1"
             val conversation = conversation(listOf(KeyValuePair(ACTIVE_FEATURES_KEY, ACTIVE_FEATURE_KEY_CLASSIFIER)))
 
-            mockAgentClassifierService(conversation, channelRouting.toRoutingInformation().agentList, tenantId, ClassificationResult(emptyList(), emptyList()))
+            mockAgentClassifierService(
+                conversation,
+                channelRouting.toRoutingInformation().agentList,
+                tenantId,
+                ClassificationResult(emptyList(), emptyList()),
+            )
 
             val conversationHandler =
                 DefaultConversationHandler(

@@ -9,7 +9,6 @@ package org.eclipse.lmos.runtime.inbound
 import kotlinx.coroutines.flow.Flow
 import org.eclipse.lmos.classifier.core.ClassificationResult
 import org.eclipse.lmos.runtime.config.RuntimeAutoConfiguration
-import org.eclipse.lmos.runtime.core.cache.TenantAwareCache
 import org.eclipse.lmos.runtime.core.inbound.ConversationHandler
 import org.eclipse.lmos.runtime.core.inbound.DefaultConversationHandler
 import org.eclipse.lmos.runtime.core.model.Address
@@ -130,7 +129,6 @@ class LmosRuntimeAutoConfigurationCustomBeansTest {
                     TODO("Not yet implemented")
                 }
             }
-
 
         @Bean
         open fun conversationService(): ConversationHandler =

@@ -15,7 +15,6 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import org.eclipse.lmos.runtime.core.RuntimeConfiguration
 import org.eclipse.lmos.runtime.core.constants.RuntimeConstants.SUBSET
@@ -61,20 +60,16 @@ open class LmosOperatorChannelRoutingRepository(
 ) : ChannelRoutingRepository {
     private val log = LoggerFactory.getLogger(LmosOperatorChannelRoutingRepository::class.java)
 
-    @OptIn(ExperimentalSerializationApi::class)
-    private val json =
-        Json {
-            ignoreUnknownKeys = true
-            coerceInputValues = true
-            encodeDefaults = true
-            decodeEnumsCaseInsensitive = true
-        }
-
     private val client: HttpClient =
         HttpClient(CIO) {
             install(ContentNegotiation) {
                 json(
-                    json = json,
+                    json =
+                        Json {
+                            ignoreUnknownKeys = true
+                            coerceInputValues = true
+                            encodeDefaults = true
+                        },
                 )
             }
         }
