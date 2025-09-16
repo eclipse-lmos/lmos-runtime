@@ -9,7 +9,6 @@ package org.eclipse.lmos.runtime.core.inbound
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.onEach
 import org.eclipse.lmos.runtime.core.channelrouting.ChannelRoutingRepository
 import org.eclipse.lmos.runtime.core.disambiguation.DisambiguationHandler
 import org.eclipse.lmos.runtime.core.exception.AgentNotFoundException
@@ -63,7 +62,7 @@ class DefaultConversationHandler(
                     subset,
                 )
             val routingInformation = channelRouting.toRoutingInformation()
-            log.info("Using routingInformation: $routingInformation")
+            log.debug("Using routingInformation: {}", routingInformation)
 
             val agentName: String
             val agentAddress: Address
@@ -105,9 +104,7 @@ class DefaultConversationHandler(
                     agentName,
                     agentAddress,
                     routingInformation.subset,
-                ).onEach {
-                    log.info("Agent Response: ${it.content}")
-                }
+                )
         }
 
     private fun useClassifier(conversation: Conversation): Boolean {

@@ -13,11 +13,12 @@ import org.junit.jupiter.api.Assertions.assertInstanceOf
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.ApplicationContext
 import org.springframework.test.context.TestPropertySource
 
-@SpringBootTest(classes = [RuntimeAutoConfiguration::class, ModelAgentClassifierAutoConfiguration::class])
+@SpringBootTest(classes = [RuntimeAutoConfiguration::class, ModelAgentClassifierAutoConfiguration::class, CacheAutoConfiguration::class])
 @TestPropertySource(
     properties = [
         "lmos.runtime.agent-registry.type=API",
@@ -30,6 +31,7 @@ import org.springframework.test.context.TestPropertySource
         "lmos.router.classifier.llm.enabled=true",
         "lmos.router.llm.provider=openai",
         "lmos.router.llm.model=dummy-model",
+        "spring.cache.type=simple",
     ],
 )
 class ApiAgentRegistryLoadedConditionTest {

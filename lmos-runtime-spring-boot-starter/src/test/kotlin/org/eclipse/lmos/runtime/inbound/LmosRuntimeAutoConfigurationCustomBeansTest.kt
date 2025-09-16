@@ -27,6 +27,7 @@ import org.eclipse.lmos.runtime.properties.RuntimeProperties
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.ApplicationContext
@@ -34,15 +35,17 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Import
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
-import kotlin.jvm.java
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, classes = [RuntimeAutoConfiguration::class])
+@SpringBootTest(
+    webEnvironment = SpringBootTest.WebEnvironment.NONE,
+    classes = [RuntimeAutoConfiguration::class, CacheAutoConfiguration::class],
+)
 @ActiveProfiles("test")
 @TestPropertySource(
     properties = [
         "lmos.runtime.router.type=LLM", "lmos.runtime.openAi=dummyOpenAiKey", "lmos.runtime.disambiguation.enabled=false",
         "lmos.runtime.disambiguation.llm.provider=openai", "lmos.runtime.disambiguation.llm.model=dummy-model",
-        "lmos.router.classifier.llm.enabled=true",
+        "lmos.router.classifier.llm.enabled=true", "spring.cache.type=simple",
     ],
 )
 @Import(LmosRuntimeAutoConfigurationCustomBeansTest.CustomBeanConfig::class)

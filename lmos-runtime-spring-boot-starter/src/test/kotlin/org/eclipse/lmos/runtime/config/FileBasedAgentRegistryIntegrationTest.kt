@@ -13,10 +13,17 @@ import org.eclipse.lmos.runtime.core.service.outbound.AgentRegistryService
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.TestPropertySource
 
-@SpringBootTest(classes = [RuntimeAutoConfiguration::class, ModelAgentClassifierAutoConfiguration::class]) // Minimal context
+@SpringBootTest(
+    classes = [
+        RuntimeAutoConfiguration::class,
+        ModelAgentClassifierAutoConfiguration::class,
+        CacheAutoConfiguration::class,
+    ],
+) // Minimal context
 @TestPropertySource(
     properties = [
         "lmos.runtime.agent-registry.type=FILE",
@@ -29,6 +36,7 @@ import org.springframework.test.context.TestPropertySource
         "lmos.router.classifier.llm.enabled=true",
         "lmos.router.llm.provider=openai",
         "lmos.router.llm.model=dummy-model",
+        "spring.cache.type=simple",
     ],
 )
 class FileBasedAgentRegistryIntegrationTest {

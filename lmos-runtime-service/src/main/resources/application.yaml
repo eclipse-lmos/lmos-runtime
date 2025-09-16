@@ -78,6 +78,8 @@ spring:
     name: lmos-runtime
   main:
     banner-mode: off
+  cache:
+    type: redis
 
 logging:
   level:
@@ -86,6 +88,7 @@ logging:
       springframework: WARN
     sun:
       rmi: ERROR
+    org.springframework.cache.interceptor.CacheInterceptor: DEBUG
 
 management:
   server:
@@ -109,3 +112,4 @@ management:
 graphql:
   packages:
   - org.eclipse.lmos
+

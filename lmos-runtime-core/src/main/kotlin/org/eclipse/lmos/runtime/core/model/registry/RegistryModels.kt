@@ -19,7 +19,7 @@ data class ChannelRouting(
     val metadata: Metadata,
     val spec: Spec,
     val subset: String? = null,
-)
+) : java.io.Serializable
 
 @Serializable
 data class Metadata(
@@ -30,7 +30,7 @@ data class Metadata(
     val generation: Int? = null,
     val resourceVersion: String? = null,
     val uid: String? = null,
-)
+) : java.io.Serializable
 
 @Serializable
 data class Labels(
@@ -38,12 +38,12 @@ data class Labels(
     val subset: String? = null,
     val tenant: String,
     val version: String,
-)
+) : java.io.Serializable
 
 @Serializable
 data class Spec(
     val capabilityGroups: List<CapabilityGroup>,
-)
+) : java.io.Serializable
 
 @Serializable
 data class CapabilityGroup(
@@ -51,7 +51,7 @@ data class CapabilityGroup(
     val name: String,
     val description: String,
     val capabilities: List<Capability>,
-)
+) : java.io.Serializable
 
 @Serializable
 data class Capability(
@@ -61,7 +61,7 @@ data class Capability(
     val description: String,
     val host: String,
     val requiredVersion: String? = null,
-)
+) : java.io.Serializable
 
 data class RoutingInformation(
     val agentList: List<Agent>,

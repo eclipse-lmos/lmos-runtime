@@ -34,7 +34,6 @@ class ConversationController(
         @RequestHeader(TURN_ID) turnId: String,
     ): ResponseEntity<AssistantMessage> {
         val assistantMessage = conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId, subsetHeader).first()
-        log.info("Response generated: ${assistantMessage.content}")
         return ResponseEntity.ok(assistantMessage)
     }
 }

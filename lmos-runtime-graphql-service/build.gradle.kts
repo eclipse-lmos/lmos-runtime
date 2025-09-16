@@ -7,8 +7,8 @@ import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
  */
 
 plugins {
-    id("org.springframework.boot")
-    id("io.spring.dependency-management")
+    id("org.springframework.boot") version "3.5.5"
+    id("io.spring.dependency-management") version "1.1.7"
     id("com.citi.helm")
     id("com.citi.helm-publish")
 }
