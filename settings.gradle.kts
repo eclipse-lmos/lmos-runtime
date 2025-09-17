@@ -6,8 +6,6 @@
 
 rootProject.name = "lmos-runtime"
 
-// include("lmos-kernel")
-// include("lmos-kernel-impl")
 include("lmos-runtime-core")
 include("lmos-runtime-spring-boot-starter")
 include("lmos-runtime-service")
