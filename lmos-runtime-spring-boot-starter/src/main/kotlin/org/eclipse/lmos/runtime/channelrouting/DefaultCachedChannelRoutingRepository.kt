@@ -6,18 +6,20 @@
 
 package org.eclipse.lmos.runtime.channelrouting
 
+import org.eclipse.lmos.runtime.core.channelrouting.CachedChannelRoutingRepository
 import org.eclipse.lmos.runtime.core.channelrouting.ChannelRoutingRepository
 import org.eclipse.lmos.runtime.core.model.registry.ChannelRouting
 import org.springframework.cache.annotation.Cacheable
 
-open class CachedChannelRoutingRepository(
+open class DefaultCachedChannelRoutingRepository(
     private val channelRoutingRepository: ChannelRoutingRepository,
-) : ChannelRoutingRepository {
+) : CachedChannelRoutingRepository {
     @Cacheable("channelRoutings", key = "#conversationId + ':' + #tenantId + ':' + #channelId")
     override fun getChannelRouting(
         conversationId: String,
         tenantId: String,
         channelId: String,
         subset: String?,
-    ): ChannelRouting = channelRoutingRepository.getChannelRouting(conversationId, tenantId, channelId, subset)
+        namespace: String?,
+    ): ChannelRouting = channelRoutingRepository.getChannelRouting(tenantId, channelId, subset, namespace)
 }

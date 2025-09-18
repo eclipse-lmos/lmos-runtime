@@ -17,6 +17,11 @@ lmos:
       llm:
         provider: openai
         model: dummy-model
+    tenants:
+        - id: tenant1
+          display-name: Tenant 1
+        - id: tenant2
+          display-name: Tenant 2
   router:
     classifier:
       llm:

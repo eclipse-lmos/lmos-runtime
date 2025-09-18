@@ -15,7 +15,7 @@ import kotlinx.coroutines.test.runTest
 import org.eclipse.lmos.arc.api.Message
 import org.eclipse.lmos.classifier.core.ClassificationResult
 import org.eclipse.lmos.runtime.core.RuntimeConfiguration
-import org.eclipse.lmos.runtime.core.channelrouting.ChannelRoutingRepository
+import org.eclipse.lmos.runtime.core.channelrouting.CachedChannelRoutingRepository
 import org.eclipse.lmos.runtime.core.disambiguation.DisambiguationHandler
 import org.eclipse.lmos.runtime.core.exception.AgentClientException
 import org.eclipse.lmos.runtime.core.exception.AgentNotFoundException
@@ -38,7 +38,7 @@ class ConversationHandlerTest {
     private lateinit var agentRoutingService: AgentRoutingService
     private lateinit var agentClassifierService: AgentClassifierService
     private lateinit var agentClientService: AgentClientService
-    private lateinit var channelRoutingRepository: ChannelRoutingRepository
+    private lateinit var channelRoutingRepository: CachedChannelRoutingRepository
     private lateinit var conversationHandler: ConversationHandler
     private lateinit var lmosRuntimeConfig: RuntimeConfiguration
     private lateinit var disambiguationHandler: DisambiguationHandler
@@ -50,7 +50,7 @@ class ConversationHandlerTest {
         agentRegistryService = mockk<AgentRegistryService>()
         agentRoutingService = ExplicitAgentRoutingService()
         agentClassifierService = mockk<AgentClassifierService>()
-        channelRoutingRepository = mockk<ChannelRoutingRepository>()
+        channelRoutingRepository = mockk<CachedChannelRoutingRepository>()
         lmosRuntimeConfig =
             RuntimeConfiguration(
                 mockk<RuntimeConfiguration.AgentRegistry>(),
@@ -117,7 +117,7 @@ class ConversationHandlerTest {
             )
 
         // ChannelRoutingRepository Mock: Standardverhalten
-        coEvery { channelRoutingRepository.getChannelRouting(any(), "de", any(), any()) } returns channelRouting
+        coEvery { channelRoutingRepository.getChannelRouting(any(), "de", any(), any(), any()) } returns channelRouting
     }
 
     @Test
@@ -226,7 +226,7 @@ class ConversationHandlerTest {
         val turnId = "testTurnId"
 
         coEvery {
-            channelRoutingRepository.getChannelRouting(any(), "fail", any(), any())
+            channelRoutingRepository.getChannelRouting(any(), "fail", any(), any(), any())
         } throws NoRoutingInfoFoundException("Registry Error")
 
         assertThrows<NoRoutingInfoFoundException> {

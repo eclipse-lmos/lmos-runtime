@@ -18,7 +18,6 @@ data class ChannelRouting(
     val kind: String? = null, // Made nullable
     val metadata: Metadata,
     val spec: Spec,
-    val subset: String? = null,
 ) : java.io.Serializable
 
 @Serializable

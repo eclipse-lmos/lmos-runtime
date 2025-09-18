@@ -6,7 +6,6 @@
 
 package org.eclipse.lmos.runtime.service.inbound.controller
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.flow.flow
@@ -38,9 +37,6 @@ import org.springframework.web.reactive.function.BodyInserters
 class ConversationControllerTest {
     @Autowired
     private lateinit var webClient: WebTestClient
-
-    @Autowired
-    private lateinit var objectMapper: ObjectMapper
 
     @Autowired
     private lateinit var conversationHandler: ConversationHandler
@@ -93,8 +89,8 @@ class ConversationControllerTest {
                 .exchange()
                 .expectStatus()
                 .isOk
-                .expectBody()
-                .json(objectMapper.writeValueAsString(assistantMessage))
+                .expectBody(AssistantMessage::class.java)
+                .isEqualTo(assistantMessage)
         }
 
     @Test
@@ -132,8 +128,8 @@ class ConversationControllerTest {
                 .exchange()
                 .expectStatus()
                 .isOk
-                .expectBody()
-                .json(objectMapper.writeValueAsString(assistantMessage))
+                .expectBody(AssistantMessage::class.java)
+                .isEqualTo(assistantMessage)
         }
 
     @Test
@@ -197,13 +193,13 @@ class ConversationControllerTest {
                 .exchange()
                 .expectStatus()
                 .isNotFound
-                .expectBody()
-                .json(objectMapper.writeValueAsString(errorMessage))
+                .expectBody(ErrorMessage::class.java)
+                .isEqualTo(errorMessage)
         }
 
     @TestConfiguration
-    open class CustomBeanConfig {
+    class CustomBeanConfig {
         @Bean
-        open fun conversationHandler(): ConversationHandler = mockk<ConversationHandler>()
+        fun conversationHandler(): ConversationHandler = mockk<ConversationHandler>()
     }
 }

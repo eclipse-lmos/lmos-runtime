@@ -21,6 +21,7 @@ dependencies {
 
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+    implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:$kotlinxSerializationVersion")
     implementation("com.charleskorn.kaml:kaml:0.93.0")
@@ -31,7 +32,7 @@ dependencies {
     implementation("dev.langchain4j:langchain4j:$langChain4jCoreVersion")
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
-    api("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:$kotlinxSerializationVersion")
+
     api("org.eclipse.lmos:lmos-router-llm:$lmosRouterVersion")
     api("org.eclipse.lmos:arc-agent-client:$arcVersion")
     api("org.eclipse.lmos:arc-api:$arcVersion")
@@ -39,7 +40,7 @@ dependencies {
     testImplementation(kotlin("test-junit5"))
     testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
-
+    testImplementation("com.marcinziolo:kotlin-wiremock:2.1.1")
     testFixturesImplementation("com.marcinziolo:kotlin-wiremock:2.1.1")
     testFixturesImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
 }

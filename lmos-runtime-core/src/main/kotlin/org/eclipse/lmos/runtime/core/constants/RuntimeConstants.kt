@@ -13,4 +13,5 @@ object RuntimeConstants {
     }
 
     const val SUBSET = "x-subset"
+    const val NAMESPACE = "x-namespace"
 }

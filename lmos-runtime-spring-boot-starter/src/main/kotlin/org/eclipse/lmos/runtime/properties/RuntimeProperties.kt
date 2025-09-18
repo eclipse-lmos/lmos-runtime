@@ -7,11 +7,13 @@
 package org.eclipse.lmos.runtime.properties
 
 import org.eclipse.lmos.runtime.core.RuntimeConfiguration
+import org.eclipse.lmos.runtime.core.configuration.TenantConfig
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.properties.ConfigurationProperties
 
 @ConfigurationProperties(prefix = "lmos.runtime")
 class RuntimeProperties(
+    val tenants: List<TenantConfig> = emptyList(),
     agentRegistry: AgentRegistry,
     openAi: OpenAI? = null,
     cache: Cache,

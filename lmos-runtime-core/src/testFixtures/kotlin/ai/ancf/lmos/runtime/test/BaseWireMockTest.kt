@@ -10,7 +10,7 @@ import com.github.tomakehurst.wiremock.WireMockServer
 
 abstract class BaseWireMockTest {
     companion object {
-        protected lateinit var wireMockServer: WireMockServer
+        lateinit var wireMockServer: WireMockServer
 
         @JvmStatic
         protected var mockPort: Int = 0

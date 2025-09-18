@@ -15,5 +15,6 @@ object LmosServiceConstants {
     object Headers {
         const val TURN_ID = "x-turn-id"
         const val SUBSET = "x-subset"
+        const val NAMESPACE = "x-namespace"
     }
 }

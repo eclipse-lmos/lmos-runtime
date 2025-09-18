@@ -9,7 +9,7 @@ package org.eclipse.lmos.runtime.core.inbound
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import org.eclipse.lmos.runtime.core.channelrouting.ChannelRoutingRepository
+import org.eclipse.lmos.runtime.core.channelrouting.CachedChannelRoutingRepository
 import org.eclipse.lmos.runtime.core.disambiguation.DisambiguationHandler
 import org.eclipse.lmos.runtime.core.exception.AgentNotFoundException
 import org.eclipse.lmos.runtime.core.model.Address
@@ -37,7 +37,7 @@ interface ConversationHandler {
 class DefaultConversationHandler(
     private val agentRoutingService: AgentRoutingService,
     private val agentClassifierService: AgentClassifierService,
-    private val channelRoutingRepository: ChannelRoutingRepository,
+    private val cachedChannelRoutingRepository: CachedChannelRoutingRepository,
     private val agentClientService: AgentClientService,
     private val disambiguationHandler: DisambiguationHandler?,
 ) : ConversationHandler {
@@ -55,11 +55,12 @@ class DefaultConversationHandler(
 
             // Retrieve ChannelRouting from cached Repository
             val channelRouting =
-                channelRoutingRepository.getChannelRouting(
-                    conversationId,
-                    tenantId,
-                    conversation.systemContext.channelId,
-                    subset,
+                cachedChannelRoutingRepository.getChannelRouting(
+                    conversationId = conversationId,
+                    tenantId = tenantId,
+                    channelId = conversation.systemContext.channelId,
+                    subset = subset,
+                    namespace = null,
                 )
             val routingInformation = channelRouting.toRoutingInformation()
             log.debug("Using routingInformation: {}", routingInformation)

@@ -10,11 +10,12 @@ import dev.langchain4j.model.chat.ChatModel
 import org.eclipse.lmos.classifier.core.AgentClassifier
 import org.eclipse.lmos.classifier.llm.ChatModelClientProperties
 import org.eclipse.lmos.classifier.llm.LangChainChatModelFactory
-import org.eclipse.lmos.runtime.channelrouting.CachedChannelRoutingRepository
+import org.eclipse.lmos.runtime.channelrouting.DefaultCachedChannelRoutingRepository
 import org.eclipse.lmos.runtime.core.AgentRegistryType
 import org.eclipse.lmos.runtime.core.RuntimeConfiguration
+import org.eclipse.lmos.runtime.core.channel.ChannelRepository
+import org.eclipse.lmos.runtime.core.channelrouting.CachedChannelRoutingRepository
 import org.eclipse.lmos.runtime.core.channelrouting.ChannelRoutingRepository
-import org.eclipse.lmos.runtime.core.channelrouting.LmosOperatorChannelRoutingRepository
 import org.eclipse.lmos.runtime.core.disambiguation.DefaultDisambiguationHandler
 import org.eclipse.lmos.runtime.core.disambiguation.DisambiguationHandler
 import org.eclipse.lmos.runtime.core.inbound.ConversationHandler
@@ -29,6 +30,8 @@ import org.eclipse.lmos.runtime.outbound.ArcAgentClientService
 import org.eclipse.lmos.runtime.outbound.LmosAgentClassifierService
 import org.eclipse.lmos.runtime.outbound.LmosAgentRoutingService
 import org.eclipse.lmos.runtime.outbound.LmosOperatorAgentRegistry
+import org.eclipse.lmos.runtime.outbound.LmosOperatorChannelRepository
+import org.eclipse.lmos.runtime.outbound.LmosOperatorChannelRoutingRepository
 import org.eclipse.lmos.runtime.properties.RuntimeProperties
 import org.eclipse.lmos.runtime.properties.Type
 import org.springframework.beans.factory.ObjectProvider
@@ -49,9 +52,18 @@ class RuntimeAutoConfiguration(
     @Bean
     @ConditionalOnMissingBean(ChannelRoutingRepository::class)
     fun channelRoutingRepository(runtimeConfig: RuntimeConfiguration): ChannelRoutingRepository =
-        CachedChannelRoutingRepository(
-            LmosOperatorChannelRoutingRepository(runtimeConfig),
+        LmosOperatorChannelRoutingRepository(runtimeConfig)
+
+    @Bean
+    @ConditionalOnMissingBean(CachedChannelRoutingRepository::class)
+    fun cachedChannelRoutingRepository(channelRoutingRepository: ChannelRoutingRepository): CachedChannelRoutingRepository =
+        DefaultCachedChannelRoutingRepository(
+            channelRoutingRepository,
         )
+
+    @Bean
+    @ConditionalOnMissingBean(ChannelRepository::class)
+    fun channelRepository(runtimeConfig: RuntimeConfiguration): ChannelRepository = LmosOperatorChannelRepository(runtimeConfig)
 
     @Bean
     @ConditionalOnMissingBean(AgentClientService::class)
@@ -143,14 +155,14 @@ class RuntimeAutoConfiguration(
     fun conversationHandler(
         agentRoutingService: AgentRoutingService,
         agentClassifierService: AgentClassifierService,
-        channelRoutingRepository: ChannelRoutingRepository,
+        cachedChannelRoutingRepository: CachedChannelRoutingRepository,
         agentClientService: AgentClientService,
         disambiguationHandlerProvider: ObjectProvider<DisambiguationHandler>,
     ): ConversationHandler =
         DefaultConversationHandler(
             agentRoutingService,
             agentClassifierService,
-            channelRoutingRepository,
+            cachedChannelRoutingRepository,
             agentClientService,
             disambiguationHandlerProvider.ifAvailable,
         )
