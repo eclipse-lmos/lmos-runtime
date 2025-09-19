@@ -7,8 +7,8 @@
 package org.eclipse.lmos.runtime.config
 
 import org.eclipse.lmos.classifier.llm.starter.ModelAgentClassifierAutoConfiguration
-import org.eclipse.lmos.runtime.core.service.outbound.AgentRegistryService
-import org.eclipse.lmos.runtime.outbound.LmosOperatorAgentRegistry
+import org.eclipse.lmos.runtime.core.channelrouting.ChannelRoutingRepository
+import org.eclipse.lmos.runtime.outbound.OperatorChannelRoutingRepository
 import org.junit.jupiter.api.Assertions.assertInstanceOf
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
@@ -39,9 +39,9 @@ class ApiAgentRegistryLoadedConditionTest {
     private lateinit var context: ApplicationContext
 
     @Test
-    fun `should load LmosOperatorAgentRegistry when type is API`() {
-        val agentRegistryService = context.getBean(AgentRegistryService::class.java)
-        assertNotNull(agentRegistryService)
-        assertInstanceOf(LmosOperatorAgentRegistry::class.java, agentRegistryService)
+    fun `should load OperatorChannelRoutingRepository when type is API`() {
+        val channelRepository = context.getBean(ChannelRoutingRepository::class.java)
+        assertNotNull(channelRepository)
+        assertInstanceOf(OperatorChannelRoutingRepository::class.java, channelRepository)
     }
 }

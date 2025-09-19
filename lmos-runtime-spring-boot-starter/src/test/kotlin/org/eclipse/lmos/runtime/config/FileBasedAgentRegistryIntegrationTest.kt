@@ -8,8 +8,9 @@ package org.eclipse.lmos.runtime.config
 
 import kotlinx.coroutines.test.runTest
 import org.eclipse.lmos.classifier.llm.starter.ModelAgentClassifierAutoConfiguration
+import org.eclipse.lmos.runtime.core.channelrouting.ChannelRoutingRepository
 import org.eclipse.lmos.runtime.core.exception.NoRoutingInfoFoundException
-import org.eclipse.lmos.runtime.core.service.outbound.AgentRegistryService
+import org.eclipse.lmos.runtime.core.model.registry.toRoutingInformation
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -41,7 +42,7 @@ import org.springframework.test.context.TestPropertySource
 )
 class FileBasedAgentRegistryIntegrationTest {
     @Autowired
-    private lateinit var agentRegistryService: AgentRegistryService
+    private lateinit var channelRoutingRepository: ChannelRoutingRepository
 
     // If ConversationHandler is too complex to set up, test AgentRegistryService directly
     // @Autowired
@@ -50,14 +51,14 @@ class FileBasedAgentRegistryIntegrationTest {
     @Test
     fun `should retrieve routing information using FileBasedAgentRegistryService via Spring context`() =
         runTest {
-            val routingInfo = agentRegistryService.getRoutingInformation("integ-acme", "web", "stable")
+            val routingInfo = channelRoutingRepository.getChannelRouting("integ-acme", "web", "stable").toRoutingInformation()
             assertNotNull(routingInfo)
             assertEquals(1, routingInfo.agentList.size)
             assertEquals("integ-contract-agent", routingInfo.agentList[0].name)
             assertEquals("stable", routingInfo.subset)
 
             // Test a case without subset
-            val routingInfoNoSubset = agentRegistryService.getRoutingInformation("integ-acme", "app", null)
+            val routingInfoNoSubset = channelRoutingRepository.getChannelRouting("integ-acme", "app", null).toRoutingInformation()
             assertNotNull(routingInfoNoSubset)
             assertEquals(1, routingInfoNoSubset.agentList.size)
             assertEquals("integ-app-agent", routingInfoNoSubset.agentList[0].name)
@@ -66,9 +67,9 @@ class FileBasedAgentRegistryIntegrationTest {
 
     @Test
     fun `should throw NoRoutingInfoFoundException for non-existent entry via Spring context`() =
-        assertThrows(NoRoutingInfoFoundException::class.java) {
-            runTest {
-                agentRegistryService.getRoutingInformation("non-existent", "channel", null)
+        runTest {
+            assertThrows(NoRoutingInfoFoundException::class.java) {
+                channelRoutingRepository.getChannelRouting("non-existent", "channel", null).toRoutingInformation()
             }
         }
 }

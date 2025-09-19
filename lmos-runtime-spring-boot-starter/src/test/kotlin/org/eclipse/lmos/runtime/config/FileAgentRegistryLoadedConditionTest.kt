@@ -7,8 +7,8 @@
 package org.eclipse.lmos.runtime.config
 
 import org.eclipse.lmos.classifier.llm.starter.ModelAgentClassifierAutoConfiguration
-import org.eclipse.lmos.runtime.core.service.outbound.AgentRegistryService
-import org.eclipse.lmos.runtime.core.service.outbound.FileBasedAgentRegistryService
+import org.eclipse.lmos.runtime.core.channelrouting.ChannelRoutingRepository
+import org.eclipse.lmos.runtime.outbound.FileBasedChannelRoutingRepository
 import org.junit.jupiter.api.Assertions.assertInstanceOf
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
@@ -40,8 +40,8 @@ class FileAgentRegistryLoadedConditionTest {
 
     @Test
     fun `should load FileBasedAgentRegistryService when type is FILE`() {
-        val agentRegistryService = context.getBean(AgentRegistryService::class.java)
+        val agentRegistryService = context.getBean(ChannelRoutingRepository::class.java)
         assertNotNull(agentRegistryService)
-        assertInstanceOf(FileBasedAgentRegistryService::class.java, agentRegistryService)
+        assertInstanceOf(FileBasedChannelRoutingRepository::class.java, agentRegistryService)
     }
 }

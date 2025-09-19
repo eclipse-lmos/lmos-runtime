@@ -15,10 +15,10 @@ import org.eclipse.lmos.runtime.core.exception.AgentNotFoundException
 import org.eclipse.lmos.runtime.core.model.Address
 import org.eclipse.lmos.runtime.core.model.AssistantMessage
 import org.eclipse.lmos.runtime.core.model.Conversation
+import org.eclipse.lmos.runtime.core.model.registry.toRoutingInformation
 import org.eclipse.lmos.runtime.core.service.outbound.AgentClassifierService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentClientService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentRoutingService
-import org.eclipse.lmos.runtime.outbound.toRoutingInformation
 import org.slf4j.LoggerFactory
 
 const val ACTIVE_FEATURES_KEY = "activeFeatures"

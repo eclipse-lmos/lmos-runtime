@@ -7,7 +7,8 @@
 package org.eclipse.lmos.runtime.service.inbound.controller
 
 import kotlinx.coroutines.coroutineScope
-import org.eclipse.lmos.runtime.core.service.outbound.AgentRegistryService
+import org.eclipse.lmos.runtime.core.channelrouting.ChannelRoutingRepository
+import org.eclipse.lmos.runtime.core.model.registry.toRoutingInformation
 import org.eclipse.lmos.runtime.service.constants.ServiceConstants.Endpoints.BASE_PATH
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("$BASE_PATH/agents")
 class AgentsController(
-    private val agentRegistryService: AgentRegistryService,
+    private val channelRoutingRepository: ChannelRoutingRepository,
 ) {
     data class CapabilitySummary(
         val id: String,
@@ -50,7 +51,7 @@ class AgentsController(
         @RequestParam(required = false) subset: String?,
     ): AgentsResponse =
         coroutineScope {
-            val routingInformation = agentRegistryService.getRoutingInformation(tenantId, channelId, subset)
+            val routingInformation = channelRoutingRepository.getChannelRouting(tenantId, channelId, subset).toRoutingInformation()
             AgentsResponse(
                 subset = routingInformation.subset,
                 agents =

@@ -22,14 +22,12 @@ import org.eclipse.lmos.runtime.core.inbound.ConversationHandler
 import org.eclipse.lmos.runtime.core.inbound.DefaultConversationHandler
 import org.eclipse.lmos.runtime.core.service.outbound.AgentClassifierService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentClientService
-import org.eclipse.lmos.runtime.core.service.outbound.AgentRegistryService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentRoutingService
-import org.eclipse.lmos.runtime.core.service.outbound.FileBasedAgentRegistryService
 import org.eclipse.lmos.runtime.core.service.routing.ExplicitAgentRoutingService
 import org.eclipse.lmos.runtime.outbound.ArcAgentClientService
 import org.eclipse.lmos.runtime.outbound.DefaultAgentClassifierService
+import org.eclipse.lmos.runtime.outbound.FileBasedChannelRoutingRepository
 import org.eclipse.lmos.runtime.outbound.LmosAgentRoutingService
-import org.eclipse.lmos.runtime.outbound.LmosOperatorAgentRegistry
 import org.eclipse.lmos.runtime.outbound.OperatorChannelRepository
 import org.eclipse.lmos.runtime.outbound.OperatorChannelRoutingRepository
 import org.eclipse.lmos.runtime.properties.RuntimeProperties
@@ -50,9 +48,8 @@ class RuntimeAutoConfiguration(
     private val runtimeProperties: RuntimeProperties,
 ) {
     @Bean
-    @ConditionalOnMissingBean(ChannelRoutingRepository::class)
-    fun channelRoutingRepository(runtimeConfig: RuntimeConfiguration): ChannelRoutingRepository =
-        OperatorChannelRoutingRepository(runtimeConfig)
+    @ConditionalOnMissingBean(ChannelRepository::class)
+    fun channelRepository(runtimeConfig: RuntimeConfiguration): ChannelRepository = OperatorChannelRepository(runtimeConfig)
 
     @Bean
     @ConditionalOnMissingBean(CachedChannelRoutingRepository::class)
@@ -62,16 +59,12 @@ class RuntimeAutoConfiguration(
         )
 
     @Bean
-    @ConditionalOnMissingBean(ChannelRepository::class)
-    fun channelRepository(runtimeConfig: RuntimeConfiguration): ChannelRepository = OperatorChannelRepository(runtimeConfig)
-
-    @Bean
     @ConditionalOnMissingBean(AgentClientService::class)
     fun agentClientService(): AgentClientService = ArcAgentClientService()
 
     @Bean
-    @ConditionalOnMissingBean(AgentRegistryService::class) // Corrected this line
-    fun agentRegistryService(lmosRuntimeConfig: RuntimeConfiguration): AgentRegistryService {
+    @ConditionalOnMissingBean(ChannelRoutingRepository::class) // Corrected this line
+    fun channelRoutingRepository(lmosRuntimeConfig: RuntimeConfiguration): ChannelRoutingRepository {
         val agentRegistryConfig = runtimeProperties.agentRegistry
         return when (agentRegistryConfig.type) {
             AgentRegistryType.API -> {
@@ -79,14 +72,14 @@ class RuntimeAutoConfiguration(
                     ?: throw IllegalArgumentException(
                         "LMOS runtime agent registry type is API, but 'lmos.runtime.agent-registry.base-url' is not configured.",
                     )
-                LmosOperatorAgentRegistry(runtimeProperties)
+                OperatorChannelRoutingRepository(runtimeProperties)
             }
             AgentRegistryType.FILE -> {
                 agentRegistryConfig.fileName
                     ?: throw IllegalArgumentException(
                         "LMOS runtime agent registry type is FILE, but 'lmos.runtime.agent-registry.filename' is not configured.",
                     )
-                FileBasedAgentRegistryService(lmosRuntimeConfig.agentRegistry)
+                FileBasedChannelRoutingRepository(lmosRuntimeConfig)
             }
         }
     }

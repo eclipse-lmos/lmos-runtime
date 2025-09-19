@@ -67,6 +67,8 @@ data class RoutingInformation(
     val subset: String?,
 )
 
+fun ChannelRouting.toRoutingInformation() = RoutingInformation(this.toAgent(), this.metadata.labels.subset)
+
 fun ChannelRouting.toAgent(): List<Agent> {
     val agentVersion = this.metadata.labels.version
     return this.spec.capabilityGroups

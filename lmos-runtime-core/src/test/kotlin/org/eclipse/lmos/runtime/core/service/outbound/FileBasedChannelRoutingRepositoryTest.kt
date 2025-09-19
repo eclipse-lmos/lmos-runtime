@@ -6,29 +6,31 @@
 
 package org.eclipse.lmos.runtime.core.service.outbound
 
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.eclipse.lmos.runtime.core.AgentRegistryType
 import org.eclipse.lmos.runtime.core.RuntimeConfiguration
 import org.eclipse.lmos.runtime.core.exception.NoRoutingInfoFoundException
+import org.eclipse.lmos.runtime.core.model.registry.toRoutingInformation
+import org.eclipse.lmos.runtime.outbound.FileBasedChannelRoutingRepository
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.io.InputStream
 import java.net.URL
 
-class FileBasedAgentRegistryServiceTest {
+class FileBasedChannelRoutingRepositoryTest {
     private fun getTestResourcePath(fileName: String): String =
-        FileBasedAgentRegistryServiceTest::class.java.classLoader
+        FileBasedChannelRoutingRepositoryTest::class.java.classLoader
             .getResource(fileName)
             ?.path
             ?: throw IllegalStateException("Test resource $fileName not found.")
 
     @Test
     fun `should load and parse valid YAML and find routing information`() =
-        runBlocking {
+        runTest {
             val lmosRuntimeConfig =
                 getLmosRuntimeConfig("test-agent-registry.yaml")
-            val service = FileBasedAgentRegistryService(lmosRuntimeConfig.agentRegistry)
-            val routingInfo = service.getRoutingInformation("acme", "web", "stable")
+            val service = FileBasedChannelRoutingRepository(lmosRuntimeConfig)
+            val routingInfo = service.getChannelRouting("acme", "web", "stable").toRoutingInformation()
 
             assertNotNull(routingInfo)
             assertEquals(1, routingInfo.agentList.size)
@@ -60,12 +62,12 @@ class FileBasedAgentRegistryServiceTest {
 
     @Test
     fun `should find routing information when no subset is requested and a stable match exists`() =
-        runBlocking {
+        runTest {
             // This test assumes that if a specific subset is not found or not requested,
             // a match with no subset label is considered.
             // The current implementation requires subset to be null in labels for this.
-            val service = FileBasedAgentRegistryService(getLmosRuntimeConfig("test-agent-registry.yaml").agentRegistry)
-            val routingInfo = service.getRoutingInformation("acme", "web", null) // Requesting without subset
+            val service = FileBasedChannelRoutingRepository(getLmosRuntimeConfig("test-agent-registry.yaml"))
+            val routingInfo = service.getChannelRouting("acme", "web", null).toRoutingInformation() // Requesting without subset
 
             assertNotNull(routingInfo)
             assertEquals(1, routingInfo.agentList.size)
@@ -76,9 +78,9 @@ class FileBasedAgentRegistryServiceTest {
 
     @Test
     fun `should find routing information for different tenant and channel`() =
-        runBlocking {
-            val service = FileBasedAgentRegistryService(getLmosRuntimeConfig("test-agent-registry.yaml").agentRegistry)
-            val routingInfo = service.getRoutingInformation("another-tenant", "app", "beta")
+        runTest {
+            val service = FileBasedChannelRoutingRepository(getLmosRuntimeConfig("test-agent-registry.yaml"))
+            val routingInfo = service.getChannelRouting("another-tenant", "app", "beta").toRoutingInformation()
 
             assertNotNull(routingInfo)
             assertEquals(1, routingInfo.agentList.size)
@@ -88,21 +90,21 @@ class FileBasedAgentRegistryServiceTest {
 
     @Test
     fun `should throw NoRoutingInfoFoundException when no match found`() =
-        runBlocking {
-            val service = FileBasedAgentRegistryService(getLmosRuntimeConfig("test-agent-registry.yaml").agentRegistry)
+        runTest {
+            val service = FileBasedChannelRoutingRepository(getLmosRuntimeConfig("test-agent-registry.yaml"))
 
             assertThrows(NoRoutingInfoFoundException::class.java) {
-                runBlocking { service.getRoutingInformation("nonexistent", "channel", null) }
+                service.getChannelRouting("nonexistent", "channel", null).toRoutingInformation()
             }
         }
 
     @Test
     fun `should throw NoRoutingInfoFoundException when subset does not match`() =
-        runBlocking {
-            val service = FileBasedAgentRegistryService(getLmosRuntimeConfig("test-agent-registry.yaml").agentRegistry)
+        runTest {
+            val service = FileBasedChannelRoutingRepository(getLmosRuntimeConfig("test-agent-registry.yaml"))
 
             assertThrows(NoRoutingInfoFoundException::class.java) {
-                runBlocking { service.getRoutingInformation("acme", "web", "nonexistent-subset") }
+                service.getChannelRouting("acme", "web", "nonexistent-subset").toRoutingInformation()
             }
         }
 
@@ -110,14 +112,14 @@ class FileBasedAgentRegistryServiceTest {
     fun `should throw IllegalArgumentException for non-existent file`() {
         val exception =
             assertThrows(IllegalArgumentException::class.java) {
-                FileBasedAgentRegistryService(getLmosRuntimeConfig("non-existent-file.yaml").agentRegistry)
+                FileBasedChannelRoutingRepository(getLmosRuntimeConfig("non-existent-file.yaml"))
             }
         assertTrue(exception.message?.contains("Agent registry file not found") == true)
     }
 
     @Test
     fun `should throw IllegalArgumentException for malformed YAML`() =
-        runBlocking {
+        runTest {
             val malformedContent = "channelRoutings: - metadata: name: broken"
             val fileName = "malformed.yaml"
 
@@ -125,7 +127,7 @@ class FileBasedAgentRegistryServiceTest {
             withTemporaryResource(fileName, malformedContent) {
                 val exception =
                     assertThrows(IllegalArgumentException::class.java) {
-                        FileBasedAgentRegistryService(getLmosRuntimeConfig(fileName).agentRegistry)
+                        FileBasedChannelRoutingRepository(getLmosRuntimeConfig(fileName))
                     }
                 assertTrue(exception.message?.contains("Error parsing agent registry file") == true)
             }
@@ -133,14 +135,14 @@ class FileBasedAgentRegistryServiceTest {
 
     @Test
     fun `should handle empty channelRoutings list`() =
-        runBlocking {
+        runTest {
             val emptyContent = "channelRoutings: []"
             val fileName = "empty.yaml"
 
             withTemporaryResource(fileName, emptyContent) {
-                val service = FileBasedAgentRegistryService(getLmosRuntimeConfig(fileName).agentRegistry)
+                val service = FileBasedChannelRoutingRepository(getLmosRuntimeConfig(fileName))
                 assertThrows(NoRoutingInfoFoundException::class.java) {
-                    runBlocking { service.getRoutingInformation("acme", "web", "stable") }
+                    service.getChannelRouting("acme", "web", "stable").toRoutingInformation()
                 }
             }
         }
@@ -163,7 +165,7 @@ class FileBasedAgentRegistryServiceTest {
 
     @Test
     fun `should handle completely empty YAML file`() =
-        runBlocking {
+        runTest {
             val fileName = "completely-empty.yaml"
             val emptyContent = "" // Empty content
 
@@ -172,7 +174,7 @@ class FileBasedAgentRegistryServiceTest {
                 // Kaml might throw an exception if it can't deserialize to AgentRegistryDocument (e.g. "channelRoutings" is missing)
                 val exception =
                     assertThrows(IllegalArgumentException::class.java) {
-                        FileBasedAgentRegistryService(getLmosRuntimeConfig(fileName).agentRegistry)
+                        FileBasedChannelRoutingRepository(getLmosRuntimeConfig(fileName))
                     }
                 assertTrue(exception.message?.contains("Error parsing agent registry file") == true) {
                     exception.message

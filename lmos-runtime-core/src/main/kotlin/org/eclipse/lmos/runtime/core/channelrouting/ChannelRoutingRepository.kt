@@ -12,7 +12,7 @@ interface ChannelRoutingRepository {
     fun getChannelRouting(
         tenantId: String,
         channelId: String,
-        subset: String?,
-        namespace: String?,
+        subset: String? = null,
+        namespace: String? = null,
     ): ChannelRouting
 }
