@@ -10,12 +10,11 @@ import org.eclipse.lmos.runtime.core.disambiguation.DefaultDisambiguationHandler
 import org.eclipse.lmos.runtime.core.disambiguation.DisambiguationHandler
 import org.eclipse.lmos.runtime.core.inbound.ConversationHandler
 import org.eclipse.lmos.runtime.core.inbound.DefaultConversationHandler
-import org.eclipse.lmos.runtime.core.service.outbound.AgentClassifierService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentClientService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentRoutingService
 import org.eclipse.lmos.runtime.core.service.routing.ExplicitAgentRoutingService
 import org.eclipse.lmos.runtime.outbound.ArcAgentClientService
-import org.eclipse.lmos.runtime.outbound.LmosAgentClassifierService
+import org.eclipse.lmos.runtime.outbound.DefaultAgentClassifierService
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -43,8 +42,8 @@ class LmosRuntimeAutoConfigurationTest {
 
     @Test
     fun `should not load LmosAgentClassifierService as AgentClassifierService`() {
-        val agentClassifierService = applicationContext.getBean(AgentClassifierService::class.java)
-        assertTrue(agentClassifierService is LmosAgentClassifierService)
+        val defaultAgentClassifierService = applicationContext.getBean(DefaultAgentClassifierService::class.java)
+        assertTrue(defaultAgentClassifierService is org.eclipse.lmos.runtime.outbound.DefaultAgentClassifierService)
     }
 
     @Test

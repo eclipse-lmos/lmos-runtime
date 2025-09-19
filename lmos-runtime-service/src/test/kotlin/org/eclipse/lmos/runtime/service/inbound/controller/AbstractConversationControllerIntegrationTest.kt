@@ -15,9 +15,9 @@ import org.eclipse.lmos.arc.api.AgentResult
 import org.eclipse.lmos.arc.api.Message
 import org.eclipse.lmos.runtime.core.model.*
 import org.eclipse.lmos.runtime.outbound.ArcAgentClientService
-import org.eclipse.lmos.runtime.service.constants.LmosServiceConstants.Endpoints.BASE_PATH
-import org.eclipse.lmos.runtime.service.constants.LmosServiceConstants.Endpoints.CHAT_URL
-import org.eclipse.lmos.runtime.service.constants.LmosServiceConstants.Headers.TURN_ID
+import org.eclipse.lmos.runtime.service.constants.ServiceConstants.Endpoints.BASE_PATH
+import org.eclipse.lmos.runtime.service.constants.ServiceConstants.Endpoints.CHAT_URL
+import org.eclipse.lmos.runtime.service.constants.ServiceConstants.Headers.TURN_ID
 import org.eclipse.lmos.runtime.test.BaseWireMockTest
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue

@@ -32,13 +32,13 @@ import org.slf4j.LoggerFactory
  *
  * @property runtimeConfig Configuration object for runtime settings.
  */
-open class LmosOperatorChannelRoutingRepository(
+open class OperatorChannelRoutingRepository(
     private val runtimeConfig: RuntimeConfiguration,
 ) : ChannelRoutingRepository {
     /**
      * Logger instance for repository operations.
      */
-    private val log = LoggerFactory.getLogger(LmosOperatorChannelRoutingRepository::class.java)
+    private val log = LoggerFactory.getLogger(OperatorChannelRoutingRepository::class.java)
 
     /**
      * HTTP client with CIO engine and JSON content negotiation.

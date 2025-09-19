@@ -27,11 +27,11 @@ import org.eclipse.lmos.runtime.core.service.outbound.AgentRoutingService
 import org.eclipse.lmos.runtime.core.service.outbound.FileBasedAgentRegistryService
 import org.eclipse.lmos.runtime.core.service.routing.ExplicitAgentRoutingService
 import org.eclipse.lmos.runtime.outbound.ArcAgentClientService
-import org.eclipse.lmos.runtime.outbound.LmosAgentClassifierService
+import org.eclipse.lmos.runtime.outbound.DefaultAgentClassifierService
 import org.eclipse.lmos.runtime.outbound.LmosAgentRoutingService
 import org.eclipse.lmos.runtime.outbound.LmosOperatorAgentRegistry
-import org.eclipse.lmos.runtime.outbound.LmosOperatorChannelRepository
-import org.eclipse.lmos.runtime.outbound.LmosOperatorChannelRoutingRepository
+import org.eclipse.lmos.runtime.outbound.OperatorChannelRepository
+import org.eclipse.lmos.runtime.outbound.OperatorChannelRoutingRepository
 import org.eclipse.lmos.runtime.properties.RuntimeProperties
 import org.eclipse.lmos.runtime.properties.Type
 import org.springframework.beans.factory.ObjectProvider
@@ -52,7 +52,7 @@ class RuntimeAutoConfiguration(
     @Bean
     @ConditionalOnMissingBean(ChannelRoutingRepository::class)
     fun channelRoutingRepository(runtimeConfig: RuntimeConfiguration): ChannelRoutingRepository =
-        LmosOperatorChannelRoutingRepository(runtimeConfig)
+        OperatorChannelRoutingRepository(runtimeConfig)
 
     @Bean
     @ConditionalOnMissingBean(CachedChannelRoutingRepository::class)
@@ -63,7 +63,7 @@ class RuntimeAutoConfiguration(
 
     @Bean
     @ConditionalOnMissingBean(ChannelRepository::class)
-    fun channelRepository(runtimeConfig: RuntimeConfiguration): ChannelRepository = LmosOperatorChannelRepository(runtimeConfig)
+    fun channelRepository(runtimeConfig: RuntimeConfiguration): ChannelRepository = OperatorChannelRepository(runtimeConfig)
 
     @Bean
     @ConditionalOnMissingBean(AgentClientService::class)
@@ -107,7 +107,7 @@ class RuntimeAutoConfiguration(
 
     @Bean
     @ConditionalOnMissingBean(AgentClassifierService::class)
-    fun agentClassifierService(classifier: AgentClassifier): AgentClassifierService = LmosAgentClassifierService(classifier)
+    fun agentClassifierService(classifier: AgentClassifier): AgentClassifierService = DefaultAgentClassifierService(classifier)
 
     @Bean
     @Qualifier("disambiguationChatModel")

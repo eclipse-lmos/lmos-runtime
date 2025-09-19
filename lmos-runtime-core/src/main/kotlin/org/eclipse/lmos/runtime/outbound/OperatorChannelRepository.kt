@@ -15,8 +15,6 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.jackson.*
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.json.Json
 import org.eclipse.lmos.runtime.core.RuntimeConfiguration
 import org.eclipse.lmos.runtime.core.channel.ChannelRepository
 import org.eclipse.lmos.runtime.core.constants.RuntimeConstants.NAMESPACE
@@ -35,23 +33,9 @@ import org.slf4j.LoggerFactory
  *
  * @property lmosRuntimeConfig Configuration object for runtime settings.
  */
-class LmosOperatorChannelRepository(
+class OperatorChannelRepository(
     private val lmosRuntimeConfig: RuntimeConfiguration,
 ) : ChannelRepository {
-    /**
-     * JSON serializer/deserializer configuration.
-     * Configured to ignore unknown keys, coerce input values,
-     * encode default values, and support case-insensitive enum decoding.
-     */
-    @OptIn(ExperimentalSerializationApi::class)
-    private val json =
-        Json {
-            ignoreUnknownKeys = true
-            coerceInputValues = true
-            encodeDefaults = true
-            decodeEnumsCaseInsensitive = true
-        }
-
     /**
      * HTTP client with CIO engine and JSON content negotiation.
      */
@@ -65,7 +49,7 @@ class LmosOperatorChannelRepository(
     /**
      * Logger instance for repository operations.
      */
-    private val log = LoggerFactory.getLogger(LmosOperatorChannelRepository::class.java)
+    private val log = LoggerFactory.getLogger(OperatorChannelRepository::class.java)
 
     /**
      * Retrieves a single channel resource for a given tenant and channel ID.

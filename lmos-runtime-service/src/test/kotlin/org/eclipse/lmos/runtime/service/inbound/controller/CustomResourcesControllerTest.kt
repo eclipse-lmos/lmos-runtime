@@ -17,8 +17,8 @@ import org.eclipse.lmos.runtime.core.model.custom.ChannelSpecCR
 import org.eclipse.lmos.runtime.core.model.custom.ChannelStatusCR
 import org.eclipse.lmos.runtime.core.model.custom.ObjectMetaCR
 import org.eclipse.lmos.runtime.core.model.registry.*
-import org.eclipse.lmos.runtime.service.constants.LmosServiceConstants
-import org.eclipse.lmos.runtime.service.constants.LmosServiceConstants.Headers
+import org.eclipse.lmos.runtime.service.constants.ServiceConstants
+import org.eclipse.lmos.runtime.service.constants.ServiceConstants.Headers
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -62,7 +62,7 @@ class CustomResourcesControllerTest {
 
         webTestClient
             .get()
-            .uri(LmosServiceConstants.Endpoints.BASE_PATH + "/tenants/$tenantId/channels")
+            .uri(ServiceConstants.Endpoints.BASE_PATH + "/tenants/$tenantId/channels")
             .header(Headers.SUBSET, subset)
             .header(Headers.NAMESPACE, namespace)
             .exchange()
@@ -87,7 +87,7 @@ class CustomResourcesControllerTest {
 
         webTestClient
             .get()
-            .uri(LmosServiceConstants.Endpoints.BASE_PATH + "/tenants/$tenantId/channels/$channelId")
+            .uri(ServiceConstants.Endpoints.BASE_PATH + "/tenants/$tenantId/channels/$channelId")
             .header(Headers.SUBSET, subset)
             .header(Headers.NAMESPACE, namespace)
             .exchange()
@@ -146,7 +146,7 @@ class CustomResourcesControllerTest {
 
         webTestClient
             .get()
-            .uri(LmosServiceConstants.Endpoints.BASE_PATH + "/tenants/$tenantId/channels/$channelId/routing")
+            .uri(ServiceConstants.Endpoints.BASE_PATH + "/tenants/$tenantId/channels/$channelId/routing")
             .header(Headers.SUBSET, subset)
             .header(Headers.NAMESPACE, namespace)
             .exchange()
@@ -162,7 +162,7 @@ class CustomResourcesControllerTest {
 
         webTestClient
             .get()
-            .uri(LmosServiceConstants.Endpoints.BASE_PATH + "/tenants/$tenantId/channels/$channelId")
+            .uri(ServiceConstants.Endpoints.BASE_PATH + "/tenants/$tenantId/channels/$channelId")
             .header(Headers.SUBSET, subset)
             .header(Headers.NAMESPACE, namespace)
             .exchange()

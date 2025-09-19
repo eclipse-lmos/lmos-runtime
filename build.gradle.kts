@@ -128,8 +128,6 @@ subprojects {
 }
 
 dependencies {
-    // kover(project("lmos-kernel"))
-    // kover(project("lmos-kernel-impl"))
     kover(project("lmos-runtime-core"))
     kover(project("lmos-runtime-spring-boot-starter"))
     kover(project("lmos-runtime-service"))

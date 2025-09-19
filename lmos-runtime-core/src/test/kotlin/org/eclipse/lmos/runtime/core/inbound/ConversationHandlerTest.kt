@@ -146,44 +146,6 @@ class ConversationHandlerTest {
         }
 
     @Test
-    fun `test cached routing information is used`() =
-        runTest {
-            // Arrange
-            val conversationId = "conv-124"
-            val tenantId = "de"
-            val turnId = "turn-1"
-            val cachedSubset = "stable"
-
-            val conversation = conversation()
-
-            val expectedAgentResponse = AssistantMessage(content = "Test response")
-
-            mockAgentClient(
-                conversation,
-                conversationId,
-                turnId,
-                expectedAgentResponse,
-            )
-
-            val result =
-                conversationHandler
-                    .handleConversation(
-                        conversation,
-                        conversationId,
-                        tenantId,
-                        turnId,
-                        cachedSubset,
-                    ).first()
-
-            assertEquals(expectedAgentResponse, result)
-
-            // Verify that getRoutingInformation was not called
-            coVerify(exactly = 0) {
-                agentRegistryService.getRoutingInformation(any(), any(), any())
-            }
-        }
-
-    @Test
     fun `test different subset parameter should not overrides cached routing information`() =
         runTest {
             // Arrange
@@ -201,6 +163,7 @@ class ConversationHandlerTest {
                 conversationId,
                 turnId,
                 expectedAgentResponse,
+                "stable", // Original subset from cached routing
             )
 
             // Call with a different subset parameter

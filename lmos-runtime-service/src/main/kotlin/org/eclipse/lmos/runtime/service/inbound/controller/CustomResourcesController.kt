@@ -13,8 +13,8 @@ import org.eclipse.lmos.runtime.core.exception.NoChannelFoundException
 import org.eclipse.lmos.runtime.core.exception.NoRoutingInfoFoundException
 import org.eclipse.lmos.runtime.core.model.custom.Channel
 import org.eclipse.lmos.runtime.core.model.registry.ChannelRouting
-import org.eclipse.lmos.runtime.service.constants.LmosServiceConstants.Endpoints.BASE_PATH
-import org.eclipse.lmos.runtime.service.constants.LmosServiceConstants.Headers.SUBSET
+import org.eclipse.lmos.runtime.service.constants.ServiceConstants.Endpoints.BASE_PATH
+import org.eclipse.lmos.runtime.service.constants.ServiceConstants.Headers.SUBSET
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.*
 

@@ -8,7 +8,7 @@ package org.eclipse.lmos.runtime.service.inbound.controller
 
 import kotlinx.coroutines.coroutineScope
 import org.eclipse.lmos.runtime.core.service.outbound.AgentRegistryService
-import org.eclipse.lmos.runtime.service.constants.LmosServiceConstants.Endpoints.BASE_PATH
+import org.eclipse.lmos.runtime.service.constants.ServiceConstants.Endpoints.BASE_PATH
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping

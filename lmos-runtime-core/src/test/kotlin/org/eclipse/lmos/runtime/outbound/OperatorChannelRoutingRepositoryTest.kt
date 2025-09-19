@@ -17,8 +17,8 @@ import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class LmosOperatorChannelRoutingRepositoryTest : BaseWireMockTest() {
-    private lateinit var repository: LmosOperatorChannelRoutingRepository
+class OperatorChannelRoutingRepositoryTest : BaseWireMockTest() {
+    private lateinit var repository: OperatorChannelRoutingRepository
 
     @BeforeEach
     fun setup() {
@@ -36,7 +36,7 @@ class LmosOperatorChannelRoutingRepositoryTest : BaseWireMockTest() {
                             ),
                     ),
             )
-        repository = LmosOperatorChannelRoutingRepository(runtimeConfig)
+        repository = OperatorChannelRoutingRepository(runtimeConfig)
     }
 
     @Test

@@ -21,7 +21,7 @@ import org.eclipse.lmos.runtime.core.service.outbound.AgentClientService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentRegistryService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentRoutingService
 import org.eclipse.lmos.runtime.outbound.ArcAgentClientService
-import org.eclipse.lmos.runtime.outbound.LmosAgentClassifierService
+import org.eclipse.lmos.runtime.outbound.DefaultAgentClassifierService
 import org.eclipse.lmos.runtime.outbound.LmosAgentRoutingService
 import org.eclipse.lmos.runtime.properties.RuntimeProperties
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -70,8 +70,8 @@ class LmosRuntimeAutoConfigurationCustomBeansTest {
 
     @Test
     fun `should not load LmosAgentClassifierService as AgentClassifierService`() {
-        val agentClassifierService = applicationContext.getBean(AgentClassifierService::class.java)
-        assertFalse(agentClassifierService is LmosAgentClassifierService)
+        val defaultAgentClassifierService = applicationContext.getBean(AgentClassifierService::class.java)
+        assertFalse(defaultAgentClassifierService is DefaultAgentClassifierService)
     }
 
     @Test

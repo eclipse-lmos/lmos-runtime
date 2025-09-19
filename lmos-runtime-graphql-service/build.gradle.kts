@@ -19,15 +19,15 @@ dependencies {
 
     implementation(project(":lmos-runtime-spring-boot-starter"))
 
-    implementation("org.springframework.boot:spring-boot-starter:$springBootVersion")
-    implementation("org.springframework.boot:spring-boot-starter-actuator:$springBootVersion")
+    implementation("org.springframework.boot:spring-boot-starter")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.2")
 
     implementation("com.expediagroup:graphql-kotlin-spring-server:8.8.1")
 
     testImplementation(testFixtures(project(":lmos-runtime-core")))
-    testImplementation("org.springframework.boot:spring-boot-starter-test:$springBootVersion")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
     testImplementation("app.cash.turbine:turbine:1.2.1")

@@ -10,10 +10,10 @@ import kotlinx.coroutines.flow.first
 import org.eclipse.lmos.runtime.core.inbound.ConversationHandler
 import org.eclipse.lmos.runtime.core.model.AssistantMessage
 import org.eclipse.lmos.runtime.core.model.Conversation
-import org.eclipse.lmos.runtime.service.constants.LmosServiceConstants.Endpoints.BASE_PATH
-import org.eclipse.lmos.runtime.service.constants.LmosServiceConstants.Endpoints.CHAT_URL
-import org.eclipse.lmos.runtime.service.constants.LmosServiceConstants.Headers.SUBSET
-import org.eclipse.lmos.runtime.service.constants.LmosServiceConstants.Headers.TURN_ID
+import org.eclipse.lmos.runtime.service.constants.ServiceConstants.Endpoints.BASE_PATH
+import org.eclipse.lmos.runtime.service.constants.ServiceConstants.Endpoints.CHAT_URL
+import org.eclipse.lmos.runtime.service.constants.ServiceConstants.Headers.SUBSET
+import org.eclipse.lmos.runtime.service.constants.ServiceConstants.Headers.TURN_ID
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
