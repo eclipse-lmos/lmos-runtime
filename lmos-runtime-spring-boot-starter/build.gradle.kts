@@ -17,10 +17,4 @@ dependencies {
     implementation("org.eclipse.lmos:lmos-classifier-llm-spring-boot-starter")
     implementation("org.eclipse.lmos:lmos-classifier-vector-spring-boot-starter")
     implementation("org.eclipse.lmos:lmos-classifier-hybrid-spring-boot-starter")
-    implementation("dev.langchain4j:langchain4j-open-ai")
-    implementation("dev.langchain4j:langchain4j-azure-open-ai")
-    implementation("dev.langchain4j:langchain4j-anthropic")
-    implementation("dev.langchain4j:langchain4j-google-ai-gemini")
-    implementation("dev.langchain4j:langchain4j-ollama")
-    implementation("com.azure:azure-identity")
 }
