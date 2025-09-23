@@ -27,9 +27,7 @@ dependencies {
     api(platform("io.ktor:ktor-bom:$ktorVersion"))
     api(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:$kotlinCoroutines"))
     api(platform("dev.langchain4j:langchain4j-bom:$langChain4jVersion"))
-
-
-
+          
     constraints {
         // lmosRouterVersion-managed
         api("org.eclipse.lmos:lmos-classifier-llm-spring-boot-starter:$lmosRouterVersion")

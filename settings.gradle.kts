@@ -13,16 +13,8 @@ include("lmos-runtime-graphql-service")
 include("lmos-runtime-bom")
 
 pluginManagement {
-    val kotlinPluginVersion: String by settings
-    val springBootPluginVersion: String by settings
-    val ktlintPluginVersion: String by settings
-    val dependencyManagementPluginVersion: String by settings
-    val licenserPluginVersion: String by settings
-    val helmPluginVersion: String by settings
-    val releasePluginVersion: String by settings
-    val mavenPublishPluginVersion: String by settings
-    val koverPluginVersion: String by settings
-    val dokkaPluginVersion: String by settings
+    val kotlinVersion = "2.2.10"
+    val helmVersion = "2.2.0"
 
     repositories {
         gradlePluginPortal()
@@ -30,20 +22,20 @@ pluginManagement {
         mavenLocal()
     }
     plugins {
-        id("org.springframework.boot") version springBootPluginVersion
-        id("org.jlleitschuh.gradle.ktlint") version ktlintPluginVersion
-        id("io.spring.dependency-management") version dependencyManagementPluginVersion
-        id("org.cadixdev.licenser") version licenserPluginVersion
-        id("com.citi.helm") version helmPluginVersion
-        id("com.citi.helm-publish") version helmPluginVersion
-        id("net.researchgate.release") version releasePluginVersion
-        id("com.vanniktech.maven.publish") version mavenPublishPluginVersion
-        id("org.jetbrains.kotlin.jvm") version kotlinPluginVersion
-        id("org.jetbrains.kotlin.kapt") version kotlinPluginVersion
-        id("org.jetbrains.kotlin.plugin.serialization") version kotlinPluginVersion
-        id("org.jetbrains.kotlin.plugin.spring") version kotlinPluginVersion
-        id("org.jetbrains.kotlinx.kover") version koverPluginVersion
-        id("org.jetbrains.dokka") version dokkaPluginVersion
+        id("org.springframework.boot") version "3.5.5"
+        id("org.jlleitschuh.gradle.ktlint") version "13.1.0"
+        id("io.spring.dependency-management") version "1.1.7"
+        id("org.cadixdev.licenser") version "0.6.1"
+        id("com.citi.helm") version helmVersion
+        id("com.citi.helm-publish") version helmVersion
+        id("net.researchgate.release") version "3.1.0"
+        id("com.vanniktech.maven.publish") version "0.34.0"
+        id("org.jetbrains.kotlin.jvm") version kotlinVersion
+        id("org.jetbrains.kotlin.kapt") version kotlinVersion
+        id("org.jetbrains.kotlin.plugin.serialization") version kotlinVersion
+        id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
+        id("org.jetbrains.kotlinx.kover") version "0.9.1"
+        id("org.jetbrains.dokka") version "2.0.0"
     }
 }
 
