@@ -18,12 +18,12 @@ dependencies {
     val ktorVersion = "3.2.3"
     val kotlinxSerializationVersion = "1.9.0"
     val junitVersion = "5.13.4"
-    val jacksonVersion = "2.19.0"
     val lmosRouterVersion = "0.9.0"
     val arcVersion = "0.154.0"
     val langChain4jCoreVersion = "1.0.0"
     val langChain4jModulesVersion = "1.0.1-beta6"
     val langChain4jOpenAiVersion = "1.0.0"
+    val kotlinCoroutines = "1.10.2"
 
     api(platform("org.springframework.boot:spring-boot-dependencies:$springBootVersion"))
     constraints {
@@ -38,22 +38,12 @@ dependencies {
         api("org.jetbrains.kotlinx:kotlinx-serialization-bom:$kotlinxSerializationVersion")
         api("org.jetbrains.kotlinx:kotlinx-serialization-core:$kotlinxSerializationVersion")
         api("org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:$kotlinxSerializationVersion")
-        api("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.2")
-        api("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
-        api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+        api("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:$kotlinCoroutines")
+        api("org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlinCoroutines")
+        api("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutines")
         // JUnit
         api("org.junit.jupiter:junit-jupiter:$junitVersion")
-        // Jackson
-        api("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
-        api("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
-        // Spring Boot
-        api("org.springframework.boot:spring-boot-starter:$springBootVersion")
-        api("org.springframework.boot:spring-boot-starter-cache:$springBootVersion")
-        api("org.springframework.boot:spring-boot-starter-data-redis:$springBootVersion")
-        api("org.springframework.boot:spring-boot-starter-webflux:$springBootVersion")
-        api("org.springframework.boot:spring-boot-starter-actuator:$springBootVersion")
-        api("org.springframework.boot:spring-boot-starter-test:$springBootVersion")
-        api("org.springframework.boot:spring-boot-starter-data-redis-reactive:$springBootVersion")
+
         // lmosRouterVersion-managed
         api("org.eclipse.lmos:lmos-classifier-llm-spring-boot-starter:$lmosRouterVersion")
         api("org.eclipse.lmos:lmos-classifier-vector-spring-boot-starter:$lmosRouterVersion")
