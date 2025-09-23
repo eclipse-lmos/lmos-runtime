@@ -108,6 +108,14 @@ management:
     metrics:
       export:
         enabled: true
+  metrics:
+    distribution:
+      percentiles_histogram:
+        http:
+          server:
+            requests: true
+          client:
+            requests: true
 
 graphql:
   packages:
