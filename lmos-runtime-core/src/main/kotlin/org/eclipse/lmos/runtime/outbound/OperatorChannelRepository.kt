@@ -13,7 +13,6 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.serialization.jackson.*
 import kotlinx.coroutines.runBlocking
 import org.eclipse.lmos.runtime.core.RuntimeConfiguration
 import org.eclipse.lmos.runtime.core.channel.ChannelRepository
@@ -42,7 +41,7 @@ class OperatorChannelRepository(
     private val client: HttpClient =
         HttpClient(CIO) {
             install(ContentNegotiation) {
-                jackson()
+                installDefaultJackson()
             }
         }
 

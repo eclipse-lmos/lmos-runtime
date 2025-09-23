@@ -13,9 +13,7 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.json.Json
 import org.eclipse.lmos.runtime.core.RuntimeConfiguration
 import org.eclipse.lmos.runtime.core.channelrouting.ChannelRoutingRepository
 import org.eclipse.lmos.runtime.core.constants.RuntimeConstants.NAMESPACE
@@ -46,14 +44,7 @@ open class OperatorChannelRoutingRepository(
     private val client: HttpClient =
         HttpClient(CIO) {
             install(ContentNegotiation) {
-                json(
-                    json =
-                        Json {
-                            ignoreUnknownKeys = true
-                            coerceInputValues = true
-                            encodeDefaults = true
-                        },
-                )
+                installDefaultJackson()
             }
         }
 
