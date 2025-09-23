@@ -13,7 +13,7 @@ import org.eclipse.lmos.runtime.core.model.Agent
 import org.eclipse.lmos.runtime.core.model.Conversation
 import org.eclipse.lmos.runtime.core.service.outbound.AgentClassifierService
 
-class LmosAgentClassifierService(
+class DefaultAgentClassifierService(
     private val classifier: AgentClassifier,
 ) : AgentClassifierService {
     override suspend fun classify(

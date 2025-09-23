@@ -23,6 +23,11 @@ class NoRoutingInfoFoundException(
     cause: Exception? = null,
 ) : LmosRuntimeException(msg, cause)
 
+class NoChannelFoundException(
+    msg: String?,
+    cause: Exception? = null,
+) : LmosRuntimeException(msg, cause)
+
 class InternalServerErrorException(
     msg: String?,
     cause: Exception? = null,

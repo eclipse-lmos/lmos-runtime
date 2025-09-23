@@ -14,37 +14,15 @@ plugins {
 }
 
 dependencies {
-
-    val springBootVersion: String by rootProject.extra
-
+    implementation(enforcedPlatform(project(":lmos-runtime-bom")))
     implementation(project(":lmos-runtime-spring-boot-starter"))
-
-    implementation("org.springframework.boot:spring-boot-starter:$springBootVersion")
-    implementation("org.springframework.boot:spring-boot-starter-actuator:$springBootVersion")
-    implementation("io.micrometer:micrometer-registry-prometheus")
-
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.2")
-
-    implementation("com.expediagroup:graphql-kotlin-spring-server:8.8.1")
+    implementation("org.springframework.boot:spring-boot-starter")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+    implementation("com.expediagroup:graphql-kotlin-spring-server")
 
     testImplementation(testFixtures(project(":lmos-runtime-core")))
-    testImplementation("org.springframework.boot:spring-boot-starter-test:$springBootVersion")
-    testImplementation("org.junit.jupiter:junit-jupiter")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
-    testImplementation("app.cash.turbine:turbine:1.2.1")
-}
-
-// Set kotlinx-serialization version in dependencyManagement to overrule the dependency management of spring boot plugin.
-// Can be omitted again when spring boot has upgraded to more recent kotlinx-serialization version.
-dependencyManagement {
-    dependencies {
-        val kotlinxSerializationVersion = "1.9.0"
-        dependency("org.jetbrains.kotlinx:kotlinx-serialization-bom:$kotlinxSerializationVersion")
-        dependency("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationVersion")
-        dependency("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:$kotlinxSerializationVersion")
-        dependency("org.jetbrains.kotlinx:kotlinx-serialization-core:$kotlinxSerializationVersion")
-        dependency("org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:$kotlinxSerializationVersion")
-    }
+    testImplementation("app.cash.turbine:turbine")
 }
 
 tasks.named<BootBuildImage>("bootBuildImage") {

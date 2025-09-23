@@ -1,7 +1,7 @@
 /*
- * // SPDX-FileCopyrightText: 2025 Deutsche Telekom AG and others
- * //
- * // SPDX-License-Identifier: Apache-2.0
+ * SPDX-FileCopyrightText: 2025 Deutsche Telekom AG and others
+ *
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 package org.eclipse.lmos.runtime.core
@@ -9,7 +9,7 @@ package org.eclipse.lmos.runtime.core
 import org.eclipse.lmos.runtime.core.disambiguation.defaultDisambiguationClarificationPrompt
 import org.eclipse.lmos.runtime.core.disambiguation.defaultDisambiguationIntroductionPrompt
 
-open class LmosRuntimeConfig(
+open class RuntimeConfiguration(
     val agentRegistry: AgentRegistry,
     val openAi: OpenAI? = null,
     val cache: Cache,

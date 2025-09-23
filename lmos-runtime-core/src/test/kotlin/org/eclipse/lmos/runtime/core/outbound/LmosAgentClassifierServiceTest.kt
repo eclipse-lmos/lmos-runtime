@@ -15,14 +15,14 @@ import org.eclipse.lmos.runtime.core.model.*
 import org.eclipse.lmos.runtime.core.model.Agent
 import org.eclipse.lmos.runtime.core.model.InputContext
 import org.eclipse.lmos.runtime.core.model.SystemContext
-import org.eclipse.lmos.runtime.outbound.LmosAgentClassifierService
+import org.eclipse.lmos.runtime.outbound.DefaultAgentClassifierService
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 class LmosAgentClassifierServiceTest {
     private val classifierMock = mockk<AgentClassifier>()
-    private val underTest = LmosAgentClassifierService(classifierMock)
+    private val underTest = DefaultAgentClassifierService(classifierMock)
 
     private val defaultTenantId = "myTenantId"
     private val defaultChannelId = "myChannelId"

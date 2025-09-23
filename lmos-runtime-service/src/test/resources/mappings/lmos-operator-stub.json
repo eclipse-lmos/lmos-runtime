@@ -1,10 +1,18 @@
 {
   "request": {
     "method": "GET",
-    "url": "/agentRegistry/apis/v1/tenants/en/channels/web/routing"
+    "urlPath": "/agentRegistry/apis/v1/tenants/en/channels/web/routing",
+    "headers": {
+      "Accept": {
+        "contains": "application/json"
+      }
+    }
   },
   "response": {
     "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
     "jsonBody": {
       "apiVersion": "v1",
       "kind": "ChannelRouting",
@@ -13,7 +21,7 @@
         "generation": 1,
         "labels": {
           "channel": "web",
-          "subset": "production",
+          "subset": "stable",
           "tenant": "en",
           "version": "v1.0"
         },

@@ -7,6 +7,7 @@ import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
  */
 
 plugins {
+    id("org.jetbrains.kotlin.plugin.spring")
     id("org.springframework.boot")
     id("io.spring.dependency-management")
     id("com.citi.helm")
@@ -14,37 +15,15 @@ plugins {
 }
 
 dependencies {
-
-    val springBootVersion: String by rootProject.extra
-    val lmosRouterVersion: String by project
-
+    implementation(enforcedPlatform(project(":lmos-runtime-bom")))
     implementation(project(":lmos-runtime-spring-boot-starter"))
-
-    implementation("org.springframework.boot:spring-boot-starter:$springBootVersion")
-    implementation("org.springframework.boot:spring-boot-starter-webflux:$springBootVersion")
-    implementation("org.springframework.boot:spring-boot-starter-actuator:$springBootVersion")
-    implementation("io.micrometer:micrometer-registry-prometheus")
-
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.2")
-
+    implementation("org.springframework.boot:spring-boot-starter")
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
     testImplementation(testFixtures(project(":lmos-runtime-core")))
-    testImplementation("org.springframework.boot:spring-boot-starter-test:$springBootVersion")
-    testImplementation("org.junit.jupiter:junit-jupiter")
-    testImplementation("com.marcinziolo:kotlin-wiremock:2.1.1")
-    testImplementation("org.eclipse.lmos:lmos-classifier-llm-spring-boot-starter:$lmosRouterVersion")
-}
-
-// Set kotlinx-serialization version in dependencyManagement to overrule the dependency management of spring boot plugin.
-// Can be omitted again when spring boot has upgraded to more recent kotlinx-serialization version.
-dependencyManagement {
-    dependencies {
-        val kotlinxSerializationVersion = "1.9.0"
-        dependency("org.jetbrains.kotlinx:kotlinx-serialization-bom:$kotlinxSerializationVersion")
-        dependency("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationVersion")
-        dependency("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:$kotlinxSerializationVersion")
-        dependency("org.jetbrains.kotlinx:kotlinx-serialization-core:$kotlinxSerializationVersion")
-        dependency("org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:$kotlinxSerializationVersion")
-    }
+    testImplementation("org.testcontainers:junit-jupiter")
+    testImplementation("com.redis.testcontainers:testcontainers-redis")
 }
 
 tasks.named<BootBuildImage>("bootBuildImage") {
