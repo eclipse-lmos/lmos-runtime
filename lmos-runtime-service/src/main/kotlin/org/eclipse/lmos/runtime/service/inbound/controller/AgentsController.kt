@@ -8,7 +8,7 @@ package org.eclipse.lmos.runtime.service.inbound.controller
 
 import kotlinx.coroutines.coroutineScope
 import org.eclipse.lmos.runtime.core.channelrouting.ChannelRoutingRepository
-import org.eclipse.lmos.runtime.core.model.registry.toRoutingInformation
+import org.eclipse.lmos.runtime.core.channelrouting.toRoutingInformation
 import org.eclipse.lmos.runtime.service.constants.ServiceConstants.Endpoints.BASE_PATH
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping

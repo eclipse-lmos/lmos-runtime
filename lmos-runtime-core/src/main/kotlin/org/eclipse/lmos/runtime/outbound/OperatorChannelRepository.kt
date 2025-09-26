@@ -15,6 +15,7 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import org.eclipse.lmos.runtime.core.RuntimeConfiguration
+import org.eclipse.lmos.runtime.core.channel.Channel
 import org.eclipse.lmos.runtime.core.channel.ChannelRepository
 import org.eclipse.lmos.runtime.core.constants.RuntimeConstants.NAMESPACE
 import org.eclipse.lmos.runtime.core.constants.RuntimeConstants.SUBSET
@@ -22,7 +23,6 @@ import org.eclipse.lmos.runtime.core.exception.InternalServerErrorException
 import org.eclipse.lmos.runtime.core.exception.NoChannelFoundException
 import org.eclipse.lmos.runtime.core.exception.NoRoutingInfoFoundException
 import org.eclipse.lmos.runtime.core.exception.UnexpectedResponseException
-import org.eclipse.lmos.runtime.core.model.custom.Channel
 import org.slf4j.LoggerFactory
 
 /**

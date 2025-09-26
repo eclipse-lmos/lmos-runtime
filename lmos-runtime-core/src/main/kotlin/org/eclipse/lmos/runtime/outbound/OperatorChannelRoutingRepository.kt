@@ -15,13 +15,13 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import org.eclipse.lmos.runtime.core.RuntimeConfiguration
+import org.eclipse.lmos.runtime.core.channelrouting.ChannelRouting
 import org.eclipse.lmos.runtime.core.channelrouting.ChannelRoutingRepository
 import org.eclipse.lmos.runtime.core.constants.RuntimeConstants.NAMESPACE
 import org.eclipse.lmos.runtime.core.constants.RuntimeConstants.SUBSET
 import org.eclipse.lmos.runtime.core.exception.InternalServerErrorException
 import org.eclipse.lmos.runtime.core.exception.NoRoutingInfoFoundException
 import org.eclipse.lmos.runtime.core.exception.UnexpectedResponseException
-import org.eclipse.lmos.runtime.core.model.registry.ChannelRouting
 import org.slf4j.LoggerFactory
 
 /**

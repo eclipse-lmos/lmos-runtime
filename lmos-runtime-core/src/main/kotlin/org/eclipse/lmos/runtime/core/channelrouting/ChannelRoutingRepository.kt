@@ -6,8 +6,6 @@
 
 package org.eclipse.lmos.runtime.core.channelrouting
 
-import org.eclipse.lmos.runtime.core.model.registry.ChannelRouting
-
 interface ChannelRoutingRepository {
     fun getChannelRouting(
         tenantId: String,

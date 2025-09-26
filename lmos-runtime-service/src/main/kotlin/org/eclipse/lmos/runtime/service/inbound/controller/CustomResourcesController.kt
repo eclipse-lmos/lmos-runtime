@@ -6,13 +6,13 @@
 
 package org.eclipse.lmos.runtime.service.inbound.controller
 
+import org.eclipse.lmos.runtime.core.channel.Channel
 import org.eclipse.lmos.runtime.core.channel.ChannelRepository
+import org.eclipse.lmos.runtime.core.channelrouting.ChannelRouting
 import org.eclipse.lmos.runtime.core.channelrouting.ChannelRoutingRepository
 import org.eclipse.lmos.runtime.core.constants.RuntimeConstants.NAMESPACE
 import org.eclipse.lmos.runtime.core.exception.NoChannelFoundException
 import org.eclipse.lmos.runtime.core.exception.NoRoutingInfoFoundException
-import org.eclipse.lmos.runtime.core.model.custom.Channel
-import org.eclipse.lmos.runtime.core.model.registry.ChannelRouting
 import org.eclipse.lmos.runtime.service.constants.ServiceConstants.Endpoints.BASE_PATH
 import org.eclipse.lmos.runtime.service.constants.ServiceConstants.Headers.SUBSET
 import org.slf4j.LoggerFactory

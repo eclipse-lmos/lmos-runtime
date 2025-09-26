@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.lmos.runtime.core.model.custom
+package org.eclipse.lmos.runtime.core.channel
 
 data class ObjectMetaCR(
     val name: String? = null,

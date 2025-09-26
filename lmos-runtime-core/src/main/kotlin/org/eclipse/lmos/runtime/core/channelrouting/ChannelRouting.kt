@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.lmos.runtime.core.model.registry
+package org.eclipse.lmos.runtime.core.channelrouting
 
 import kotlinx.serialization.Serializable
 import org.eclipse.lmos.runtime.core.model.Address

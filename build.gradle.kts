@@ -23,8 +23,6 @@ plugins {
     id("org.jetbrains.dokka")
 }
 
-fun getProperty(propertyName: String) = getenv(propertyName) ?: project.findProperty(propertyName) as String
-
 repositories {
     mavenCentral()
     mavenLocal()

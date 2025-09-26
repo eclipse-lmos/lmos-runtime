@@ -7,6 +7,7 @@
 package org.eclipse.lmos.runtime.core.model.registry
 
 import kotlinx.serialization.Serializable // Or Jackson if that's standard
+import org.eclipse.lmos.runtime.core.channelrouting.ChannelRouting
 
 @Serializable // Or Jackson annotations
 data class AgentRegistryDocument(

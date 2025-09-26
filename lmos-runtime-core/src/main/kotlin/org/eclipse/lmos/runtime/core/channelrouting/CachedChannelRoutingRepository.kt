@@ -6,8 +6,6 @@
 
 package org.eclipse.lmos.runtime.core.channelrouting
 
-import org.eclipse.lmos.runtime.core.model.registry.ChannelRouting
-
 interface CachedChannelRoutingRepository {
     fun getChannelRouting(
         conversationId: String,

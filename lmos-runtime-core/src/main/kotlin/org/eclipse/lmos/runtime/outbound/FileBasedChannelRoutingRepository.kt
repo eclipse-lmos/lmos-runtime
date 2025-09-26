@@ -8,10 +8,10 @@ package org.eclipse.lmos.runtime.outbound
 
 import com.charleskorn.kaml.Yaml
 import org.eclipse.lmos.runtime.core.RuntimeConfiguration
+import org.eclipse.lmos.runtime.core.channelrouting.ChannelRouting
 import org.eclipse.lmos.runtime.core.channelrouting.ChannelRoutingRepository
 import org.eclipse.lmos.runtime.core.exception.NoRoutingInfoFoundException
 import org.eclipse.lmos.runtime.core.model.registry.AgentRegistryDocument
-import org.eclipse.lmos.runtime.core.model.registry.ChannelRouting
 import org.slf4j.LoggerFactory
 import java.io.FileNotFoundException
 

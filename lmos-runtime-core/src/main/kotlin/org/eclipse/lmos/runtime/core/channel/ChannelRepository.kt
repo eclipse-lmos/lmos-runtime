@@ -6,19 +6,17 @@
 
 package org.eclipse.lmos.runtime.core.channel
 
-import org.eclipse.lmos.runtime.core.model.custom.Channel
-
 interface ChannelRepository {
     fun getChannel(
         tenantId: String,
         channelId: String,
-        subset: String?,
-        namespace: String?,
+        subset: String? = null,
+        namespace: String? = null,
     ): Channel
 
     fun getChannels(
         tenantId: String,
-        subset: String?,
-        namespace: String?,
+        subset: String? = null,
+        namespace: String? = null,
     ): List<Channel>
 }

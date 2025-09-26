@@ -9,8 +9,8 @@ package org.eclipse.lmos.runtime.config
 import kotlinx.coroutines.test.runTest
 import org.eclipse.lmos.classifier.llm.starter.ModelAgentClassifierAutoConfiguration
 import org.eclipse.lmos.runtime.core.channelrouting.ChannelRoutingRepository
+import org.eclipse.lmos.runtime.core.channelrouting.toRoutingInformation
 import org.eclipse.lmos.runtime.core.exception.NoRoutingInfoFoundException
-import org.eclipse.lmos.runtime.core.model.registry.toRoutingInformation
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired

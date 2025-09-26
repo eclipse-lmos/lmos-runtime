@@ -7,8 +7,8 @@
 package org.eclipse.lmos.runtime.channelrouting
 
 import org.eclipse.lmos.runtime.core.channelrouting.CachedChannelRoutingRepository
+import org.eclipse.lmos.runtime.core.channelrouting.ChannelRouting
 import org.eclipse.lmos.runtime.core.channelrouting.ChannelRoutingRepository
-import org.eclipse.lmos.runtime.core.model.registry.ChannelRouting
 import org.springframework.cache.annotation.Cacheable
 
 open class DefaultCachedChannelRoutingRepository(

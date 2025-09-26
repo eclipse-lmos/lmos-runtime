@@ -9,8 +9,8 @@ package org.eclipse.lmos.runtime.core.service.outbound
 import kotlinx.coroutines.test.runTest
 import org.eclipse.lmos.runtime.core.AgentRegistryType
 import org.eclipse.lmos.runtime.core.RuntimeConfiguration
+import org.eclipse.lmos.runtime.core.channelrouting.toRoutingInformation
 import org.eclipse.lmos.runtime.core.exception.NoRoutingInfoFoundException
-import org.eclipse.lmos.runtime.core.model.registry.toRoutingInformation
 import org.eclipse.lmos.runtime.outbound.FileBasedChannelRoutingRepository
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
