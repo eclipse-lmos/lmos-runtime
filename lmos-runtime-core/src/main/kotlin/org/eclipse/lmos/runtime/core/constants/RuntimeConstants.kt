@@ -7,11 +7,6 @@
 package org.eclipse.lmos.runtime.core.constants
 
 object RuntimeConstants {
-    object Cache {
-        const val ROUTES = "routes"
-        const val DEFAULT_ROUTE = "default"
-    }
-
     const val SUBSET = "x-subset"
     const val NAMESPACE = "x-namespace"
 }
