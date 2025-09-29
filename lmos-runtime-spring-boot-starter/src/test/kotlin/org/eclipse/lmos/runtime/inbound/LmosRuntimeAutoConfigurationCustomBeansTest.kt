@@ -9,7 +9,6 @@ package org.eclipse.lmos.runtime.inbound
 import kotlinx.coroutines.flow.Flow
 import org.eclipse.lmos.classifier.core.ClassificationResult
 import org.eclipse.lmos.runtime.config.RuntimeAutoConfiguration
-import org.eclipse.lmos.runtime.core.channelrouting.RoutingInformation
 import org.eclipse.lmos.runtime.core.inbound.ConversationHandler
 import org.eclipse.lmos.runtime.core.inbound.DefaultConversationHandler
 import org.eclipse.lmos.runtime.core.model.Address
@@ -18,7 +17,6 @@ import org.eclipse.lmos.runtime.core.model.AssistantMessage
 import org.eclipse.lmos.runtime.core.model.Conversation
 import org.eclipse.lmos.runtime.core.service.outbound.AgentClassifierService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentClientService
-import org.eclipse.lmos.runtime.core.service.outbound.AgentRegistryService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentRoutingService
 import org.eclipse.lmos.runtime.outbound.ArcAgentClientService
 import org.eclipse.lmos.runtime.outbound.DefaultAgentClassifierService
@@ -117,18 +115,6 @@ class LmosRuntimeAutoConfigurationCustomBeansTest {
                     conversation: Conversation,
                     agentList: List<Agent>,
                 ): Agent {
-                    TODO("Not yet implemented")
-                }
-            }
-
-        @Bean
-        open fun agentRegistryService(): AgentRegistryService =
-            object : AgentRegistryService {
-                override suspend fun getRoutingInformation(
-                    tenantId: String,
-                    channelId: String,
-                    subset: String?,
-                ): RoutingInformation {
                     TODO("Not yet implemented")
                 }
             }

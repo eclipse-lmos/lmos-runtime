@@ -15,14 +15,7 @@ import kotlinx.coroutines.test.runTest
 import org.eclipse.lmos.arc.api.Message
 import org.eclipse.lmos.classifier.core.ClassificationResult
 import org.eclipse.lmos.runtime.core.RuntimeConfiguration
-import org.eclipse.lmos.runtime.core.channelrouting.CachedChannelRoutingRepository
-import org.eclipse.lmos.runtime.core.channelrouting.Capability
-import org.eclipse.lmos.runtime.core.channelrouting.CapabilityGroup
-import org.eclipse.lmos.runtime.core.channelrouting.ChannelRouting
-import org.eclipse.lmos.runtime.core.channelrouting.Labels
-import org.eclipse.lmos.runtime.core.channelrouting.Metadata
-import org.eclipse.lmos.runtime.core.channelrouting.Spec
-import org.eclipse.lmos.runtime.core.channelrouting.toRoutingInformation
+import org.eclipse.lmos.runtime.core.channelrouting.*
 import org.eclipse.lmos.runtime.core.disambiguation.DisambiguationHandler
 import org.eclipse.lmos.runtime.core.exception.AgentClientException
 import org.eclipse.lmos.runtime.core.exception.AgentNotFoundException
@@ -30,7 +23,6 @@ import org.eclipse.lmos.runtime.core.exception.NoRoutingInfoFoundException
 import org.eclipse.lmos.runtime.core.model.*
 import org.eclipse.lmos.runtime.core.service.outbound.AgentClassifierService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentClientService
-import org.eclipse.lmos.runtime.core.service.outbound.AgentRegistryService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentRoutingService
 import org.eclipse.lmos.runtime.core.service.routing.ExplicitAgentRoutingService
 import org.junit.jupiter.api.BeforeEach
@@ -39,7 +31,6 @@ import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
 
 class ConversationHandlerTest {
-    private lateinit var agentRegistryService: AgentRegistryService
     private lateinit var agentRoutingService: AgentRoutingService
     private lateinit var agentClassifierService: AgentClassifierService
     private lateinit var agentClientService: AgentClientService
@@ -52,7 +43,6 @@ class ConversationHandlerTest {
     @BeforeEach
     fun setUp() {
         agentClientService = mockk<AgentClientService>()
-        agentRegistryService = mockk<AgentRegistryService>()
         agentRoutingService = ExplicitAgentRoutingService()
         agentClassifierService = mockk<AgentClassifierService>()
         channelRoutingRepository = mockk<CachedChannelRoutingRepository>()
