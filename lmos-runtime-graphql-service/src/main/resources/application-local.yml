@@ -10,5 +10,3 @@ lmos:
       base-url: http://localhost:8080
     router:
       type: EXPLICIT
-    cache:
-      ttl: 6000

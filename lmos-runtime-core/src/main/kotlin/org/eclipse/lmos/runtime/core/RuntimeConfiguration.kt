@@ -10,14 +10,14 @@ import org.eclipse.lmos.runtime.core.disambiguation.defaultDisambiguationClarifi
 import org.eclipse.lmos.runtime.core.disambiguation.defaultDisambiguationIntroductionPrompt
 
 open class RuntimeConfiguration(
-    val agentRegistry: AgentRegistry,
+    val channelRoutingRepository: ChannelRoutingRepositoryConfig,
     val openAi: OpenAI? = null,
     val cache: Cache,
     val disambiguation: Disambiguation,
 ) {
-    data class AgentRegistry(
+    data class ChannelRoutingRepositoryConfig(
         val baseUrl: String? = null, // Made nullable
-        val type: AgentRegistryType = AgentRegistryType.API, // Default to API
+        val type: ChannelRoutingRepositoryType = ChannelRoutingRepositoryType.API, // Default to API
         val fileName: String? = null, // Path to the YAML file
         val defaultSubset: String = "stable",
     )

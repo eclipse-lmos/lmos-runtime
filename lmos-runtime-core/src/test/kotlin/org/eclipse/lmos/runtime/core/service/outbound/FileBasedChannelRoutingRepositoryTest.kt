@@ -7,7 +7,7 @@
 package org.eclipse.lmos.runtime.core.service.outbound
 
 import kotlinx.coroutines.test.runTest
-import org.eclipse.lmos.runtime.core.AgentRegistryType
+import org.eclipse.lmos.runtime.core.ChannelRoutingRepositoryType
 import org.eclipse.lmos.runtime.core.RuntimeConfiguration
 import org.eclipse.lmos.runtime.core.channelrouting.toRoutingInformation
 import org.eclipse.lmos.runtime.core.exception.NoRoutingInfoFoundException
@@ -41,9 +41,9 @@ class FileBasedChannelRoutingRepositoryTest {
     private fun getLmosRuntimeConfig(fileName: String): RuntimeConfiguration {
         val lmosRuntimeConfig =
             RuntimeConfiguration(
-                agentRegistry =
-                    RuntimeConfiguration.AgentRegistry(
-                        type = AgentRegistryType.FILE,
+                channelRoutingRepository =
+                    RuntimeConfiguration.ChannelRoutingRepositoryConfig(
+                        type = ChannelRoutingRepositoryType.FILE,
                         fileName = fileName,
                     ),
                 cache = RuntimeConfiguration.Cache(ttl = 6000),

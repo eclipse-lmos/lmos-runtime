@@ -8,7 +8,7 @@ package org.eclipse.lmos.runtime.service.constants
 
 object ServiceConstants {
     object Endpoints {
-        const val BASE_PATH = "/lmos/runtime/apis/v1"
+        const val BASE_PATH = "/apis/v1"
         const val CHAT_URL = "/{tenantId}/chat/{conversationId}/message"
     }
 

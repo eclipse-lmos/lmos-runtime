@@ -6,7 +6,7 @@
 
 package org.eclipse.lmos.runtime.core
 
-enum class AgentRegistryType {
+enum class ChannelRoutingRepositoryType {
     API,
     FILE,
 }

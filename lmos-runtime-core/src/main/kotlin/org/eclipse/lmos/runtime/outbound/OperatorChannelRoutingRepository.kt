@@ -90,7 +90,7 @@ open class OperatorChannelRoutingRepository(
         namespace: String?,
     ): ChannelRouting {
         val urlString =
-            "${runtimeConfig.agentRegistry.baseUrl}/apis/v1/tenants/$tenantId/channels/$channelId/routing"
+            "${runtimeConfig.channelRoutingRepository.baseUrl}/apis/v1/tenants/$tenantId/channels/$channelId/routing"
         log.debug("Calling operator: $urlString with subset: $subset namespace=$namespace")
 
         val response =

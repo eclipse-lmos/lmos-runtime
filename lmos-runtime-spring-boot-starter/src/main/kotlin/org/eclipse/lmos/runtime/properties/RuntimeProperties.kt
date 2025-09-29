@@ -12,7 +12,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 
 @ConfigurationProperties(prefix = "lmos.runtime")
 class RuntimeProperties(
-    agentRegistry: AgentRegistry,
+    agentRegistry: ChannelRoutingRepositoryConfig,
     openAi: OpenAI? = null,
     cache: Cache,
     disambiguation: Disambiguation,

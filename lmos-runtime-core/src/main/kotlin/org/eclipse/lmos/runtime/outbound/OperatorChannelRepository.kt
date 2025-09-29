@@ -69,7 +69,7 @@ class OperatorChannelRepository(
         namespace: String?,
     ): Channel =
         runBlocking {
-            val urlString = "${lmosRuntimeConfig.agentRegistry.baseUrl}/apis/v1/tenants/$tenantId/channels/$channelId"
+            val urlString = "${lmosRuntimeConfig.channelRoutingRepository.baseUrl}/apis/v1/tenants/$tenantId/channels/$channelId"
             log.trace("Calling operator(getChannel): $urlString subset=$subset namespace=$namespace")
             val response =
                 try {
@@ -116,7 +116,7 @@ class OperatorChannelRepository(
         namespace: String?,
     ): List<Channel> =
         runBlocking {
-            val urlString = "${lmosRuntimeConfig.agentRegistry.baseUrl}/apis/v1/tenants/$tenantId/channels"
+            val urlString = "${lmosRuntimeConfig.channelRoutingRepository.baseUrl}/apis/v1/tenants/$tenantId/channels"
             log.trace("Calling operator(listChannels): $urlString subset=$subset namespace=$namespace")
             val response =
                 try {

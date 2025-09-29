@@ -9,7 +9,7 @@ package org.eclipse.lmos.runtime.outbound
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.eclipse.lmos.runtime.core.RuntimeConfiguration
-import org.eclipse.lmos.runtime.core.RuntimeConfiguration.AgentRegistry
+import org.eclipse.lmos.runtime.core.RuntimeConfiguration.ChannelRoutingRepositoryConfig
 import org.eclipse.lmos.runtime.core.exception.NoChannelFoundException
 import org.eclipse.lmos.runtime.test.BaseWireMockTest
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -27,7 +27,7 @@ class OperatorChannelRepositoryTest : BaseWireMockTest() {
     fun setup() {
         val runtimeConfig =
             RuntimeConfiguration(
-                AgentRegistry(baseUrl = wireMockServer.baseUrl()),
+                ChannelRoutingRepositoryConfig(baseUrl = wireMockServer.baseUrl()),
                 cache = RuntimeConfiguration.Cache(ttl = 6000),
                 disambiguation =
                     RuntimeConfiguration.Disambiguation(

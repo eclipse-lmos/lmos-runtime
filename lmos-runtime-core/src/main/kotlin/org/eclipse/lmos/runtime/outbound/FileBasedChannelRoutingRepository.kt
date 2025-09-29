@@ -23,7 +23,7 @@ class FileBasedChannelRoutingRepository(
 
     init {
         val fileName =
-            runtimeConfig.agentRegistry.fileName ?: throw IllegalArgumentException(
+            runtimeConfig.channelRoutingRepository.fileName ?: throw IllegalArgumentException(
                 "LMOS runtime agent registry type is FILE, but 'lmos.runtime.agent-registry.filename' is not configured.",
             )
         log.info("Initializing FileBasedAgentRegistryService with file: $fileName")
@@ -47,7 +47,7 @@ class FileBasedChannelRoutingRepository(
         subset: String?,
         namespace: String?,
     ): ChannelRouting {
-        val effectiveSubset = subset ?: runtimeConfig.agentRegistry.defaultSubset
+        val effectiveSubset = subset ?: runtimeConfig.channelRoutingRepository.defaultSubset
         log.debug(
             "Searching for routing information for tenant: $tenantId, channel: $channelId, subset: $subset, effectiveSubset: $effectiveSubset",
         )

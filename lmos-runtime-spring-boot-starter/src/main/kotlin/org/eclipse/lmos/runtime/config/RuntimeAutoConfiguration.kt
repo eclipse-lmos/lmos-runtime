@@ -11,7 +11,7 @@ import org.eclipse.lmos.classifier.core.AgentClassifier
 import org.eclipse.lmos.classifier.llm.ChatModelClientProperties
 import org.eclipse.lmos.classifier.llm.LangChainChatModelFactory
 import org.eclipse.lmos.runtime.channelrouting.DefaultCachedChannelRoutingRepository
-import org.eclipse.lmos.runtime.core.AgentRegistryType
+import org.eclipse.lmos.runtime.core.ChannelRoutingRepositoryType
 import org.eclipse.lmos.runtime.core.RuntimeConfiguration
 import org.eclipse.lmos.runtime.core.channel.ChannelRepository
 import org.eclipse.lmos.runtime.core.channelrouting.CachedChannelRoutingRepository
@@ -65,16 +65,16 @@ class RuntimeAutoConfiguration(
     @Bean
     @ConditionalOnMissingBean(ChannelRoutingRepository::class) // Corrected this line
     fun channelRoutingRepository(lmosRuntimeConfig: RuntimeConfiguration): ChannelRoutingRepository {
-        val agentRegistryConfig = runtimeProperties.agentRegistry
+        val agentRegistryConfig = runtimeProperties.channelRoutingRepository
         return when (agentRegistryConfig.type) {
-            AgentRegistryType.API -> {
+            ChannelRoutingRepositoryType.API -> {
                 agentRegistryConfig.baseUrl
                     ?: throw IllegalArgumentException(
                         "LMOS runtime agent registry type is API, but 'lmos.runtime.agent-registry.base-url' is not configured.",
                     )
                 OperatorChannelRoutingRepository(runtimeProperties)
             }
-            AgentRegistryType.FILE -> {
+            ChannelRoutingRepositoryType.FILE -> {
                 agentRegistryConfig.fileName
                     ?: throw IllegalArgumentException(
                         "LMOS runtime agent registry type is FILE, but 'lmos.runtime.agent-registry.filename' is not configured.",
