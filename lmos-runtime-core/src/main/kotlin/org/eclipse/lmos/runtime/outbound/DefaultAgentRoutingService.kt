@@ -21,7 +21,7 @@ import org.eclipse.lmos.runtime.core.service.outbound.AgentRoutingService
 import org.slf4j.LoggerFactory
 
 class LmosAgentRoutingService(
-    private val lmosRuntimeConfig: RuntimeConfiguration,
+    private val runtimeConfig: RuntimeConfiguration,
 ) : AgentRoutingService {
     private val log = LoggerFactory.getLogger(LmosAgentRoutingService::class.java)
 
@@ -60,7 +60,7 @@ class LmosAgentRoutingService(
         }
 
     private fun agentRoutingSpecResolver(agentRoutingSpecsProvider: AgentRoutingSpecsProvider): AgentRoutingSpecsResolver {
-        val openAIConfig = lmosRuntimeConfig.openAi ?: throw IllegalArgumentException("OpenAI configuration is missing")
+        val openAIConfig = runtimeConfig.openAi ?: throw IllegalArgumentException("OpenAI configuration is missing")
 
         fun requireField(
             value: Any?,

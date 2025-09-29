@@ -23,7 +23,6 @@ import org.springframework.test.context.TestPropertySource
     properties = [
         "lmos.runtime.agent-registry.type=API",
         "lmos.runtime.agent-registry.base-url=http://dummy-api.com",
-        "lmos.runtime.cache.ttl=600",
         "lmos.runtime.router.type=EXPLICIT", // Added router type
         "lmos.runtime.disambiguation.enabled=false",
         "lmos.runtime.disambiguation.llm.provider=openai",

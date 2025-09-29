@@ -30,7 +30,6 @@ import org.springframework.test.context.TestPropertySource
         "lmos.runtime.agent-registry.type=FILE",
         "lmos.runtime.agent-registry.filename=integration-test-agent-registry.yaml",
         "lmos.runtime.router.type=EXPLICIT",
-        "lmos.runtime.cache.ttl=600",
         "lmos.runtime.disambiguation.enabled=false",
         "lmos.runtime.disambiguation.llm.provider=openai",
         "lmos.runtime.disambiguation.llm.model=dummy-model",
