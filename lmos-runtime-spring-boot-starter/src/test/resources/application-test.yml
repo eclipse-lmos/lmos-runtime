@@ -18,8 +18,6 @@ lmos:
       base-url: ${stub.baseUrl}/agentRegistry
     router:
       type: EXPLICIT
-    cache:
-      ttl: 6000
     disambiguation:
       enabled: true
       llm:

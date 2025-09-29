@@ -31,8 +31,6 @@ lmos:
       max-tokens: 2000
       temperature: 0.0
       format: json_object
-    cache:
-      ttl: 1800
     cors:
       enabled: true
       allowed-origins: "*"
