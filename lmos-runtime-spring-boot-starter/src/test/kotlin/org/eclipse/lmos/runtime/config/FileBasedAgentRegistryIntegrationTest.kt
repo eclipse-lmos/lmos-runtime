@@ -27,8 +27,8 @@ import org.springframework.test.context.TestPropertySource
 ) // Minimal context
 @TestPropertySource(
     properties = [
-        "lmos.runtime.agent-registry.type=FILE",
-        "lmos.runtime.agent-registry.filename=integration-test-agent-registry.yaml",
+        "lmos.runtime.channelRoutingRepository.type=FILE",
+        "lmos.runtime.channelRoutingRepository.filename=integration-test-agent-registry.yaml",
         "lmos.runtime.router.type=EXPLICIT",
         "lmos.runtime.disambiguation.enabled=false",
         "lmos.runtime.disambiguation.llm.provider=openai",

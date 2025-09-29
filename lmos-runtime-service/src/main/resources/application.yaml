@@ -6,7 +6,7 @@
 
 lmos:
   runtime:
-    agent-registry:
+    channelRoutingRepository:
       base-url: ${AGENT_REGISTRY_URL:http://lmos-operator:8080}
     router:
       type: ${ROUTER_TYPE:EXPLICIT}

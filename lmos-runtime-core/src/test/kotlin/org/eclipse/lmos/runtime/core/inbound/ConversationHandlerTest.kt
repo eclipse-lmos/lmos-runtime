@@ -59,7 +59,6 @@ class ConversationHandlerTest {
         lmosRuntimeConfig =
             RuntimeConfiguration(
                 mockk<RuntimeConfiguration.ChannelRoutingRepositoryConfig>(),
-                cache = RuntimeConfiguration.Cache(ttl = 6000),
                 disambiguation =
                     RuntimeConfiguration.Disambiguation(
                         enabled = false,

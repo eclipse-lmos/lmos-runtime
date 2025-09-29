@@ -20,7 +20,7 @@ implementation("org.eclipse.lmos:lmos-runtime-spring-boot-starter:${version}")
 ```yaml
 lmos:
   runtime:
-    agent-registry:
+    channelRoutingRepository:
       base-url: http://lmos-operator:8080
     router:
       type: EXPLICIT

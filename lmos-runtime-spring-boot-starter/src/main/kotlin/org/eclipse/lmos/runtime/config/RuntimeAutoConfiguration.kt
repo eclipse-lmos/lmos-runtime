@@ -70,14 +70,14 @@ class RuntimeAutoConfiguration(
             ChannelRoutingRepositoryType.API -> {
                 agentRegistryConfig.baseUrl
                     ?: throw IllegalArgumentException(
-                        "LMOS runtime agent registry type is API, but 'lmos.runtime.agent-registry.base-url' is not configured.",
+                        "LMOS runtime agent registry type is API, but 'lmos.runtime.channelRoutingRepository.base-url' is not configured.",
                     )
                 OperatorChannelRoutingRepository(runtimeProperties)
             }
             ChannelRoutingRepositoryType.FILE -> {
                 agentRegistryConfig.fileName
                     ?: throw IllegalArgumentException(
-                        "LMOS runtime agent registry type is FILE, but 'lmos.runtime.agent-registry.filename' is not configured.",
+                        "LMOS runtime agent registry type is FILE, but 'lmos.runtime.channelRoutingRepository.filename' is not configured.",
                     )
                 FileBasedChannelRoutingRepository(lmosRuntimeConfig)
             }

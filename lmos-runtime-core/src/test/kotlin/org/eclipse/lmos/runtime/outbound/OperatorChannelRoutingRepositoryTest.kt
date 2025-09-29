@@ -25,7 +25,6 @@ class OperatorChannelRoutingRepositoryTest : BaseWireMockTest() {
         val runtimeConfig =
             RuntimeConfiguration(
                 ChannelRoutingRepositoryConfig(baseUrl = wireMockServer.baseUrl()),
-                cache = RuntimeConfiguration.Cache(ttl = 6000),
                 disambiguation =
                     RuntimeConfiguration.Disambiguation(
                         enabled = false,

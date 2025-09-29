@@ -21,8 +21,8 @@ import org.springframework.test.context.TestPropertySource
 @SpringBootTest(classes = [RuntimeAutoConfiguration::class, ModelAgentClassifierAutoConfiguration::class, CacheAutoConfiguration::class])
 @TestPropertySource(
     properties = [
-        "lmos.runtime.agent-registry.type=API",
-        "lmos.runtime.agent-registry.base-url=http://dummy-api.com",
+        "lmos.runtime.channelRoutingRepository.type=API",
+        "lmos.runtime.channelRoutingRepository.base-url=http://dummy-api.com",
         "lmos.runtime.router.type=EXPLICIT", // Added router type
         "lmos.runtime.disambiguation.enabled=false",
         "lmos.runtime.disambiguation.llm.provider=openai",

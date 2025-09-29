@@ -46,7 +46,6 @@ class FileBasedChannelRoutingRepositoryTest {
                         type = ChannelRoutingRepositoryType.FILE,
                         fileName = fileName,
                     ),
-                cache = RuntimeConfiguration.Cache(ttl = 6000),
                 disambiguation =
                     RuntimeConfiguration.Disambiguation(
                         enabled = false,

@@ -14,7 +14,7 @@ lmos:
       temperature: 0.0
       format: json_model
       model: GPT-4o
-    agent-registry:
+    channelRoutingRepository:
       base-url: ${stub.baseUrl}/agentRegistry
     router:
       type: EXPLICIT

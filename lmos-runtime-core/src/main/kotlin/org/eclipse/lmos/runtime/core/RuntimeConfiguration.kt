@@ -12,7 +12,6 @@ import org.eclipse.lmos.runtime.core.disambiguation.defaultDisambiguationIntrodu
 open class RuntimeConfiguration(
     val channelRoutingRepository: ChannelRoutingRepositoryConfig,
     val openAi: OpenAI? = null,
-    val cache: Cache,
     val disambiguation: Disambiguation,
 ) {
     data class ChannelRoutingRepositoryConfig(
