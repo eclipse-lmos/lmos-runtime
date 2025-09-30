@@ -8,10 +8,10 @@ plugins {
 }
 
 dependencies {
-    api(enforcedPlatform(project(":lmos-runtime-bom")))
-    implementation(enforcedPlatform(project(":lmos-runtime-bom")))
-    testImplementation(enforcedPlatform(project(":lmos-runtime-bom")))
-    testImplementation(enforcedPlatform(project(":lmos-runtime-bom")))
+    api(platform(project(":lmos-runtime-bom")))
+    implementation(platform(project(":lmos-runtime-bom")))
+    testImplementation(platform(project(":lmos-runtime-bom")))
+    testImplementation(platform(project(":lmos-runtime-bom")))
 
     api("org.eclipse.lmos:lmos-router-llm")
     api("org.eclipse.lmos:arc-agent-client")

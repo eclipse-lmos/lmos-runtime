@@ -9,7 +9,7 @@ plugins {
 }
 
 dependencies {
-    implementation(enforcedPlatform(project(":lmos-runtime-bom")))
+    implementation(platform(project(":lmos-runtime-bom")))
     api(project(":lmos-runtime-core"))
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-cache")
