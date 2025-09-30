@@ -69,16 +69,16 @@ To customize the settings, create a ConfigMap or Secret and mount it to the LMOS
 
 You can adjust the following properties:
 
-| Property                                | Kubernetes ConfigMaps/ Secrets | Description                                            | Default                     |
-|-----------------------------------------|--------------------------------|--------------------------------------------------------|-----------------------------|
-| `lmos.runtime.agentRegistry.baseUrl`    | AGENT_REGISTRY_URL             | URL of the agent registry service                      | `http://lmos-operator:8080` |
-| `lmos.runtime.openAI.url`               | LLM_BASE_URL                   | LLM Base URL                                           | `https://api.openai.com/v1` |
-| `lmos.runtime.openAI.model`             | LLM_MODEL_NAME                 | LLM to use                                             | `gpt-3.5-turbo`             |
-| `lmos.runtime.openAI.maxTokens`         | LLM_MAX_TOKENS                 | Maximum tokens for model requests                      | `20000`                     |
-| `lmos.runtime.openAI.temperature`       | LLM_TEMPERATURE                | Temperature for model requests                         | `0.0`                       |
-| `lmos.runtime.openAI.format`            | LLM_FORMAT                     | Output format for model requests                       | `json_format`               |
-| `lmos.runtime.openAI.key`               | LLM_API_KEY                    | LLM API key (**should be set as a Kubernetes secret**) | `null`                      |
-| `lmos.router.classifier.vector.enabled` | CLASSIFIER_VECTOR_ENABLED      | LLM API key (**should be set as a Kubernetes secret**) | `null`                      |
+| Property                                        | Kubernetes ConfigMaps/ Secrets | Description                                            | Default                     |
+|-------------------------------------------------|--------------------------------|--------------------------------------------------------|-----------------------------|
+| `lmos.runtime.channelRoutingRepository.baseUrl` | CHANNEL_ROUTING_REPOSITORY_URL | URL of the channel routing repository                  | `http://lmos-operator:8080` |
+| `lmos.runtime.openAI.url`                       | LLM_BASE_URL                   | LLM Base URL                                           | `https://api.openai.com/v1` |
+| `lmos.runtime.openAI.model`                     | LLM_MODEL_NAME                 | LLM to use                                             | `gpt-3.5-turbo`             |
+| `lmos.runtime.openAI.maxTokens`                 | LLM_MAX_TOKENS                 | Maximum tokens for model requests                      | `20000`                     |
+| `lmos.runtime.openAI.temperature`               | LLM_TEMPERATURE                | Temperature for model requests                         | `0.0`                       |
+| `lmos.runtime.openAI.format`                    | LLM_FORMAT                     | Output format for model requests                       | `json_format`               |
+| `lmos.runtime.openAI.key`                       | LLM_API_KEY                    | LLM API key (**should be set as a Kubernetes secret**) | `null`                      |
+| `lmos.router.classifier.vector.enabled`         | CLASSIFIER_VECTOR_ENABLED      | LLM API key (**should be set as a Kubernetes secret**) | `null`                      |
 
 ### Classifier Configuration
 The [LMOS Agent Classifier library](https://github.com/eclipse-lmos/lmos-router?tab=readme-ov-file#agent-classifier) is used to identify the most appropriate agent based on the conversation and system context. Four classifier strategies can be enabled, as described below:

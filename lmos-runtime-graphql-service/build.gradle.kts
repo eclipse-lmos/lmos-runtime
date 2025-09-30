@@ -14,7 +14,7 @@ plugins {
 }
 
 dependencies {
-    implementation(enforcedPlatform(project(":lmos-runtime-bom")))
+    implementation(platform(project(":lmos-runtime-bom")))
     implementation(project(":lmos-runtime-spring-boot-starter"))
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
