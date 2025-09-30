@@ -57,7 +57,11 @@ class DefaultDisambiguationHandler(
 
         val chatResponse = chatModel.chat(disambiguationMessages)
         val disambiguationResult = prepareDisambiguationResult(chatResponse)
-        logger.info("Disambiguation result: $disambiguationResult")
+        logger
+            .atInfo()
+            .addKeyValue("result", disambiguationResult)
+            .addKeyValue("event", "DISAMBIGUATION_DONE")
+            .log("Executed disambiguation.")
 
         return AssistantMessage(
             content = disambiguationResult.clarificationQuestion,
@@ -106,7 +110,7 @@ class DefaultDisambiguationHandler(
 
 data class DisambiguationResult(
     val topics: List<String>,
-    val scratchpad: String,
+    val reasoning: String,
     val onlyConfirmation: Boolean,
     val confidence: Int,
     val clarificationQuestion: String,

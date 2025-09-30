@@ -34,7 +34,7 @@ fun defaultDisambiguationClarificationPrompt(): String =
     and without any additional characters, explanations, or Markdown formatting:
     {
       "topics" : [<topic1>, <topic2>, ...], 
-      "scratchpad": <Reasoning how to properly separate the topics with regard to the customer query>,
+      "reasoning": <Reasoning how to properly separate the topics with regard to the customer query>,
       "onlyConfirmation": <true, if there is only one relevant topic and the question is a confirmation question only, else false>,
       "confidence": <Only applicable if "onlyConfirmation"==true: Estimation of confidence in the selected topic (0 very unsure to 100 very sure)>
       "clarificationQuestion":<clarification question>
@@ -66,7 +66,7 @@ fun defaultGermanDisambiguationClarificationPrompt(): String =
     und ohne jegliche zusätzlichen Zeichen, Erklärungen oder Markdown-Formatierungen:
     {
       "topics" : [<themengebiet1>, <themengebiet2>, ...], 
-      "scratchpad": <Überlegungen, wie die relevanten Themengebiete voneinander abzugrenzen sind>,
+      "reasoning": <Überlegungen, wie die relevanten Themengebiete voneinander abzugrenzen sind>,
       "onlyConfirmation": <true, wenn es sich nur um eine Bestaetigungsrueckfrage und nicht um eine Abgrenzung zwischen Themengebieten handelt, sonst false>,
       "confidence": <Bei "onlyConfirmation"==true: Einschaetzung der Sicherheit dass das angefragte Themengebiet richtig erkannt ist. Zahl zwischen 0 (unsicher) und 100 (sehr sicher)>
       "clarificationQuestion":<rueckfrage>

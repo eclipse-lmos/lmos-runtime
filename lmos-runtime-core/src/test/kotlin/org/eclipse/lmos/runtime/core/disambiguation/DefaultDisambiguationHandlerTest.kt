@@ -142,7 +142,7 @@ class DefaultDisambiguationHandlerTest {
         """
         {
             "topics": ["contract"],
-            "scratchpad": "notes",
+            "reasoning": "notes",
             "onlyConfirmation": false,
             "confidence": 100,
             "clarificationQuestion": "Which contract would you like to view?"
