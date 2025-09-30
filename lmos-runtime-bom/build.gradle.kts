@@ -18,7 +18,7 @@ dependencies {
     val ktorVersion = "3.3.0"
     val kotlinxVersion = "1.9.0"
     val lmosRouterVersion = "0.14.0"
-    val arcVersion = "0.174.0"
+    val arcVersion = "0.175.0"
     val langChain4jVersion = "1.5.0"
     val kotlinCoroutines = "1.10.2"
 
