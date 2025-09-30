@@ -1,0 +1,21 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/apis/v1/tenants/acme/channels/notfound",
+    "headers": {
+      "Accept": {
+        "contains": "application/json"
+      }
+    }
+  },
+  "response": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "error": "Channel not found"
+    }
+  }
+}
+

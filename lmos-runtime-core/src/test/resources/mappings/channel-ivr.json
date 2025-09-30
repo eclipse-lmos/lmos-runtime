@@ -1,0 +1,50 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/apis/v1/tenants/acme/channels/ivr",
+    "headers": {
+      "Accept": {
+        "contains": "application/json"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "apiVersion": "lmos.eclipse/v1",
+      "kind": "Channel",
+      "metadata": {
+        "name": "acme-ivr-stable",
+        "labels": {
+          "channel": "ivr",
+          "version": "1.0.0",
+          "tenant": "acme",
+          "subset": "stable"
+        }
+      },
+      "spec": {
+        "requiredCapabilities": [
+          {
+            "id": "view-bill-id",
+            "name": "view-bill",
+            "version": "1.0.0"
+          },
+          {
+            "id": "download-bill-id",
+            "name": "download-bill",
+            "version": ">=1.0.0",
+            "strategy": "HIGHEST"
+          },
+          {
+            "name": "view-contract",
+            "version": ">=1.0.0"
+          }
+        ]
+      }
+    }
+  }
+}
+

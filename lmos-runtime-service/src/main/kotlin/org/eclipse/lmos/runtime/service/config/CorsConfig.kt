@@ -1,12 +1,12 @@
 /*
- * // SPDX-FileCopyrightText: 2025 Deutsche Telekom AG and others
- * //
- * // SPDX-License-Identifier: Apache-2.0
+ * SPDX-FileCopyrightText: 2025 Deutsche Telekom AG and others
+ *
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 package org.eclipse.lmos.runtime.service.config
 
-import org.eclipse.lmos.runtime.service.properties.LmosRuntimeCorsProperties
+import org.eclipse.lmos.runtime.service.properties.RuntimeCorsProperties
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
@@ -17,7 +17,7 @@ import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource
 
 @Configuration
 open class CorsConfig(
-    private val lmosRuntimeCorsProperties: LmosRuntimeCorsProperties,
+    private val runtimeCorsProperties: RuntimeCorsProperties,
 ) {
     private val log = LoggerFactory.getLogger(CorsConfig::class.java)
 
@@ -26,10 +26,10 @@ open class CorsConfig(
     open fun corsWebFilter(): CorsWebFilter {
         val corsConfig =
             CorsConfiguration().apply {
-                allowedOrigins = lmosRuntimeCorsProperties.allowedOrigins
-                maxAge = lmosRuntimeCorsProperties.maxAge
-                allowedMethods = lmosRuntimeCorsProperties.allowedMethods
-                allowedHeaders = lmosRuntimeCorsProperties.allowedHeaders
+                allowedOrigins = runtimeCorsProperties.allowedOrigins
+                maxAge = runtimeCorsProperties.maxAge
+                allowedMethods = runtimeCorsProperties.allowedMethods
+                allowedHeaders = runtimeCorsProperties.allowedHeaders
             }
 
         log.info(
@@ -42,7 +42,7 @@ open class CorsConfig(
 
         val source =
             UrlBasedCorsConfigurationSource().apply {
-                lmosRuntimeCorsProperties.patterns.forEach { pattern ->
+                runtimeCorsProperties.patterns.forEach { pattern ->
                     registerCorsConfiguration(pattern, corsConfig)
                 }
             }

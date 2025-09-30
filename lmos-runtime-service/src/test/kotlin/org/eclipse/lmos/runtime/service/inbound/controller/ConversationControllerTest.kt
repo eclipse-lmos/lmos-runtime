@@ -1,23 +1,23 @@
 /*
- * // SPDX-FileCopyrightText: 2025 Deutsche Telekom AG and others
- * //
- * // SPDX-License-Identifier: Apache-2.0
+ * SPDX-FileCopyrightText: 2025 Deutsche Telekom AG and others
+ *
+ * SPDX-License-Identifier: Apache-2.0
  */
+
 package org.eclipse.lmos.runtime.service.inbound.controller
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.eclipse.lmos.arc.api.Message
 import org.eclipse.lmos.runtime.core.exception.ErrorMessage
 import org.eclipse.lmos.runtime.core.exception.NoRoutingInfoFoundException
 import org.eclipse.lmos.runtime.core.inbound.ConversationHandler
 import org.eclipse.lmos.runtime.core.model.*
-import org.eclipse.lmos.runtime.service.constants.LmosServiceConstants.Endpoints.BASE_PATH
-import org.eclipse.lmos.runtime.service.constants.LmosServiceConstants.Endpoints.CHAT_URL
-import org.eclipse.lmos.runtime.service.constants.LmosServiceConstants.Headers.TURN_ID
+import org.eclipse.lmos.runtime.service.constants.ServiceConstants.Endpoints.BASE_PATH
+import org.eclipse.lmos.runtime.service.constants.ServiceConstants.Endpoints.CHAT_URL
+import org.eclipse.lmos.runtime.service.constants.ServiceConstants.Headers.TURN_ID
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -37,9 +37,6 @@ import org.springframework.web.reactive.function.BodyInserters
 class ConversationControllerTest {
     @Autowired
     private lateinit var webClient: WebTestClient
-
-    @Autowired
-    private lateinit var objectMapper: ObjectMapper
 
     @Autowired
     private lateinit var conversationHandler: ConversationHandler
@@ -69,7 +66,7 @@ class ConversationControllerTest {
 
     @Test
     fun `chat endpoint returns successful response`(): Unit =
-        runBlocking {
+        runTest {
             val conversationId = "test-conversation-id"
             val tenantId = "test-tenant-id"
             val turnId = "test-turn-id"
@@ -92,13 +89,13 @@ class ConversationControllerTest {
                 .exchange()
                 .expectStatus()
                 .isOk
-                .expectBody()
-                .json(objectMapper.writeValueAsString(assistantMessage))
+                .expectBody(AssistantMessage::class.java)
+                .isEqualTo(assistantMessage)
         }
 
     @Test
     fun `chat endpoint handles empty conversation`(): Unit =
-        runBlocking {
+        runTest {
             val conversationId = "empty-conversation-id"
             val tenantId = "empty-tenant-id"
             val turnId = "empty-turn-id"
@@ -131,13 +128,13 @@ class ConversationControllerTest {
                 .exchange()
                 .expectStatus()
                 .isOk
-                .expectBody()
-                .json(objectMapper.writeValueAsString(assistantMessage))
+                .expectBody(AssistantMessage::class.java)
+                .isEqualTo(assistantMessage)
         }
 
     @Test
     fun `chat endpoint handles missing turn id`(): Unit =
-        runBlocking {
+        runTest {
             val conversationId = "no-turn-id-conversation"
             val tenantId = "no-turn-id-tenant"
 
@@ -153,7 +150,7 @@ class ConversationControllerTest {
 
     @Test
     fun `chat endpoint handles invalid request body`(): Unit =
-        runBlocking {
+        runTest {
             val conversationId = "invalid-body-conversation"
             val tenantId = "invalid-body-tenant"
             val turnId = "invalid-turn-id"
@@ -171,7 +168,7 @@ class ConversationControllerTest {
 
     @Test
     fun `chat endpoint handles NoRoutingInfoFoundException`(): Unit =
-        runBlocking {
+        runTest {
             val conversationId = "invalid-body-conversation"
             val tenantId = "invalid-body-tenant"
             val turnId = "invalid-turn-id"
@@ -196,13 +193,13 @@ class ConversationControllerTest {
                 .exchange()
                 .expectStatus()
                 .isNotFound
-                .expectBody()
-                .json(objectMapper.writeValueAsString(errorMessage))
+                .expectBody(ErrorMessage::class.java)
+                .isEqualTo(errorMessage)
         }
 
     @TestConfiguration
-    open class CustomBeanConfig {
+    class CustomBeanConfig {
         @Bean
-        open fun conversationHandler(): ConversationHandler = mockk<ConversationHandler>()
+        fun conversationHandler(): ConversationHandler = mockk<ConversationHandler>()
     }
 }

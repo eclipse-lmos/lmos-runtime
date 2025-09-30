@@ -1,22 +1,23 @@
 /*
- * // SPDX-FileCopyrightText: 2025 Deutsche Telekom AG and others
- * //
- * // SPDX-License-Identifier: Apache-2.0
+ * SPDX-FileCopyrightText: 2025 Deutsche Telekom AG and others
+ *
+ * SPDX-License-Identifier: Apache-2.0
  */
+
 package org.eclipse.lmos.runtime.service.inbound.controller
 
+import com.redis.testcontainers.RedisContainer
 import io.mockk.*
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.eclipse.lmos.arc.agent.client.graphql.GraphQlAgentClient
-import org.eclipse.lmos.arc.api.AgentRequest
 import org.eclipse.lmos.arc.api.AgentResult
 import org.eclipse.lmos.arc.api.Message
 import org.eclipse.lmos.runtime.core.model.*
 import org.eclipse.lmos.runtime.outbound.ArcAgentClientService
-import org.eclipse.lmos.runtime.service.constants.LmosServiceConstants.Endpoints.BASE_PATH
-import org.eclipse.lmos.runtime.service.constants.LmosServiceConstants.Endpoints.CHAT_URL
-import org.eclipse.lmos.runtime.service.constants.LmosServiceConstants.Headers.TURN_ID
+import org.eclipse.lmos.runtime.service.constants.ServiceConstants.Endpoints.BASE_PATH
+import org.eclipse.lmos.runtime.service.constants.ServiceConstants.Endpoints.CHAT_URL
+import org.eclipse.lmos.runtime.service.constants.ServiceConstants.Headers.TURN_ID
 import org.eclipse.lmos.runtime.test.BaseWireMockTest
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -26,10 +27,16 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.http.MediaType
+import org.springframework.test.context.DynamicPropertyRegistry
+import org.springframework.test.context.DynamicPropertySource
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
+import org.testcontainers.junit.jupiter.Container
+import org.testcontainers.junit.jupiter.Testcontainers
+import org.testcontainers.utility.DockerImageName
 import java.util.*
 
+@Testcontainers
 abstract class AbstractConversationControllerIntegrationTest : BaseWireMockTest() {
     @Autowired
     private lateinit var webTestClient: WebTestClient
@@ -39,6 +46,25 @@ abstract class AbstractConversationControllerIntegrationTest : BaseWireMockTest(
 
     private lateinit var baseUrl: String
 
+    companion object {
+        @JvmStatic
+        @Container
+        val redis =
+            RedisContainer(DockerImageName.parse("redis:7.2.5-alpine")).apply {
+                withReuse(true) // optional
+            }
+
+        @JvmStatic
+        @DynamicPropertySource
+        fun registerRedisProps(registry: DynamicPropertyRegistry) {
+            registry.add("spring.data.redis.host") { redis.host }
+            registry.add("spring.data.redis.port") { redis.firstMappedPort }
+            // If you’re using the newer spring.redis.* namespace:
+            // registry.add("spring.redis.host") { redis.host }
+            // registry.add("spring.redis.port") { redis.firstMappedPort }
+        }
+    }
+
     @BeforeEach
     fun setup() {
         baseUrl = "$BASE_PATH$CHAT_URL"
@@ -46,7 +72,7 @@ abstract class AbstractConversationControllerIntegrationTest : BaseWireMockTest(
 
     @Test
     fun `successful conversation handling with single message`(): Unit =
-        runBlocking {
+        runTest {
             // Arrange
             val conversationId = UUID.randomUUID().toString()
             val tenantId = "en"
@@ -77,7 +103,7 @@ abstract class AbstractConversationControllerIntegrationTest : BaseWireMockTest(
 
     @Test
     fun `conversation handling with multiple messages`(): Unit =
-        runBlocking {
+        runTest {
             val conversationId = UUID.randomUUID().toString()
             val tenantId = "en"
             val turnId = UUID.randomUUID().toString()
@@ -116,7 +142,7 @@ abstract class AbstractConversationControllerIntegrationTest : BaseWireMockTest(
 
     @Test
     fun `multi-turn conversation`(): Unit =
-        runBlocking {
+        runTest {
             // Arrange
             val conversationId = UUID.randomUUID().toString()
             val tenantId = "en"
@@ -174,7 +200,14 @@ abstract class AbstractConversationControllerIntegrationTest : BaseWireMockTest(
     private fun mockAgentCall(agentAddress: Address) {
         val mockGraphQlAgentClient = mockk<GraphQlAgentClient>()
         coEvery { agentClientService.createGraphQlAgentClient(agentAddress) } returns mockGraphQlAgentClient
-        coEvery { mockGraphQlAgentClient.callAgent(any<AgentRequest>()) } returns
+        coEvery {
+            mockGraphQlAgentClient.callAgent(
+                any(),
+                isNull(),
+                isNull(),
+                match { it["x-subset"] == "stable" },
+            )
+        } returns
             flow {
                 emit(
                     AgentResult(
@@ -203,8 +236,8 @@ abstract class AbstractConversationControllerIntegrationTest : BaseWireMockTest(
         )
 
     @TestConfiguration
-    open class TestConfig {
+    class TestConfig {
         @Bean
-        open fun agentClientService() = spyk<ArcAgentClientService>()
+        fun agentClientService() = spyk<ArcAgentClientService>()
     }
 }

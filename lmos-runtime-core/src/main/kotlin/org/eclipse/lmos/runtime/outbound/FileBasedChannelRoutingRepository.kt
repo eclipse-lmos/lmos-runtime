@@ -1,30 +1,30 @@
 /*
- * // SPDX-FileCopyrightText: 2025 Deutsche Telekom AG and others
- * //
- * // SPDX-License-Identifier: Apache-2.0
+ * SPDX-FileCopyrightText: 2025 Deutsche Telekom AG and others
+ *
+ * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.eclipse.lmos.runtime.core.service.outbound
+package org.eclipse.lmos.runtime.outbound
 
 import com.charleskorn.kaml.Yaml
-import org.eclipse.lmos.runtime.core.LmosRuntimeConfig
+import org.eclipse.lmos.runtime.core.RuntimeConfiguration
+import org.eclipse.lmos.runtime.core.channelrouting.ChannelRouting
+import org.eclipse.lmos.runtime.core.channelrouting.ChannelRoutingRepository
 import org.eclipse.lmos.runtime.core.exception.NoRoutingInfoFoundException
 import org.eclipse.lmos.runtime.core.model.registry.AgentRegistryDocument
-import org.eclipse.lmos.runtime.core.model.registry.RoutingInformation
-import org.eclipse.lmos.runtime.core.model.registry.toAgent
 import org.slf4j.LoggerFactory
 import java.io.FileNotFoundException
 
-class FileBasedAgentRegistryService(
-    private val agentRegistryConfig: LmosRuntimeConfig.AgentRegistry,
-) : AgentRegistryService {
-    private val log = LoggerFactory.getLogger(FileBasedAgentRegistryService::class.java)
+class FileBasedChannelRoutingRepository(
+    private val runtimeConfig: RuntimeConfiguration,
+) : ChannelRoutingRepository {
+    private val log = LoggerFactory.getLogger(FileBasedChannelRoutingRepository::class.java)
     private val agentRegistryDocument: AgentRegistryDocument
 
     init {
         val fileName =
-            agentRegistryConfig.fileName ?: throw IllegalArgumentException(
-                "LMOS runtime agent registry type is FILE, but 'lmos.runtime.agent-registry.filename' is not configured.",
+            runtimeConfig.channelRoutingRepository.fileName ?: throw IllegalArgumentException(
+                "LMOS runtime agent registry type is FILE, but 'lmos.runtime.channelRoutingRepository.filename' is not configured.",
             )
         log.info("Initializing FileBasedAgentRegistryService with file: $fileName")
         try {
@@ -41,12 +41,13 @@ class FileBasedAgentRegistryService(
         }
     }
 
-    override suspend fun getRoutingInformation(
+    override fun getChannelRouting(
         tenantId: String,
         channelId: String,
         subset: String?,
-    ): RoutingInformation {
-        val effectiveSubset = subset ?: agentRegistryConfig.defaultSubset
+        namespace: String?,
+    ): ChannelRouting {
+        val effectiveSubset = subset ?: runtimeConfig.channelRoutingRepository.defaultSubset
         log.debug(
             "Searching for routing information for tenant: $tenantId, channel: $channelId, subset: $subset, effectiveSubset: $effectiveSubset",
         )
@@ -75,10 +76,7 @@ class FileBasedAgentRegistryService(
             "Found routing information for tenant: $tenantId, channel: $channelId, subset: $effectiveSubset: ${matchingChannelRouting.metadata.name}",
         )
         // Use the existing toAgent() extension function and RoutingInformation data class
-        return RoutingInformation(
-            agentList = matchingChannelRouting.toAgent(), // toAgent() is now on ChannelRouting
-            subset = matchingChannelRouting.metadata.labels.subset, // Or from the request 'subset' if preferred
-        )
+        return matchingChannelRouting
     }
 }
 

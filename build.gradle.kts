@@ -7,26 +7,21 @@ import java.lang.System.getenv
 import java.net.URI
 
 plugins {
-    id("org.springframework.boot") version "3.5.6" apply false
-    id("org.jlleitschuh.gradle.ktlint") version "13.1.0"
-    id("io.spring.dependency-management") version "1.1.7"
-    id("org.cadixdev.licenser") version "0.6.1"
+    id("org.springframework.boot") apply false
+    id("org.jlleitschuh.gradle.ktlint")
+    id("io.spring.dependency-management")
+    id("org.cadixdev.licenser")
 
-    id("com.citi.helm") version "2.2.0"
-    id("com.citi.helm-publish") version "2.2.0"
-    id("net.researchgate.release") version "3.1.0"
-    id("com.vanniktech.maven.publish") version "0.34.0"
-    val kotlinVersion = "2.2.20"
-    kotlin("jvm") version kotlinVersion
-    kotlin("kapt") version kotlinVersion
-    kotlin("plugin.serialization") version kotlinVersion apply false
-    id("org.jetbrains.kotlinx.kover") version "0.9.2"
-    id("org.jetbrains.dokka") version "2.0.0"
+    id("com.citi.helm")
+    id("com.citi.helm-publish")
+    id("net.researchgate.release")
+    id("com.vanniktech.maven.publish")
+    kotlin("jvm")
+    kotlin("kapt")
+    kotlin("plugin.serialization") apply false
+    id("org.jetbrains.kotlinx.kover")
+    id("org.jetbrains.dokka")
 }
-
-val springBootVersion by extra { "3.4.0" }
-
-fun getProperty(propertyName: String) = getenv(propertyName) ?: project.findProperty(propertyName) as String
 
 repositories {
     mavenCentral()
@@ -36,6 +31,8 @@ repositories {
 group = "org.eclipse.lmos"
 
 subprojects {
+    if (name == "lmos-runtime-bom") return@subprojects
+
     group = "org.eclipse.lmos"
 
     apply(plugin = "kotlin")
@@ -43,10 +40,25 @@ subprojects {
     apply(plugin = "org.jetbrains.kotlinx.kover")
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
     apply(plugin = "com.vanniktech.maven.publish")
+    apply(plugin = "org.cadixdev.licenser")
 
     repositories {
         mavenCentral()
         mavenLocal()
+    }
+
+    license {
+        header(rootProject.file("LICENSE"))
+        include("**/*.java")
+        include("**/*.kt")
+        include("**/*.yaml")
+        exclude("**/*.properties")
+    }
+
+    kotlin {
+        compilerOptions {
+            freeCompilerArgs.add("-Xcontext-receivers")
+        }
     }
 
     java {
@@ -61,7 +73,13 @@ subprojects {
 
     dependencies {
         testImplementation(kotlin("test"))
+        testImplementation(kotlin("test-junit5"))
         testImplementation("io.mockk:mockk:1.14.5")
+        testImplementation("com.marcinziolo:kotlin-wiremock")
+        testImplementation("org.springframework.boot:spring-boot-starter-test")
+        testImplementation("org.junit.jupiter:junit-jupiter")
+        testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
+        testImplementation("org.eclipse.lmos:lmos-classifier-llm-spring-boot-starter")
     }
 
     tasks.test {

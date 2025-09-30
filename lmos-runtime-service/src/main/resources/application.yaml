@@ -1,12 +1,12 @@
 #
-# // SPDX-FileCopyrightText: 2025 Deutsche Telekom AG and others
-# //
-# // SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2025 Deutsche Telekom AG and others
+#
+# SPDX-License-Identifier: Apache-2.0
 #
 
 lmos:
   runtime:
-    agent-registry:
+    channelRoutingRepository:
       base-url: ${AGENT_REGISTRY_URL:http://lmos-operator:8080}
     router:
       type: ${ROUTER_TYPE:EXPLICIT}
@@ -18,8 +18,6 @@ lmos:
       max-tokens: ${LLM_MAX_TOKENS:2000}
       temperature: ${LLM_TEMPERATURE:0.0}
       format: ${LLM_FORMAT:json_object}
-    cache:
-      ttl: ${CACHE_TTL:1800}
     cors:
       enabled: ${CORS_ENABLED:false}
       allowed-origins: ${CORS_ALLOWED_ORIGINS:*}
@@ -78,6 +76,8 @@ spring:
     name: lmos-runtime
   main:
     banner-mode: off
+  cache:
+    type: redis
 
 logging:
   level:
@@ -86,6 +86,7 @@ logging:
       springframework: WARN
     sun:
       rmi: ERROR
+    org.springframework.cache.interceptor.CacheInterceptor: DEBUG
 
 management:
   server:
@@ -117,3 +118,4 @@ management:
 graphql:
   packages:
   - org.eclipse.lmos
+

@@ -1,33 +1,31 @@
 /*
- * // SPDX-FileCopyrightText: 2025 Deutsche Telekom AG and others
- * //
- * // SPDX-License-Identifier: Apache-2.0
+ * SPDX-FileCopyrightText: 2025 Deutsche Telekom AG and others
+ *
+ * SPDX-License-Identifier: Apache-2.0
  */
+
 package org.eclipse.lmos.runtime.inbound
 
 import kotlinx.coroutines.flow.Flow
 import org.eclipse.lmos.classifier.core.ClassificationResult
-import org.eclipse.lmos.runtime.config.LmosRuntimeAutoConfiguration
-import org.eclipse.lmos.runtime.core.cache.LmosRuntimeTenantAwareCache
-import org.eclipse.lmos.runtime.core.cache.TenantAwareInMemoryCache
+import org.eclipse.lmos.runtime.config.RuntimeAutoConfiguration
 import org.eclipse.lmos.runtime.core.inbound.ConversationHandler
 import org.eclipse.lmos.runtime.core.inbound.DefaultConversationHandler
 import org.eclipse.lmos.runtime.core.model.Address
 import org.eclipse.lmos.runtime.core.model.Agent
 import org.eclipse.lmos.runtime.core.model.AssistantMessage
 import org.eclipse.lmos.runtime.core.model.Conversation
-import org.eclipse.lmos.runtime.core.model.registry.RoutingInformation
 import org.eclipse.lmos.runtime.core.service.outbound.AgentClassifierService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentClientService
-import org.eclipse.lmos.runtime.core.service.outbound.AgentRegistryService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentRoutingService
 import org.eclipse.lmos.runtime.outbound.ArcAgentClientService
-import org.eclipse.lmos.runtime.outbound.LmosAgentClassifierService
+import org.eclipse.lmos.runtime.outbound.DefaultAgentClassifierService
 import org.eclipse.lmos.runtime.outbound.LmosAgentRoutingService
-import org.eclipse.lmos.runtime.properties.LmosRuntimeProperties
+import org.eclipse.lmos.runtime.properties.RuntimeProperties
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.ApplicationContext
@@ -36,13 +34,16 @@ import org.springframework.context.annotation.Import
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, classes = [LmosRuntimeAutoConfiguration::class])
+@SpringBootTest(
+    webEnvironment = SpringBootTest.WebEnvironment.NONE,
+    classes = [RuntimeAutoConfiguration::class, CacheAutoConfiguration::class],
+)
 @ActiveProfiles("test")
 @TestPropertySource(
     properties = [
         "lmos.runtime.router.type=LLM", "lmos.runtime.openAi=dummyOpenAiKey", "lmos.runtime.disambiguation.enabled=false",
         "lmos.runtime.disambiguation.llm.provider=openai", "lmos.runtime.disambiguation.llm.model=dummy-model",
-        "lmos.router.classifier.llm.enabled=true",
+        "lmos.router.classifier.llm.enabled=true", "spring.cache.type=simple",
     ],
 )
 @Import(LmosRuntimeAutoConfigurationCustomBeansTest.CustomBeanConfig::class)
@@ -51,7 +52,7 @@ class LmosRuntimeAutoConfigurationCustomBeansTest {
     lateinit var applicationContext: ApplicationContext
 
     @Autowired
-    lateinit var lmosRuntimeProperties: LmosRuntimeProperties
+    lateinit var runtimeProperties: RuntimeProperties
 
     @Test
     fun `should not load ArcAgentClientService as AgentClientService`() {
@@ -67,20 +68,14 @@ class LmosRuntimeAutoConfigurationCustomBeansTest {
 
     @Test
     fun `should not load LmosAgentClassifierService as AgentClassifierService`() {
-        val agentClassifierService = applicationContext.getBean(AgentClassifierService::class.java)
-        assertFalse(agentClassifierService is LmosAgentClassifierService)
+        val defaultAgentClassifierService = applicationContext.getBean(AgentClassifierService::class.java)
+        assertFalse(defaultAgentClassifierService is DefaultAgentClassifierService)
     }
 
     @Test
     fun `should not load DefaultConversationHandler as ConversationService`() {
         val conversationService = applicationContext.getBean(ConversationHandler::class.java)
         assertFalse(conversationService is DefaultConversationHandler)
-    }
-
-    @Test
-    fun `should not load TenantAwareInMemoryCache as LmosRuntimeTenantAwareCache`() {
-        val cache = applicationContext.getBean(LmosRuntimeTenantAwareCache::class.java)
-        assertFalse(cache is TenantAwareInMemoryCache)
     }
 
     @TestConfiguration
@@ -120,57 +115,6 @@ class LmosRuntimeAutoConfigurationCustomBeansTest {
                     conversation: Conversation,
                     agentList: List<Agent>,
                 ): Agent {
-                    TODO("Not yet implemented")
-                }
-            }
-
-        @Bean
-        open fun agentRegistryService(): AgentRegistryService =
-            object : AgentRegistryService {
-                override suspend fun getRoutingInformation(
-                    tenantId: String,
-                    channelId: String,
-                    subset: String?,
-                ): RoutingInformation {
-                    TODO("Not yet implemented")
-                }
-            }
-
-        @Bean
-        open fun lmosRuntimeTenantAwareCache(): LmosRuntimeTenantAwareCache<String> =
-            object : LmosRuntimeTenantAwareCache<String> {
-                override fun save(
-                    tenantId: String,
-                    prefix: String,
-                    key: String,
-                    value: String,
-                ) {
-                    TODO("Not yet implemented")
-                }
-
-                override fun save(
-                    tenantId: String,
-                    prefix: String,
-                    key: String,
-                    value: String,
-                    timeout: Long,
-                ) {
-                    TODO("Not yet implemented")
-                }
-
-                override fun get(
-                    tenantId: String,
-                    prefix: String,
-                    key: String,
-                ): String? {
-                    TODO("Not yet implemented")
-                }
-
-                override fun delete(
-                    tenantId: String,
-                    prefix: String,
-                    key: String,
-                ) {
                     TODO("Not yet implemented")
                 }
             }

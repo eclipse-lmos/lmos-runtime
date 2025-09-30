@@ -6,12 +6,10 @@
 
 lmos:
   runtime:
-    agent-registry:
+    channelRoutingRepository:
       base-url: http://localhost:8080
     router:
       type: EXPLICIT
-    cache:
-      ttl: 6000
     cors:
       enabled: true
       allowed-headers:
@@ -23,3 +21,7 @@ lmos:
       patterns:
         - "/**"
       max-age: 8000
+
+spring:
+  cache:
+    type: simple

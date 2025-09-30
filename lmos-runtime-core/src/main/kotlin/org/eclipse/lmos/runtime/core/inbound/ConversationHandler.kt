@@ -9,19 +9,15 @@ package org.eclipse.lmos.runtime.core.inbound
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.onEach
-import org.eclipse.lmos.runtime.core.LmosRuntimeConfig
-import org.eclipse.lmos.runtime.core.cache.LmosRuntimeTenantAwareCache
-import org.eclipse.lmos.runtime.core.constants.LmosRuntimeConstants.Cache.ROUTES
+import org.eclipse.lmos.runtime.core.channelrouting.CachedChannelRoutingRepository
+import org.eclipse.lmos.runtime.core.channelrouting.toRoutingInformation
 import org.eclipse.lmos.runtime.core.disambiguation.DisambiguationHandler
 import org.eclipse.lmos.runtime.core.exception.AgentNotFoundException
 import org.eclipse.lmos.runtime.core.model.Address
 import org.eclipse.lmos.runtime.core.model.AssistantMessage
 import org.eclipse.lmos.runtime.core.model.Conversation
-import org.eclipse.lmos.runtime.core.model.registry.RoutingInformation
 import org.eclipse.lmos.runtime.core.service.outbound.AgentClassifierService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentClientService
-import org.eclipse.lmos.runtime.core.service.outbound.AgentRegistryService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentRoutingService
 import org.slf4j.LoggerFactory
 
@@ -39,12 +35,10 @@ interface ConversationHandler {
 }
 
 class DefaultConversationHandler(
-    private val agentRegistryService: AgentRegistryService,
     private val agentRoutingService: AgentRoutingService,
     private val agentClassifierService: AgentClassifierService,
+    private val cachedChannelRoutingRepository: CachedChannelRoutingRepository,
     private val agentClientService: AgentClientService,
-    private val lmosRuntimeConfig: LmosRuntimeConfig,
-    private val lmosRuntimeTenantAwareCache: LmosRuntimeTenantAwareCache<RoutingInformation>,
     private val disambiguationHandler: DisambiguationHandler?,
 ) : ConversationHandler {
     private val log = LoggerFactory.getLogger(DefaultConversationHandler::class.java)
@@ -59,15 +53,22 @@ class DefaultConversationHandler(
         coroutineScope {
             log.info("Request Received, conversationId: $conversationId, turnId: $turnId, subset: $subset")
 
-            // Retrieve RoutingInformation from Cache or AgentRegistry
-            val routingInformation = retrieveRoutingInformation(tenantId, conversationId, subset, conversation)
+            // Retrieve ChannelRouting from cached Repository
+            val channelRouting =
+                cachedChannelRoutingRepository.getChannelRouting(
+                    conversationId = conversationId,
+                    tenantId = tenantId,
+                    channelId = conversation.systemContext.channelId,
+                    subset = subset,
+                    namespace = null,
+                )
+            val routingInformation = channelRouting.toRoutingInformation()
+            log.debug("Using routingInformation: {}", routingInformation)
 
-            val activeFeatures = conversation.systemContext.contextParams.firstOrNull { it.key == ACTIVE_FEATURES_KEY }
-            val useClassifier = activeFeatures?.value?.contains(ACTIVE_FEATURE_KEY_CLASSIFIER) == true
             val agentName: String
             val agentAddress: Address
 
-            if (useClassifier) {
+            if (useClassifier(conversation)) {
                 log.info("Classifier feature is active, using new classifier for agent routing")
                 val classificationResult =
                     agentClassifierService.classify(
@@ -104,54 +105,12 @@ class DefaultConversationHandler(
                     agentName,
                     agentAddress,
                     routingInformation.subset,
-                ).onEach {
-                    log.info("Agent Response: ${'$'}{it.content}")
-                }
+                )
         }
 
-    /**
-     * Retrieves a RoutingInformation for a conversation.
-     * <p>
-     * First, this method attempts to load the routing information from the cache.
-     * If no cached data is available, it fetches the routing information from the {@code AgentRegistryService},
-     * stores it in the cache, and then returns it.
-     *
-     * @param tenantId        the tenant ID
-     * @param conversationId  the conversation ID
-     * @param subset          optional subset parameter for agent selection
-     * @param conversation    the current conversation
-     * @return the routing information for the conversation
-     */
-    private suspend fun retrieveRoutingInformation(
-        tenantId: String,
-        conversationId: String,
-        subset: String?,
-        conversation: Conversation,
-    ): RoutingInformation {
-        // Lookup cached RoutingInformation
-        val cachedRoutingInformation = lmosRuntimeTenantAwareCache.get(tenantId, ROUTES, conversationId)
-        // Check if cached RoutingInformation can be reused and subset has not changed
-        val routingInformation =
-            if (cachedRoutingInformation != null) {
-                cachedRoutingInformation
-            } else {
-                val fetched =
-                    agentRegistryService.getRoutingInformation(
-                        tenantId,
-                        conversation.systemContext.channelId,
-                        subset,
-                    )
-                log.debug("Caching routing information: {}", fetched)
-                lmosRuntimeTenantAwareCache.save(
-                    tenantId,
-                    ROUTES,
-                    conversationId,
-                    fetched,
-                    lmosRuntimeConfig.cache.ttl,
-                )
-                fetched
-            }
-        log.info("Using routingInformation: $routingInformation")
-        return routingInformation
+    private fun useClassifier(conversation: Conversation): Boolean {
+        val activeFeatures = conversation.systemContext.contextParams.firstOrNull { it.key == ACTIVE_FEATURES_KEY }
+        val useClassifier = activeFeatures?.value?.contains(ACTIVE_FEATURE_KEY_CLASSIFIER) == true
+        return useClassifier
     }
 }
