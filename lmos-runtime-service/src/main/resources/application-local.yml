@@ -21,3 +21,7 @@ lmos:
       patterns:
         - "/**"
       max-age: 8000
+
+spring:
+  cache:
+    type: simple
