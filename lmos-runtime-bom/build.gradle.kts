@@ -6,7 +6,7 @@
 
 plugins {
     id("java-platform")
-    id("com.vanniktech.maven.publish")
+    //id("com.vanniktech.maven.publish")
 }
 
 javaPlatform {
@@ -50,6 +50,7 @@ dependencies {
     }
 }
 
+/**
 mavenPublishing {
     publishToMavenCentral(automaticRelease = true)
     signAllPublications()
@@ -79,3 +80,4 @@ mavenPublishing {
         }
     }
 }
+**/
