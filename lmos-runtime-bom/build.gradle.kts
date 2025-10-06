@@ -6,7 +6,7 @@
 
 plugins {
     id("java-platform")
-    id("maven-publish")
+    id("com.vanniktech.maven.publish")
 }
 
 javaPlatform {
@@ -50,27 +50,32 @@ dependencies {
     }
 }
 
-publishing {
-    publications {
-        create<MavenPublication>("mavenBom") {
-            from(components["javaPlatform"])
-            groupId = project.group.toString()
-            artifactId = project.name
-            version = project.version.toString()
-            pom {
-                name.set("LMOS Runtime BOM")
-                description.set("A Bill of Materials (BOM) for LMOS Runtime dependencies.")
-                url.set("https://github.com/eclipse-lmos/lmos-runtime")
-                licenses {
-                    license {
-                        name.set("Apache-2.0")
-                        url.set("https://github.com/eclipse-lmos/lmos-runtime/blob/main/LICENSES/Apache-2.0.txt")
-                    }
-                }
-                scm {
-                    url.set("https://github.com/eclipse-lmos/lmos-runtime.git")
-                }
+mavenPublishing {
+    publishToMavenCentral(automaticRelease = true)
+    signAllPublications()
+
+    pom {
+        name = "LMOS Runtime"
+        description =
+            """The LMOS Runtime facilitates dynamic agent routing and conversation handling in a multi-tenant, multi-channel environment.
+                """.trimMargin()
+        url = "https://github.com/eclipse-lmos/lmos-runtime"
+        licenses {
+            license {
+                name = "Apache-2.0"
+                distribution = "repo"
+                url = "https://github.com/eclipse-lmos/lmos-runtime/blob/main/LICENSES/Apache-2.0.txt"
             }
+        }
+        developers {
+            developer {
+                id = "telekom"
+                name = "Telekom Open Source"
+                email = "opensource@telekom.de"
+            }
+        }
+        scm {
+            url = "https://github.com/eclipse-lmos/lmos-runtime.git"
         }
     }
 }
