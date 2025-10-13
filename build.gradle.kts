@@ -31,59 +31,59 @@ repositories {
 group = "org.eclipse.lmos"
 
 subprojects {
-    if (name == "lmos-runtime-bom") return@subprojects
-
     group = "org.eclipse.lmos"
-
-    apply(plugin = "kotlin")
-    apply(plugin = "kotlinx-serialization")
-    apply(plugin = "org.jetbrains.kotlinx.kover")
-    apply(plugin = "org.jlleitschuh.gradle.ktlint")
-    apply(plugin = "com.vanniktech.maven.publish")
-    apply(plugin = "org.cadixdev.licenser")
 
     repositories {
         mavenCentral()
         mavenLocal()
     }
 
-    license {
-        header(rootProject.file("LICENSE"))
-        include("**/*.java")
-        include("**/*.kt")
-        include("**/*.yaml")
-        exclude("**/*.properties")
-    }
+    apply(plugin = "com.vanniktech.maven.publish")
 
-    kotlin {
-        compilerOptions {
-            freeCompilerArgs.add("-Xcontext-receivers")
+    if (name != "lmos-runtime-bom") {
+        apply(plugin = "kotlin")
+        apply(plugin = "kotlinx-serialization")
+        apply(plugin = "org.jetbrains.kotlinx.kover")
+        apply(plugin = "org.jlleitschuh.gradle.ktlint")
+        apply(plugin = "org.cadixdev.licenser")
+
+        license {
+            header(rootProject.file("LICENSE"))
+            include("**/*.java")
+            include("**/*.kt")
+            include("**/*.yaml")
+            exclude("**/*.properties")
         }
-    }
 
-    java {
-        toolchain {
-            languageVersion = JavaLanguageVersion.of(21)
+        kotlin {
+            compilerOptions {
+                freeCompilerArgs.add("-Xcontext-receivers")
+            }
         }
-    }
+        java {
+            toolchain {
+                languageVersion = JavaLanguageVersion.of(21)
+            }
+        }
 
-    ktlint {
-        version.set("1.5.0")
-    }
+        ktlint {
+            version.set("1.5.0")
+        }
 
-    dependencies {
-        testImplementation(kotlin("test"))
-        testImplementation(kotlin("test-junit5"))
-        testImplementation("io.mockk:mockk:1.14.5")
-        testImplementation("com.marcinziolo:kotlin-wiremock")
-        testImplementation("org.springframework.boot:spring-boot-starter-test")
-        testImplementation("org.junit.jupiter:junit-jupiter")
-        testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
-        testImplementation("org.eclipse.lmos:lmos-classifier-llm-spring-boot-starter")
-    }
+        dependencies {
+            testImplementation(kotlin("test"))
+            testImplementation(kotlin("test-junit5"))
+            testImplementation("io.mockk:mockk:1.14.5")
+            testImplementation("com.marcinziolo:kotlin-wiremock")
+            testImplementation("org.springframework.boot:spring-boot-starter-test")
+            testImplementation("org.junit.jupiter:junit-jupiter")
+            testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
+            testImplementation("org.eclipse.lmos:lmos-classifier-llm-spring-boot-starter")
+        }
 
-    tasks.test {
-        useJUnitPlatform()
+        tasks.test {
+            useJUnitPlatform()
+        }
     }
 
     mavenPublishing {
