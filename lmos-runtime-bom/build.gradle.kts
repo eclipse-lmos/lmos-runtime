@@ -14,7 +14,7 @@ javaPlatform {
 
 dependencies {
     val springBootVersion = "3.5.6"
-    val ktorVersion = "3.3.0"
+    val ktorVersion = "3.3.1"
     val kotlinxVersion = "1.9.0"
     val lmosRouterVersion = "0.16.0"
     val arcVersion = "0.174.0"
