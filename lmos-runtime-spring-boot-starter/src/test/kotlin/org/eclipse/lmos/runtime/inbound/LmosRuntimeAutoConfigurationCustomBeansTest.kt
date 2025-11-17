@@ -99,8 +99,8 @@ class LmosRuntimeAutoConfigurationCustomBeansTest {
         open fun agentClassifierService(): AgentClassifierService =
             object : AgentClassifierService {
                 override suspend fun classify(
+                    conversationId: String,
                     conversation: Conversation,
-                    agents: List<Agent>,
                     tenant: String,
                     subset: String?,
                 ): ClassificationResult {

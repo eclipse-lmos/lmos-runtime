@@ -29,10 +29,6 @@ data:
   CLASSIFIER_LLM_ENABLED: {{ .Values.classifierLlmEnabled | quote }}
   {{- end -}}
 
-  {{- if .Values.classifierHybridRagEnabled }}
-  CLASSIFIER_HYBRID_RAG_ENABLED: {{ .Values.classifierHybridRagEnabled | quote }}
-  {{- end -}}
-
   {{- if .Values.classifierHybridFastTrackEnabled }}
   CLASSIFIER_HYBRID_FASTTRACK_ENABLED: {{ .Values.classifierHybridFastTrackEnabled | quote }}
   {{- end -}}

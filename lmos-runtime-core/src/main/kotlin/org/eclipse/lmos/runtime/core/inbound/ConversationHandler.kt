@@ -72,21 +72,21 @@ class DefaultConversationHandler(
                 log.info("Classifier feature is active, using new classifier for agent routing")
                 val classificationResult =
                     agentClassifierService.classify(
+                        conversationId,
                         conversation,
-                        routingInformation.agentList,
                         tenantId,
                         routingInformation.subset,
                     )
-                if (classificationResult.agents.isEmpty()) {
+                if (classificationResult.classifiedAgents.isEmpty()) {
                     if (disambiguationHandler != null) {
                         return@coroutineScope flow {
-                            emit(disambiguationHandler.disambiguate(conversation, classificationResult.topRankedEmbeddings))
+                            emit(disambiguationHandler.disambiguate(conversation, classificationResult.candidateAgents))
                         }
                     } else {
                         throw AgentNotFoundException("Failed to classify agent for conversationId '$conversationId'.")
                     }
                 }
-                val classifiedAgent = classificationResult.agents.first()
+                val classifiedAgent = classificationResult.classifiedAgents.first()
                 agentName = classifiedAgent.name
                 agentAddress = Address(uri = classifiedAgent.address)
             } else {

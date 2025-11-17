@@ -16,6 +16,7 @@ dependencies {
     api("org.eclipse.lmos:lmos-router-llm")
     api("org.eclipse.lmos:arc-agent-client")
     api("org.eclipse.lmos:arc-api")
+    api("org.eclipse.lmos:lmos-classifier-core")
 
     implementation("io.ktor:ktor-client-cio")
     implementation("io.ktor:ktor-serialization-kotlinx-json")
@@ -26,7 +27,6 @@ dependencies {
     implementation("com.charleskorn.kaml:kaml")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
     implementation("org.slf4j:slf4j-api")
-    implementation("org.eclipse.lmos:lmos-classifier-core")
     implementation("dev.langchain4j:langchain4j")
 
     testFixturesImplementation("com.marcinziolo:kotlin-wiremock")

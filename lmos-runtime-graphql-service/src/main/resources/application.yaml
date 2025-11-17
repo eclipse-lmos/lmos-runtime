@@ -40,8 +40,6 @@ lmos:
         enabled: ${CLASSIFIER_VECTOR_ENABLED:false}
       llm:
         enabled: ${CLASSIFIER_LLM_ENABLED:true}
-      hybrid-rag:
-        enabled: ${CLASSIFIER_HYBRID_RAG_ENABLED:false}
       hybrid-fast-track:
         enabled: ${CLASSIFIER_HYBRID_FASTTRACK_ENABLED:false}
     llm:

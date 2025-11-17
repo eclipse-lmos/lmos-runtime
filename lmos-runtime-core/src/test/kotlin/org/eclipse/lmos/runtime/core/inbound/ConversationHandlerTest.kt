@@ -224,8 +224,8 @@ class ConversationHandlerTest {
             val expectedDisambiguationResponse = AssistantMessage(content = "Please give me more details.")
 
             mockAgentClassifierService(
+                conversationId,
                 conversation,
-                channelRouting.toRoutingInformation().agentList,
                 tenantId,
                 ClassificationResult(emptyList(), emptyList()),
             )
@@ -252,8 +252,8 @@ class ConversationHandlerTest {
             val conversation = conversation(listOf(KeyValuePair(ACTIVE_FEATURES_KEY, ACTIVE_FEATURE_KEY_CLASSIFIER)))
 
             mockAgentClassifierService(
+                conversationId,
                 conversation,
-                channelRouting.toRoutingInformation().agentList,
                 tenantId,
                 ClassificationResult(emptyList(), emptyList()),
             )
@@ -308,12 +308,12 @@ class ConversationHandlerTest {
     }
 
     private fun mockAgentClassifierService(
+        conversationId: String,
         conversation: Conversation,
-        agents: List<Agent>,
         tenantId: String,
         classificationResult: ClassificationResult,
     ) {
-        coEvery { agentClassifierService.classify(conversation, agents, tenantId, any()) } returns classificationResult
+        coEvery { agentClassifierService.classify(conversationId, conversation, tenantId, any()) } returns classificationResult
     }
 
     private fun mockDisambiguationHandler(
