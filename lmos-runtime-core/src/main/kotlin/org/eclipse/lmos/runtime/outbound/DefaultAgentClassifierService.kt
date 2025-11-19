@@ -9,21 +9,24 @@ package org.eclipse.lmos.runtime.outbound
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.eclipse.lmos.classifier.core.*
-import org.eclipse.lmos.runtime.core.model.Agent
+import org.eclipse.lmos.classifier.core.llm.AgentProvider
+import org.eclipse.lmos.runtime.core.channelrouting.CachedChannelRoutingRepository
+import org.eclipse.lmos.runtime.core.channelrouting.toRoutingInformation
 import org.eclipse.lmos.runtime.core.model.Conversation
 import org.eclipse.lmos.runtime.core.service.outbound.AgentClassifierService
+
+const val CONVERSATION_ID_METADATA_KEY = "conversationId"
 
 class DefaultAgentClassifierService(
     private val classifier: AgentClassifier,
 ) : AgentClassifierService {
     override suspend fun classify(
+        conversationId: String,
         conversation: Conversation,
-        agents: List<Agent>,
         tenant: String,
         subset: String?,
     ): ClassificationResult {
         val (userMessage, historyMessages) = prepareMessages(conversation)
-        val classifierAgents = prepareAgents(agents)
         return withContext(Dispatchers.IO) {
             classifier.classify(
                 ClassificationRequest(
@@ -31,7 +34,7 @@ class DefaultAgentClassifierService(
                         InputContext(
                             userMessage = userMessage,
                             historyMessages = historyMessages,
-                            agents = classifierAgents,
+                            metadata = mapOf(CONVERSATION_ID_METADATA_KEY to conversationId),
                         ),
                     systemContext =
                         SystemContext(
@@ -61,11 +64,33 @@ class DefaultAgentClassifierService(
 
         return Pair(userMessage, historyMessages)
     }
+}
 
-    private fun prepareAgents(agents: List<Agent>): List<org.eclipse.lmos.classifier.core.Agent> =
-        agents.map {
+/**
+ * Used only by the LLM-based classifier to provide agents based on channel routing information.
+ */
+class ChannelRoutingAgentProvider(
+    private val cachedChannelRoutingRepository: CachedChannelRoutingRepository,
+) : AgentProvider {
+    override fun provide(request: ClassificationRequest): List<Agent> {
+        val conversationId =
+            request.inputContext.metadata[CONVERSATION_ID_METADATA_KEY]
+                ?: throw IllegalStateException(
+                    "Cannot retrieve channel routing due to missing conversation ID in Classification Request: $request",
+                )
+
+        val channelRouting =
+            cachedChannelRoutingRepository.getChannelRouting(
+                conversationId = conversationId.toString(),
+                tenantId = request.systemContext.tenantId,
+                channelId = request.systemContext.channelId,
+                subset = request.systemContext.subset,
+                namespace = null,
+            )
+
+        return channelRouting.toRoutingInformation().agentList.map {
             Agent(
-                it.id,
+                it.id.ifEmpty { it.name },
                 it.name,
                 it.addresses.random().uri,
                 it.capabilities.map { cap ->
@@ -73,4 +98,5 @@ class DefaultAgentClassifierService(
                 },
             )
         }
+    }
 }

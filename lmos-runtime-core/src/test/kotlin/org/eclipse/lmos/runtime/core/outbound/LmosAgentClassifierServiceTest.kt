@@ -12,7 +12,6 @@ import kotlinx.coroutines.runBlocking
 import org.eclipse.lmos.arc.api.Message
 import org.eclipse.lmos.classifier.core.*
 import org.eclipse.lmos.runtime.core.model.*
-import org.eclipse.lmos.runtime.core.model.Agent
 import org.eclipse.lmos.runtime.core.model.InputContext
 import org.eclipse.lmos.runtime.core.model.SystemContext
 import org.eclipse.lmos.runtime.outbound.DefaultAgentClassifierService
@@ -36,31 +35,13 @@ class LmosAgentClassifierServiceTest {
     private val defaultInputContext = InputContext(defaultConversationMessages)
     private val defaultSystemContext = SystemContext(defaultChannelId)
     private val defaultUserContext = UserContext("user-1", null)
-    private val defaultAgent =
-        Agent(
-            id = "myAgentId",
-            name = "myAgent",
-            description = "myDescription",
-            version = "1.2.3",
-            capabilities =
-                listOf(
-                    AgentCapability(
-                        id = "myCapId",
-                        name = "myCap",
-                        version = "1.2.3",
-                        description = "myDescription",
-                    ),
-                ),
-            addresses = listOf(Address(uri = "http://my-agent:8080")),
-        )
 
     @Test
     fun `service calls classifier correctly`() =
         runBlocking {
             // Given
+            val conversationId = "conversationId"
             val conversation = Conversation(defaultInputContext, defaultSystemContext, defaultUserContext)
-
-            val agents = listOf(defaultAgent)
 
             var capturedRequest: ClassificationRequest? = null
             every { classifierMock.classify(any()) } answers {
@@ -69,7 +50,7 @@ class LmosAgentClassifierServiceTest {
             }
 
             // When
-            underTest.classify(conversation, agents, defaultTenantId, defaultSubset)
+            underTest.classify(conversationId, conversation, defaultTenantId, defaultSubset)
 
             // Then
             assertNotNull(capturedRequest)
@@ -88,11 +69,6 @@ class LmosAgentClassifierServiceTest {
                 },
                 historyMessages,
             )
-
-            val agent = capturedRequest!!.inputContext.agents.first()
-            assertEquals(defaultAgent.id, agent.id)
-            assertEquals(defaultAgent.capabilities.first().id, agent.capabilities.first().id)
-            assertEquals(defaultAgent.capabilities.first().description, agent.capabilities.first().description)
 
             val tenantId = capturedRequest!!.systemContext.tenantId
             assertEquals(defaultTenantId, tenantId)

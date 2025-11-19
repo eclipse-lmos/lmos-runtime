@@ -74,6 +74,7 @@ fun ChannelRouting.toAgent(): List<Agent> {
     return this.spec.capabilityGroups
         .map { agent ->
             AgentBuilder()
+                .id(agent.id)
                 .name(agent.name)
                 .description(agent.description)
                 .version(agentVersion)

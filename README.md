@@ -87,7 +87,6 @@ The [LMOS Agent Classifier library](https://github.com/eclipse-lmos/lmos-router?
 |----------------------------------------------------|-------------------------------------|------------------------------------------|---------|
 | `lmos.router.classifier.vector.enabled`            | CLASSIFIER_VECTOR_ENABLED           | Enables vector classification            | `false` |
 | `lmos.router.classifier.llm.enabled`               | CLASSIFIER_LLM_ENABLED              | Enables LLM classification               | `true`  |
-| `lmos.router.classifier.hybrid-rag.enabled`        | CLASSIFIER_HYBRID_RAG_ENABLED       | Enables Hybrid-RAG classification        | `false` |
 | `lmos.router.classifier.hybrid-fast-track.enabled` | CLASSIFIER_HYBRID_FASTTRACK_ENABLED | Enables Hybrid-Fast-Track classification | `false` |
 
 If a LLM is involved in the classification process, it must be configured accordingly.
