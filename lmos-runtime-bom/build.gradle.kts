@@ -39,7 +39,7 @@ dependencies {
         api("org.eclipse.lmos:arc-api:$arcVersion")
 
         // Misc
-        api("com.charleskorn.kaml:kaml:0.93.0")
+        api("com.charleskorn.kaml:kaml:0.104.0")
         api("com.expediagroup:graphql-kotlin-spring-server:8.8.1")
         api("org.mockito.kotlin:mockito-kotlin:6.0.0")
         api("app.cash.turbine:turbine:1.2.1")
