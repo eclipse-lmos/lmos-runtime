@@ -8,7 +8,6 @@ package org.eclipse.lmos.runtime.config
 
 import dev.langchain4j.model.chat.ChatModel
 import org.eclipse.lmos.classifier.core.AgentClassifier
-import org.eclipse.lmos.classifier.core.llm.AgentProvider
 import org.eclipse.lmos.classifier.llm.ChatModelClientProperties
 import org.eclipse.lmos.classifier.llm.LangChainChatModelFactory
 import org.eclipse.lmos.runtime.channelrouting.DefaultCachedChannelRoutingRepository
@@ -26,7 +25,6 @@ import org.eclipse.lmos.runtime.core.service.outbound.AgentClientService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentRoutingService
 import org.eclipse.lmos.runtime.core.service.routing.ExplicitAgentRoutingService
 import org.eclipse.lmos.runtime.outbound.ArcAgentClientService
-import org.eclipse.lmos.runtime.outbound.ChannelRoutingAgentProvider
 import org.eclipse.lmos.runtime.outbound.DefaultAgentClassifierService
 import org.eclipse.lmos.runtime.outbound.FileBasedChannelRoutingRepository
 import org.eclipse.lmos.runtime.outbound.LmosAgentRoutingService
@@ -103,16 +101,6 @@ class RuntimeAutoConfiguration(
     @Bean
     @ConditionalOnMissingBean(AgentClassifierService::class)
     fun agentClassifierService(classifier: AgentClassifier): AgentClassifierService = DefaultAgentClassifierService(classifier)
-
-    @Bean
-    @ConditionalOnProperty(
-        prefix = "lmos.router.classifier.llm",
-        name = ["enabled"],
-        havingValue = "true",
-        matchIfMissing = false,
-    )
-    fun channelRoutingAgentProvider(cachedChannelRoutingRepository: CachedChannelRoutingRepository): AgentProvider =
-        ChannelRoutingAgentProvider(cachedChannelRoutingRepository)
 
     @Bean
     @Qualifier("disambiguationChatModel")
