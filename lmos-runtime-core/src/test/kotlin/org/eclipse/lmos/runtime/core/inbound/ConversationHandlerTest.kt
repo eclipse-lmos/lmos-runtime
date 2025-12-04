@@ -17,6 +17,7 @@ import org.eclipse.lmos.classifier.core.ClassificationResult
 import org.eclipse.lmos.runtime.core.RuntimeConfiguration
 import org.eclipse.lmos.runtime.core.channelrouting.*
 import org.eclipse.lmos.runtime.core.disambiguation.DisambiguationHandler
+import org.eclipse.lmos.runtime.core.disambiguation.DisambiguationResult
 import org.eclipse.lmos.runtime.core.exception.AgentClientException
 import org.eclipse.lmos.runtime.core.exception.AgentNotFoundException
 import org.eclipse.lmos.runtime.core.exception.NoRoutingInfoFoundException
@@ -221,7 +222,14 @@ class ConversationHandlerTest {
             val tenantId = "de"
             val turnId = "turn-1"
             val conversation = conversation(listOf(KeyValuePair(ACTIVE_FEATURES_KEY, ACTIVE_FEATURE_KEY_CLASSIFIER)))
-            val expectedDisambiguationResponse = AssistantMessage(content = "Please give me more details.")
+            val expectedDisambiguationResult =
+                DisambiguationResult(
+                    topics = listOf("myTopics"),
+                    reasoning = "some reasoning",
+                    onlyConfirmation = false,
+                    confidence = 85,
+                    clarificationQuestion = "Please give me more details.",
+                )
 
             mockAgentClassifierService(
                 conversationId,
@@ -229,13 +237,13 @@ class ConversationHandlerTest {
                 tenantId,
                 ClassificationResult(emptyList(), emptyList()),
             )
-            mockDisambiguationHandler(conversation, emptyList(), expectedDisambiguationResponse)
+            mockDisambiguationHandler(conversation, emptyList(), expectedDisambiguationResult)
 
             // when
             val result = conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId, null).first()
 
             // then
-            assertEquals(expectedDisambiguationResponse, result)
+            assertEquals(expectedDisambiguationResult.clarificationQuestion, result.content)
 
             coVerify(exactly = 1) {
                 disambiguationHandler.disambiguate(conversation, any())
@@ -319,8 +327,8 @@ class ConversationHandlerTest {
     private fun mockDisambiguationHandler(
         conversation: Conversation,
         candidateAgents: List<org.eclipse.lmos.classifier.core.Agent>,
-        assistantMessage: AssistantMessage,
+        disambiguationResult: DisambiguationResult,
     ) {
-        coEvery { disambiguationHandler.disambiguate(conversation, candidateAgents) } returns assistantMessage
+        coEvery { disambiguationHandler.disambiguate(conversation, candidateAgents) } returns disambiguationResult
     }
 }
