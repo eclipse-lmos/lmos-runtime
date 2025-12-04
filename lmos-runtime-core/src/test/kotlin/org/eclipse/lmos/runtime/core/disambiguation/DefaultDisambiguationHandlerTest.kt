@@ -72,7 +72,7 @@ class DefaultDisambiguationHandlerTest {
         )
         // and clarification question is returned
         assertNotNull(disambiguationResult)
-        assertEquals("Which contract would you like to view?", disambiguationResult.content)
+        assertEquals("Which contract would you like to view?", disambiguationResult.clarificationQuestion)
     }
 
     @Test

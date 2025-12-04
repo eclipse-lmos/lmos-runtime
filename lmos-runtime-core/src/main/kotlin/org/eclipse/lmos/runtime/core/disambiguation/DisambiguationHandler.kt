@@ -14,7 +14,6 @@ import dev.langchain4j.data.message.UserMessage
 import dev.langchain4j.model.chat.ChatModel
 import dev.langchain4j.model.chat.response.ChatResponse
 import org.eclipse.lmos.classifier.core.Agent
-import org.eclipse.lmos.runtime.core.model.AssistantMessage
 import org.eclipse.lmos.runtime.core.model.Conversation
 import org.slf4j.LoggerFactory
 
@@ -30,12 +29,12 @@ interface DisambiguationHandler {
      *
      * @param conversation current conversation
      * @param candidateAgents agents with the highest match scores
-     * @return assistant message to be sent to the user
+     * @return the disambiguation result
      */
     fun disambiguate(
         conversation: Conversation,
         candidateAgents: List<Agent>,
-    ): AssistantMessage
+    ): DisambiguationResult
 }
 
 class DefaultDisambiguationHandler(
@@ -49,7 +48,7 @@ class DefaultDisambiguationHandler(
     override fun disambiguate(
         conversation: Conversation,
         candidateAgents: List<Agent>,
-    ): AssistantMessage {
+    ): DisambiguationResult {
         val disambiguationMessages = mutableListOf<ChatMessage>()
         disambiguationMessages.add(prepareIntroductionSystemMessage())
         disambiguationMessages.addAll(prepareChatMessages(conversation))
@@ -58,15 +57,12 @@ class DefaultDisambiguationHandler(
         val chatResponse = chatModel.chat(disambiguationMessages)
         val disambiguationResult = prepareDisambiguationResult(chatResponse)
         logger
-            .atInfo()
+            .atDebug()
             .addKeyValue("result", disambiguationResult)
             .addKeyValue("event", "DISAMBIGUATION_DONE")
             .log("Executed disambiguation.")
 
-        return AssistantMessage(
-            content = disambiguationResult.clarificationQuestion,
-            anonymizationEntities = emptyList(),
-        )
+        return disambiguationResult
     }
 
     private fun prepareIntroductionSystemMessage() = SystemMessage(introductionPrompt)
