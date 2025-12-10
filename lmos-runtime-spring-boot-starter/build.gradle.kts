@@ -11,10 +11,10 @@ plugins {
 dependencies {
     implementation(platform(project(":lmos-runtime-bom")))
     api(project(":lmos-runtime-core"))
+    api("org.eclipse.lmos:lmos-classifier-llm-spring-boot-starter")
+    api("org.eclipse.lmos:lmos-classifier-vector-spring-boot-starter")
+    api("org.eclipse.lmos:lmos-classifier-hybrid-spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
-    implementation("org.eclipse.lmos:lmos-classifier-llm-spring-boot-starter")
-    implementation("org.eclipse.lmos:lmos-classifier-vector-spring-boot-starter")
-    implementation("org.eclipse.lmos:lmos-classifier-hybrid-spring-boot-starter")
 }
