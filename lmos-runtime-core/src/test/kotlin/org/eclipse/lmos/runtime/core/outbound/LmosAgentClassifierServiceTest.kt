@@ -6,7 +6,7 @@
 
 package org.eclipse.lmos.runtime.core.outbound
 
-import io.mockk.every
+import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.eclipse.lmos.arc.api.Message
@@ -44,7 +44,7 @@ class LmosAgentClassifierServiceTest {
             val conversation = Conversation(defaultInputContext, defaultSystemContext, defaultUserContext)
 
             var capturedRequest: ClassificationRequest? = null
-            every { classifierMock.classify(any()) } answers {
+            coEvery { classifierMock.classify(any()) } answers {
                 capturedRequest = firstArg()
                 ClassificationResult(emptyList())
             }
