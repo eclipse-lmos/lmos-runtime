@@ -8,6 +8,8 @@ package org.eclipse.lmos.runtime.config
 
 import dev.langchain4j.model.chat.ChatModel
 import org.eclipse.lmos.classifier.core.AgentClassifier
+import org.eclipse.lmos.classifier.core.tracing.ClassifierTracer
+import org.eclipse.lmos.classifier.core.tracing.NoopClassifierTracer
 import org.eclipse.lmos.classifier.llm.ChatModelClientProperties
 import org.eclipse.lmos.classifier.llm.LangChainChatModelFactory
 import org.eclipse.lmos.runtime.channelrouting.DefaultCachedChannelRoutingRepository
@@ -136,11 +138,13 @@ class RuntimeAutoConfiguration(
     fun disambiguationHandler(
         @Qualifier("disambiguationChatModel") chatModel: ChatModel,
         lmosRuntimeProperties: RuntimeProperties,
+        tracerProvider: ObjectProvider<ClassifierTracer>,
     ): DisambiguationHandler =
         DefaultDisambiguationHandler(
             chatModel,
             lmosRuntimeProperties.disambiguation.introductionPrompt(),
             lmosRuntimeProperties.disambiguation.clarificationPrompt(),
+            tracerProvider.getIfAvailable { NoopClassifierTracer() },
         )
 
     @Bean

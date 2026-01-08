@@ -7,14 +7,16 @@
 package org.eclipse.lmos.runtime.core.disambiguation
 
 import dev.langchain4j.data.message.AiMessage
-import dev.langchain4j.data.message.ChatMessage
 import dev.langchain4j.data.message.SystemMessage
 import dev.langchain4j.data.message.UserMessage
 import dev.langchain4j.model.chat.ChatModel
+import dev.langchain4j.model.chat.request.ChatRequest
 import dev.langchain4j.model.chat.response.ChatResponse
+import dev.langchain4j.model.output.TokenUsage
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
+import kotlinx.coroutines.runBlocking
 import org.eclipse.lmos.arc.api.Message
 import org.eclipse.lmos.classifier.core.Agent
 import org.eclipse.lmos.classifier.core.Capability
@@ -24,6 +26,7 @@ import org.eclipse.lmos.runtime.core.model.SystemContext
 import org.eclipse.lmos.runtime.core.model.UserContext
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import kotlin.test.assertFailsWith
 
 class DefaultDisambiguationHandlerTest {
     private val chatModel = mockk<ChatModel>()
@@ -38,75 +41,78 @@ class DefaultDisambiguationHandlerTest {
         )
 
     @Test
-    fun `disambiguate prepares chat model messages and returns clarification question correctly`() {
-        // given
-        val userMessage = "Hello, I need help with my contract"
-        val conversation = conversation(userMessage)
-        val candidateAgents = candidateAgents()
-        val chatModelResponse = chatResponse(disambiguationJsonResponse())
-        val messagesSlot = slot<List<ChatMessage>>()
-        every { chatModel.chat(capture(messagesSlot)) } returns chatModelResponse
+    fun `disambiguate prepares chat model messages and returns clarification question correctly`(): Unit =
+        runBlocking {
+            // given
+            val userMessage = "Hello, I need help with my contract"
+            val conversation = conversation(userMessage)
+            val candidateAgents = candidateAgents()
+            val chatModelResponse = chatResponse(disambiguationJsonResponse())
+            val messagesSlot = slot<ChatRequest>()
+            every { chatModel.chat(capture(messagesSlot)) } returns chatModelResponse
 
-        // when
-        val disambiguationResult = underTest.disambiguate(conversation, candidateAgents)
+            // when
+            val disambiguationResult = underTest.disambiguate(conversation, candidateAgents)
 
-        // then ...
-        // chat model messages were prepared correctly
-        val messages = messagesSlot.captured
-        assertEquals(3, messages.size)
+            // then ...
+            // chat model messages were prepared correctly
+            val messages = messagesSlot.captured.messages()
+            assertEquals(3, messages.size)
 
-        assertEquals(messages[0].javaClass, SystemMessage::class.java)
-        assertEquals(introductionPrompt, (messages[0] as SystemMessage).text())
+            assertEquals(messages[0].javaClass, SystemMessage::class.java)
+            assertEquals(introductionPrompt, (messages[0] as SystemMessage).text())
 
-        assertEquals(messages[1].javaClass, UserMessage::class.java)
-        assertEquals(userMessage, (messages[1] as UserMessage).singleText())
+            assertEquals(messages[1].javaClass, UserMessage::class.java)
+            assertEquals(userMessage, (messages[1] as UserMessage).singleText())
 
-        assertEquals(messages[2].javaClass, SystemMessage::class.java)
-        assertEquals(
-            """
-            Clarify: Topic 'contract-agent-id':
-             - View contract details
-             - Cancel a contract
-            """.trimIndent(),
-            (messages[2] as SystemMessage).text(),
-        )
-        // and clarification question is returned
-        assertNotNull(disambiguationResult)
-        assertEquals("Which contract would you like to view?", disambiguationResult.clarificationQuestion)
-    }
-
-    @Test
-    fun `disambiguate throws IllegalStateException when response is null`() {
-        // given
-        val conversation = conversation("Whats up?")
-        val agents = candidateAgents()
-        val chatResponse = chatResponse(null)
-        every { chatModel.chat(any<List<ChatMessage>>()) } returns chatResponse
-
-        // when
-        val exception =
-            assertThrows(IllegalStateException::class.java) {
-                underTest.disambiguate(conversation, agents)
-            }
-
-        // then
-        assertEquals("Disambiguation response is empty or null.", exception.message)
-    }
+            assertEquals(messages[2].javaClass, SystemMessage::class.java)
+            assertEquals(
+                """
+                Clarify: Topic 'contract-agent-id':
+                 - View contract details
+                 - Cancel a contract
+                """.trimIndent(),
+                (messages[2] as SystemMessage).text(),
+            )
+            // and clarification question is returned
+            assertNotNull(disambiguationResult)
+            assertEquals("Which contract would you like to view?", disambiguationResult.clarificationQuestion)
+        }
 
     @Test
-    fun `disambiguate throws IllegalArgumentException when JSON response is invalid`() {
-        val conversation = conversation("Whats up?")
-        val agents = candidateAgents()
-        val chatResponse = chatResponse("invalid json")
-        every { chatModel.chat(any<List<ChatMessage>>()) } returns chatResponse
+    fun `disambiguate throws IllegalStateException when response is null`(): Unit =
+        runBlocking {
+            // given
+            val conversation = conversation("Whats up?")
+            val agents = candidateAgents()
+            val chatResponse = chatResponse(null)
+            every { chatModel.chat(any<ChatRequest>()) } returns chatResponse
 
-        val exception =
-            assertThrows(IllegalArgumentException::class.java) {
-                underTest.disambiguate(conversation, agents)
-            }
+            // when
+            val exception =
+                assertFailsWith<IllegalStateException> {
+                    underTest.disambiguate(conversation, agents)
+                }
 
-        assertTrue(exception.message!!.contains("Invalid disambiguation result format."))
-    }
+            // then
+            assertEquals("Disambiguation response is empty or null.", exception.message)
+        }
+
+    @Test
+    fun `disambiguate throws IllegalArgumentException when JSON response is invalid`(): Unit =
+        runBlocking {
+            val conversation = conversation("Whats up?")
+            val agents = candidateAgents()
+            val chatResponse = chatResponse("invalid json")
+            every { chatModel.chat(any<ChatRequest>()) } returns chatResponse
+
+            val exception =
+                assertFailsWith<IllegalArgumentException> {
+                    underTest.disambiguate(conversation, agents)
+                }
+
+            assertTrue(exception.message!!.contains("Invalid disambiguation result format."))
+        }
 
     private fun candidateAgents() =
         listOf(
@@ -135,6 +141,8 @@ class DefaultDisambiguationHandlerTest {
     private fun chatResponse(text: String?): ChatResponse? =
         ChatResponse
             .builder()
+            .modelName("MyModel")
+            .tokenUsage(TokenUsage(1, 2, 3))
             .aiMessage(AiMessage(text, emptyList()))
             .build()
 

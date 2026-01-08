@@ -16,7 +16,7 @@ dependencies {
     val springBootVersion = "3.5.6"
     val ktorVersion = "3.3.0"
     val kotlinxVersion = "1.9.0"
-    val lmosRouterVersion = "0.21.0"
+    val lmosRouterVersion = "0.22.0-M1"
     val arcVersion = "0.174.0"
     val langChain4jVersion = "1.5.0"
     val kotlinCoroutines = "1.10.2"
@@ -33,6 +33,7 @@ dependencies {
         api("org.eclipse.lmos:lmos-classifier-vector-spring-boot-starter:$lmosRouterVersion")
         api("org.eclipse.lmos:lmos-classifier-hybrid-spring-boot-starter:$lmosRouterVersion")
         api("org.eclipse.lmos:lmos-classifier-core:$lmosRouterVersion")
+        api("org.eclipse.lmos:lmos-classifier-llm:$lmosRouterVersion")
         api("org.eclipse.lmos:lmos-router-llm:$lmosRouterVersion")
         // arcVersion-managed
         api("org.eclipse.lmos:arc-agent-client:$arcVersion")

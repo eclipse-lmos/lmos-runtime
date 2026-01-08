@@ -17,6 +17,7 @@ dependencies {
     api("org.eclipse.lmos:arc-agent-client")
     api("org.eclipse.lmos:arc-api")
     api("org.eclipse.lmos:lmos-classifier-core")
+    api("org.eclipse.lmos:lmos-classifier-llm")
 
     implementation("io.ktor:ktor-client-cio")
     implementation("io.ktor:ktor-serialization-kotlinx-json")

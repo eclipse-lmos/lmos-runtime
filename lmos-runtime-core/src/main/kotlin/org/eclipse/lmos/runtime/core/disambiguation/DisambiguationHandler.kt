@@ -7,13 +7,21 @@
 package org.eclipse.lmos.runtime.core.disambiguation
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import dev.langchain4j.data.message.AiMessage
 import dev.langchain4j.data.message.ChatMessage
 import dev.langchain4j.data.message.SystemMessage
 import dev.langchain4j.data.message.UserMessage
 import dev.langchain4j.model.chat.ChatModel
+import dev.langchain4j.model.chat.request.ChatRequest
+import dev.langchain4j.model.chat.request.ResponseFormat
+import dev.langchain4j.model.chat.request.ResponseFormatType
 import dev.langchain4j.model.chat.response.ChatResponse
+import dev.langchain4j.service.output.JsonSchemas
 import org.eclipse.lmos.classifier.core.Agent
+import org.eclipse.lmos.classifier.core.tracing.ClassifierTracer
+import org.eclipse.lmos.classifier.core.tracing.NoopClassifierTracer
+import org.eclipse.lmos.classifier.llm.OpenInferenceTags
 import org.eclipse.lmos.runtime.core.model.Conversation
 import org.slf4j.LoggerFactory
 
@@ -31,7 +39,7 @@ interface DisambiguationHandler {
      * @param candidateAgents agents with the highest match scores
      * @return the disambiguation result
      */
-    fun disambiguate(
+    suspend fun disambiguate(
         conversation: Conversation,
         candidateAgents: List<Agent>,
     ): DisambiguationResult
@@ -41,28 +49,49 @@ class DefaultDisambiguationHandler(
     private val chatModel: ChatModel,
     private val introductionPrompt: String,
     private val clarificationPrompt: String,
+    private val tracer: ClassifierTracer = NoopClassifierTracer(),
 ) : DisambiguationHandler {
     private val logger = LoggerFactory.getLogger(javaClass)
     private val jacksonObjectMapper = jacksonObjectMapper()
+    private val responseFormat =
+        ResponseFormat
+            .builder()
+            .type(ResponseFormatType.JSON)
+            .jsonSchema(JsonSchemas.jsonSchemaFrom(DisambiguationResult::class.java).get())
+            .build()
 
-    override fun disambiguate(
+    override suspend fun disambiguate(
         conversation: Conversation,
         candidateAgents: List<Agent>,
-    ): DisambiguationResult {
+    ): DisambiguationResult =
+        tracer.withSpan("llm") { tags ->
+            val chatRequest = prepareChatRequest(conversation, candidateAgents)
+            val chatResponse = chatModel.chat(chatRequest)
+            val disambiguationResult = prepareDisambiguationResult(chatResponse)
+            OpenInferenceTags.applyModelTracingTags(tags, chatRequest, chatResponse)
+            logger
+                .atDebug()
+                .addKeyValue("result", disambiguationResult)
+                .addKeyValue("event", "DISAMBIGUATION_DONE")
+                .log("Executed disambiguation.")
+
+            disambiguationResult
+        }
+
+    private fun prepareChatRequest(
+        conversation: Conversation,
+        candidateAgents: List<Agent>,
+    ): ChatRequest {
         val disambiguationMessages = mutableListOf<ChatMessage>()
         disambiguationMessages.add(prepareIntroductionSystemMessage())
         disambiguationMessages.addAll(prepareChatMessages(conversation))
         disambiguationMessages.add(prepareClarificationSystemMessage(candidateAgents))
 
-        val chatResponse = chatModel.chat(disambiguationMessages)
-        val disambiguationResult = prepareDisambiguationResult(chatResponse)
-        logger
-            .atDebug()
-            .addKeyValue("result", disambiguationResult)
-            .addKeyValue("event", "DISAMBIGUATION_DONE")
-            .log("Executed disambiguation.")
-
-        return disambiguationResult
+        return ChatRequest
+            .builder()
+            .responseFormat(responseFormat)
+            .messages(disambiguationMessages)
+            .build()
     }
 
     private fun prepareIntroductionSystemMessage() = SystemMessage(introductionPrompt)
@@ -96,7 +125,7 @@ class DefaultDisambiguationHandler(
                 ?: throw IllegalStateException("Disambiguation response is empty or null.")
 
         return try {
-            jacksonObjectMapper.readValue(json, DisambiguationResult::class.java)
+            jacksonObjectMapper.readValue<DisambiguationResult>(json)
         } catch (ex: Exception) {
             logger.error("Failed to parse disambiguation result, JSON: $json", ex)
             throw IllegalArgumentException("Invalid disambiguation result format.", ex)
@@ -105,9 +134,9 @@ class DefaultDisambiguationHandler(
 }
 
 data class DisambiguationResult(
-    val topics: List<String>,
+    val topics: List<String>?,
     val reasoning: String,
     val onlyConfirmation: Boolean,
-    val confidence: Int,
+    val confidence: Int?,
     val clarificationQuestion: String,
 )
