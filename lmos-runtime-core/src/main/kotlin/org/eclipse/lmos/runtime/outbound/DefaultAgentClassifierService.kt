@@ -72,7 +72,7 @@ class DefaultAgentClassifierService(
 class ChannelRoutingAgentProvider(
     private val cachedChannelRoutingRepository: CachedChannelRoutingRepository,
 ) : AgentProvider {
-    override fun provide(request: ClassificationRequest): List<Agent> {
+    override suspend fun provide(request: ClassificationRequest): List<Agent> {
         val conversationId =
             request.inputContext.metadata[CONVERSATION_ID_METADATA_KEY]
                 ?: throw IllegalStateException(
