@@ -19,6 +19,7 @@ import dev.langchain4j.model.chat.request.ResponseFormatType
 import dev.langchain4j.model.chat.response.ChatResponse
 import dev.langchain4j.service.output.JsonSchemas
 import org.eclipse.lmos.classifier.core.Agent
+import org.eclipse.lmos.classifier.core.llm.SystemPromptRenderer
 import org.eclipse.lmos.classifier.core.tracing.ClassifierTracer
 import org.eclipse.lmos.classifier.core.tracing.NoopClassifierTracer
 import org.eclipse.lmos.classifier.llm.OpenInferenceTags
@@ -40,6 +41,7 @@ interface DisambiguationHandler {
      * @return the disambiguation result
      */
     suspend fun disambiguate(
+        tenant: String,
         conversation: Conversation,
         candidateAgents: List<Agent>,
     ): DisambiguationResult
@@ -49,6 +51,7 @@ class DefaultDisambiguationHandler(
     private val chatModel: ChatModel,
     private val introductionPrompt: String,
     private val clarificationPrompt: String,
+    private val systemPromptRenderer: SystemPromptRenderer,
     private val tracer: ClassifierTracer = NoopClassifierTracer(),
 ) : DisambiguationHandler {
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -61,11 +64,12 @@ class DefaultDisambiguationHandler(
             .build()
 
     override suspend fun disambiguate(
+        tenant: String,
         conversation: Conversation,
         candidateAgents: List<Agent>,
     ): DisambiguationResult =
         tracer.withSpan("llm") { tags ->
-            val chatRequest = prepareChatRequest(conversation, candidateAgents)
+            val chatRequest = prepareChatRequest(tenant, conversation, candidateAgents)
             val chatResponse = chatModel.chat(chatRequest)
             val disambiguationResult = prepareDisambiguationResult(chatResponse)
             OpenInferenceTags.applyModelTracingTags(tags, chatRequest, chatResponse)
@@ -79,13 +83,14 @@ class DefaultDisambiguationHandler(
         }
 
     private fun prepareChatRequest(
+        tenant: String,
         conversation: Conversation,
         candidateAgents: List<Agent>,
     ): ChatRequest {
         val disambiguationMessages = mutableListOf<ChatMessage>()
-        disambiguationMessages.add(prepareIntroductionSystemMessage())
+        disambiguationMessages.add(prepareIntroductionSystemMessage(tenant))
         disambiguationMessages.addAll(prepareChatMessages(conversation))
-        disambiguationMessages.add(prepareClarificationSystemMessage(candidateAgents))
+        disambiguationMessages.add(prepareClarificationSystemMessage(tenant, candidateAgents))
 
         return ChatRequest
             .builder()
@@ -94,21 +99,23 @@ class DefaultDisambiguationHandler(
             .build()
     }
 
-    private fun prepareIntroductionSystemMessage() = SystemMessage(introductionPrompt)
-
-    private fun prepareClarificationSystemMessage(agents: List<Agent>) =
+    private fun prepareIntroductionSystemMessage(tenant: String) =
         SystemMessage(
-            clarificationPrompt.replace(
-                "{{topics}}",
-                agents.joinToString("\n\n") { agent ->
-                    String.format(
-                        "Topic '%s':\n - %s",
-                        agent.id,
-                        agent.capabilities.joinToString("\n - ") { capability -> capability.description },
-                    )
-                },
+            systemPromptRenderer.render(
+                introductionPrompt,
+                mapOf("tenant" to tenant),
             ),
         )
+
+    private fun prepareClarificationSystemMessage(
+        tenant: String,
+        agents: List<Agent>,
+    ) = SystemMessage(
+        systemPromptRenderer.render(
+            clarificationPrompt,
+            mapOf("agents" to agents, "tenant" to tenant),
+        ),
+    )
 
     private fun prepareChatMessages(conversation: Conversation): List<ChatMessage> =
         conversation.inputContext.messages.mapNotNull {

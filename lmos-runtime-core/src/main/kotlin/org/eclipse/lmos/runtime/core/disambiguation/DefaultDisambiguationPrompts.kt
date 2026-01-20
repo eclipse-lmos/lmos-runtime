@@ -9,6 +9,7 @@ package org.eclipse.lmos.runtime.core.disambiguation
 fun defaultDisambiguationIntroductionPrompt(): String =
     """
     Yor are a service agent working at a chat hotline. Customers contact the chat hotline with requests and questions regarding various topics. 
+    The current session originates from the country with the ISO 3166 ALPHA-2 code '@{tenant}'. It is expected that the language spoken in that country is being used.
     """.trimIndent()
 
 fun defaultDisambiguationClarificationPrompt(): String =
@@ -20,8 +21,10 @@ fun defaultDisambiguationClarificationPrompt(): String =
     Consider how the customer's answer to the generated clarification question could look like, and how the answer helps in deciding for a topic. If there are multiple topics in scope, generate the clarification question as an either-or question, to help the customer understand the kind of answer required.
 
     When clarifying the topics, restrict yourself to the following topics:
-    
-    {{topics}}
+    @foreach{agent : agents} 
+    Topic '@{agent.id}': @foreach{capability : agent.capabilities} 
+        - @{capability.description}@end{}
+    @end{}
     
     If there is only one topic available, the clarification question can only be a confirmation-style question. If you are citing the customer, use indirect speech patterns to ensure not to repeat the customer's position unreflected.
 
@@ -29,6 +32,8 @@ fun defaultDisambiguationClarificationPrompt(): String =
 
     Requests that do not refer to any of the given topics need to be declined very friendly.
     Requests that are unintelligible due to incompleteness or linguistic shortcomings should be answered with a friendly plea to reformulate the request.  
+
+    The clarification question should be phrased in the customer's language. If the language cannot be clearly determined, please reply in the language commonly spoken in the country with the ISO 3166-ALPHA-2 abbreviation '@{tenant}'.
 
     Please respond only using the following valid JSON format, 
     and without any additional characters, explanations, or Markdown formatting:
@@ -44,6 +49,7 @@ fun defaultDisambiguationClarificationPrompt(): String =
 fun defaultGermanDisambiguationIntroductionPrompt(): String =
     """
     Sie sind ein Service-Agent und arbeiten an der Chat-Hotline. Kunden melden sich über den Chat mit Anfragen oder Problemen zu verschiedenen Themen. 
+    Die aktuelle Session kommt aus dem Land mit dem ISO-3166-ALPHA-2-Code '@{tenant}'. Erwarte die im Land übliche Sprache.
     """.trimIndent()
 
 fun defaultGermanDisambiguationClarificationPrompt(): String =
@@ -52,7 +58,10 @@ fun defaultGermanDisambiguationClarificationPrompt(): String =
 
     Beschränken Sie sich dabei auf die folgenden Themengebiete:
     
-    {{topics}}
+    @foreach{agent : agents} 
+    Topic '@{agent.id}': @foreach{capability : agent.capabilities} 
+        - @{capability.description}@end{}
+    @end{}
     
     Wenn es nur ein Themengebiet gibt, darf die Rückfrage nur eine Bitte um Bestätigung sein. 
     Aussagen vom Kunden sollten dabei nur im Konjunktiv bzw. in indirekter Rede enthalten sein. 
@@ -62,6 +71,8 @@ fun defaultGermanDisambiguationClarificationPrompt(): String =
     Anfragen, die sich nicht auf mindestens eines der Themengebiete beziehen, lehnen Sie bitte freundlich ab.
     Bei Anfragen, die aufgrund von sprachlichen Mängeln oder Unvollständigkeit eher zu erraten als zu beantworten wären, den Kunden freundlich um Klarstellung bitten.
 
+    Die Rückfrage sollte in der Sprache des Kunden formuliert werden. Wenn sich die Sprache nicht eindeutig feststellen lässt, antworten Sie bitte in der Sprache, die im Land mit dem ISO-3166-ALPHA-2 Kürzel '@{tenant}' üblicherweise gesprochen wird.
+    
     Antworten Sie bitte ausschließlich mit folgendem validen JSON-Format
     und ohne jegliche zusätzlichen Zeichen, Erklärungen oder Markdown-Formatierungen:
     {
