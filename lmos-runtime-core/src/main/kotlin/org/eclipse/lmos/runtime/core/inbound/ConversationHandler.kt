@@ -80,7 +80,7 @@ class DefaultConversationHandler(
                 if (classificationResult.classifiedAgents.isEmpty()) {
                     if (disambiguationHandler != null) {
                         return@coroutineScope flow {
-                            val result = disambiguationHandler.disambiguate(conversation, classificationResult.candidateAgents)
+                            val result = disambiguationHandler.disambiguate(tenantId, conversation, classificationResult.candidateAgents)
                             emit(AssistantMessage(content = result.clarificationQuestion, anonymizationEntities = emptyList()))
                         }
                     } else {

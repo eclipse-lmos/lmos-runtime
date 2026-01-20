@@ -20,6 +20,7 @@ import kotlinx.coroutines.runBlocking
 import org.eclipse.lmos.arc.api.Message
 import org.eclipse.lmos.classifier.core.Agent
 import org.eclipse.lmos.classifier.core.Capability
+import org.eclipse.lmos.classifier.llm.MvelSystemPromptRenderer
 import org.eclipse.lmos.runtime.core.model.Conversation
 import org.eclipse.lmos.runtime.core.model.InputContext
 import org.eclipse.lmos.runtime.core.model.SystemContext
@@ -30,14 +31,20 @@ import kotlin.test.assertFailsWith
 
 class DefaultDisambiguationHandlerTest {
     private val chatModel = mockk<ChatModel>()
-    private val introductionPrompt = "Intro prompt"
-    private val clarificationPrompt = "Clarify: {{topics}}"
+    private val tenant = "de"
+    private val introductionPrompt = "Intro prompt for tenant @{tenant}."
+    private val expectedIntroductionPrompt = "Intro prompt for tenant $tenant."
+    private val clarificationPrompt =
+        "This is the clarification prompt, listing some agents: @foreach{agent : agents}@{agent.id}@end{', '} for tenant @{tenant}."
+    private val expectedClarificationPrompt =
+        "This is the clarification prompt, listing some agents: contract-agent, billing-agent for tenant $tenant."
 
     private val underTest =
         DefaultDisambiguationHandler(
             chatModel,
             introductionPrompt,
             clarificationPrompt,
+            MvelSystemPromptRenderer(),
         )
 
     @Test
@@ -52,7 +59,7 @@ class DefaultDisambiguationHandlerTest {
             every { chatModel.chat(capture(messagesSlot)) } returns chatModelResponse
 
             // when
-            val disambiguationResult = underTest.disambiguate(conversation, candidateAgents)
+            val disambiguationResult = underTest.disambiguate(tenant, conversation, candidateAgents)
 
             // then ...
             // chat model messages were prepared correctly
@@ -60,20 +67,13 @@ class DefaultDisambiguationHandlerTest {
             assertEquals(3, messages.size)
 
             assertEquals(messages[0].javaClass, SystemMessage::class.java)
-            assertEquals(introductionPrompt, (messages[0] as SystemMessage).text())
+            assertEquals(expectedIntroductionPrompt, (messages[0] as SystemMessage).text())
 
             assertEquals(messages[1].javaClass, UserMessage::class.java)
             assertEquals(userMessage, (messages[1] as UserMessage).singleText())
 
             assertEquals(messages[2].javaClass, SystemMessage::class.java)
-            assertEquals(
-                """
-                Clarify: Topic 'contract-agent-id':
-                 - View contract details
-                 - Cancel a contract
-                """.trimIndent(),
-                (messages[2] as SystemMessage).text(),
-            )
+            assertEquals(expectedClarificationPrompt, (messages[2] as SystemMessage).text())
             // and clarification question is returned
             assertNotNull(disambiguationResult)
             assertEquals("Which contract would you like to view?", disambiguationResult.clarificationQuestion)
@@ -91,7 +91,7 @@ class DefaultDisambiguationHandlerTest {
             // when
             val exception =
                 assertFailsWith<IllegalStateException> {
-                    underTest.disambiguate(conversation, agents)
+                    underTest.disambiguate(tenant, conversation, agents)
                 }
 
             // then
@@ -108,7 +108,7 @@ class DefaultDisambiguationHandlerTest {
 
             val exception =
                 assertFailsWith<IllegalArgumentException> {
-                    underTest.disambiguate(conversation, agents)
+                    underTest.disambiguate(tenant, conversation, agents)
                 }
 
             assertTrue(exception.message!!.contains("Invalid disambiguation result format."))
@@ -117,14 +117,16 @@ class DefaultDisambiguationHandlerTest {
     private fun candidateAgents() =
         listOf(
             Agent(
-                id = "contract-agent-id",
-                name = "contract-agent",
-                address = "http://contract-agent.example.com",
-                capabilities =
-                    listOf(
-                        Capability("view-contract-id", "View contract details"),
-                        Capability("cancel-contract-id", "Cancel a contract"),
-                    ),
+                id = "contract-agent",
+                name = "contract-agent-name",
+                address = "contract-agent-address",
+                capabilities = listOf(Capability(id = "view-contract", description = "View contract details")),
+            ),
+            Agent(
+                id = "billing-agent",
+                name = "billing-agent-name",
+                address = "billing-agent-address",
+                capabilities = listOf(Capability(id = "view-bill", description = "View bill.")),
             ),
         )
 

@@ -12,6 +12,7 @@ import org.eclipse.lmos.classifier.core.tracing.ClassifierTracer
 import org.eclipse.lmos.classifier.core.tracing.NoopClassifierTracer
 import org.eclipse.lmos.classifier.llm.ChatModelClientProperties
 import org.eclipse.lmos.classifier.llm.LangChainChatModelFactory
+import org.eclipse.lmos.classifier.llm.MvelSystemPromptRenderer
 import org.eclipse.lmos.runtime.channelrouting.DefaultCachedChannelRoutingRepository
 import org.eclipse.lmos.runtime.core.ChannelRoutingRepositoryType
 import org.eclipse.lmos.runtime.core.RuntimeConfiguration
@@ -76,6 +77,7 @@ class RuntimeAutoConfiguration(
                     )
                 OperatorChannelRoutingRepository(runtimeProperties)
             }
+
             ChannelRoutingRepositoryType.FILE -> {
                 agentRegistryConfig.fileName
                     ?: throw IllegalArgumentException(
@@ -90,7 +92,10 @@ class RuntimeAutoConfiguration(
     @ConditionalOnMissingBean(AgentRoutingService::class)
     fun agentRoutingService(): AgentRoutingService =
         when (runtimeProperties.router.type) {
-            Type.EXPLICIT -> ExplicitAgentRoutingService()
+            Type.EXPLICIT -> {
+                ExplicitAgentRoutingService()
+            }
+
             Type.LLM -> {
                 runtimeProperties.openAi
                     ?.key
@@ -144,6 +149,7 @@ class RuntimeAutoConfiguration(
             chatModel,
             lmosRuntimeProperties.disambiguation.introductionPrompt(),
             lmosRuntimeProperties.disambiguation.clarificationPrompt(),
+            MvelSystemPromptRenderer(),
             tracerProvider.getIfAvailable { NoopClassifierTracer() },
         )
 

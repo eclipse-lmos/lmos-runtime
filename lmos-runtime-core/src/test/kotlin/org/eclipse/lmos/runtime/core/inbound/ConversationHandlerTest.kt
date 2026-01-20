@@ -237,7 +237,7 @@ class ConversationHandlerTest {
                 tenantId,
                 ClassificationResult(emptyList(), emptyList()),
             )
-            mockDisambiguationHandler(conversation, emptyList(), expectedDisambiguationResult)
+            mockDisambiguationHandler(conversation, tenantId, emptyList(), expectedDisambiguationResult)
 
             // when
             val result = conversationHandler.handleConversation(conversation, conversationId, tenantId, turnId, null).first()
@@ -246,7 +246,7 @@ class ConversationHandlerTest {
             assertEquals(expectedDisambiguationResult.clarificationQuestion, result.content)
 
             coVerify(exactly = 1) {
-                disambiguationHandler.disambiguate(conversation, any())
+                disambiguationHandler.disambiguate(tenantId, conversation, any())
             }
         }
 
@@ -281,7 +281,7 @@ class ConversationHandlerTest {
             }
 
             coVerify(exactly = 0) {
-                disambiguationHandler.disambiguate(conversation, any())
+                disambiguationHandler.disambiguate(tenantId, conversation, any())
             }
         }
 
@@ -326,9 +326,10 @@ class ConversationHandlerTest {
 
     private fun mockDisambiguationHandler(
         conversation: Conversation,
+        tenantId: String,
         candidateAgents: List<org.eclipse.lmos.classifier.core.Agent>,
         disambiguationResult: DisambiguationResult,
     ) {
-        coEvery { disambiguationHandler.disambiguate(conversation, candidateAgents) } returns disambiguationResult
+        coEvery { disambiguationHandler.disambiguate(tenantId, conversation, candidateAgents) } returns disambiguationResult
     }
 }
