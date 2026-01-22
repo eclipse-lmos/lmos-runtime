@@ -45,7 +45,7 @@ dependencies {
         api("org.mockito.kotlin:mockito-kotlin:6.2.2")
         api("app.cash.turbine:turbine:1.2.1")
         api("com.marcinziolo:kotlin-wiremock:2.1.1")
-        api("org.testcontainers:junit-jupiter:1.15.3")
+        api("org.testcontainers:junit-jupiter:1.21.4")
         api("com.redis.testcontainers:testcontainers-redis:1.6.4")
     }
 }
