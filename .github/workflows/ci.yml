@@ -9,9 +9,12 @@ on:
     branches-ignore:
       - 'main'
   pull_request:
+    branches:
+      - main
 
 jobs:
   CI:
     uses: eclipse-lmos/.github/.github/workflows/gradle-ci.yml@main
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     permissions:
       contents: read
