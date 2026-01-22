@@ -20,7 +20,8 @@ jobs:
       contents: read
   dependabot:
     uses: eclipse-lmos/.github/.github/workflows/dependabot-automerge.yml@main
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && needs.CI.result == 'success'
+    needs: CI
     permissions:
       contents: write
       pull-requests: write
