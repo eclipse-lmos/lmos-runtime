@@ -18,3 +18,9 @@ jobs:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     permissions:
       contents: read
+  dependabot:
+    uses: eclipse-lmos/.github/.github/workflows/dependabot-automerge.yml@main
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: write
+      pull-requests: write
