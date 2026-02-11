@@ -14,7 +14,7 @@ include("lmos-runtime-bom")
 
 pluginManagement {
     val kotlinVersion = "2.3.10"
-    val helmVersion = "2.2.0"
+    val helmVersion = "3.1.1"
 
     repositories {
         gradlePluginPortal()
@@ -26,8 +26,8 @@ pluginManagement {
         id("org.jlleitschuh.gradle.ktlint") version "14.0.1"
         id("io.spring.dependency-management") version "1.1.7"
         id("dev.yumi.gradle.licenser") version "2.2.2"
-        id("com.citi.helm") version helmVersion
-        id("com.citi.helm-publish") version helmVersion
+        id("io.github.build-extensions-oss.helm") version helmVersion
+        id("io.github.build-extensions-oss.helm-publish") version helmVersion
         id("net.researchgate.release") version "3.1.0"
         id("com.vanniktech.maven.publish") version "0.34.0"
         id("org.jetbrains.kotlin.jvm") version kotlinVersion

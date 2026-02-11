@@ -12,8 +12,8 @@ plugins {
     id("io.spring.dependency-management")
     id("dev.yumi.gradle.licenser")
 
-    id("com.citi.helm")
-    id("com.citi.helm-publish")
+    id("io.github.build-extensions-oss.helm")
+    id("io.github.build-extensions-oss.helm-publish")
     id("net.researchgate.release")
     id("com.vanniktech.maven.publish")
     kotlin("jvm")

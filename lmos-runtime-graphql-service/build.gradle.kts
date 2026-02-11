@@ -9,8 +9,8 @@ import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 plugins {
     id("org.springframework.boot")
     id("io.spring.dependency-management")
-    id("com.citi.helm")
-    id("com.citi.helm-publish")
+    id("io.github.build-extensions-oss.helm")
+    id("io.github.build-extensions-oss.helm-publish")
 }
 
 dependencies {
@@ -50,27 +50,16 @@ tasks.named<BootBuildImage>("bootBuildImage") {
 
 helm {
     charts {
-        create("main") {
-            chartName.set("${rootProject.name}-graphql-chart")
-            chartVersion.set("${project.version}")
+        create("${rootProject.name}-graphql-chart") {
             sourceDir.set(file("src/main/helm"))
         }
-    }
-}
-
-tasks.register("replaceChartVersion") {
-    doLast {
-        val chartFile = file("src/main/helm/Chart.yaml")
-        val content = chartFile.readText()
-        val updatedContent = content.replace("\${chartVersion}", "${project.version}")
-        chartFile.writeText(updatedContent)
     }
 }
 
 tasks.register("helmPush") {
     description = "Push Helm chart to OCI registry"
     group = "publishing"
-    dependsOn(tasks.named("helmPackageMainChart"))
+    dependsOn(tasks.named("helmPackageLmosRuntimeGraphqlChartChart"))
 
     doLast {
         group = "publishing"
@@ -89,7 +78,7 @@ tasks.register("helmPush") {
             helm.execHelm("push") {
                 args(
                     tasks
-                        .named("helmPackageMainChart")
+                        .named("helmPackageLmosRuntimeGraphqlChartChart")
                         .get()
                         .outputs.files.singleFile
                         .toString(),
