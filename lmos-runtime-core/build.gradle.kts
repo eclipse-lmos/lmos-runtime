@@ -23,7 +23,7 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json")
     implementation("io.ktor:ktor-serialization-jackson")
     implementation("io.ktor:ktor-client-content-negotiation")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("tools.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm")
     implementation("com.charleskorn.kaml:kaml")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")

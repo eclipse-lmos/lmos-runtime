@@ -6,8 +6,6 @@
 
 package org.eclipse.lmos.runtime.core.disambiguation
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import dev.langchain4j.data.message.AiMessage
 import dev.langchain4j.data.message.ChatMessage
 import dev.langchain4j.data.message.SystemMessage
@@ -25,6 +23,8 @@ import org.eclipse.lmos.classifier.core.tracing.NoopClassifierTracer
 import org.eclipse.lmos.classifier.llm.OpenInferenceTags
 import org.eclipse.lmos.runtime.core.model.Conversation
 import org.slf4j.LoggerFactory
+import tools.jackson.module.kotlin.jacksonObjectMapper
+import tools.jackson.module.kotlin.readValue
 
 /**
  * The [DisambiguationHandler] can be used to generate disambiguation messages in order to assist the user
