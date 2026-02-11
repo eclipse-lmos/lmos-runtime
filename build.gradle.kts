@@ -10,7 +10,7 @@ plugins {
     id("org.springframework.boot") apply false
     id("org.jlleitschuh.gradle.ktlint")
     id("io.spring.dependency-management")
-    id("org.cadixdev.licenser")
+    id("dev.yumi.gradle.licenser")
 
     id("com.citi.helm")
     id("com.citi.helm-publish")
@@ -45,10 +45,10 @@ subprojects {
         apply(plugin = "kotlinx-serialization")
         apply(plugin = "org.jetbrains.kotlinx.kover")
         apply(plugin = "org.jlleitschuh.gradle.ktlint")
-        apply(plugin = "org.cadixdev.licenser")
+        apply(plugin = "dev.yumi.gradle.licenser")
 
         license {
-            header(rootProject.file("LICENSE"))
+            rule(file("../LICENSE"))
             include("**/*.java")
             include("**/*.kt")
             include("**/*.yaml")

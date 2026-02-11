@@ -25,7 +25,7 @@ pluginManagement {
         id("org.springframework.boot") version "3.5.5"
         id("org.jlleitschuh.gradle.ktlint") version "14.0.1"
         id("io.spring.dependency-management") version "1.1.7"
-        id("org.cadixdev.licenser") version "0.6.1"
+        id("dev.yumi.gradle.licenser") version "2.2.2"
         id("com.citi.helm") version helmVersion
         id("com.citi.helm-publish") version helmVersion
         id("net.researchgate.release") version "3.1.0"
