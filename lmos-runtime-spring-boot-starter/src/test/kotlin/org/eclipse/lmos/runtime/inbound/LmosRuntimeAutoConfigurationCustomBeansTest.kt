@@ -25,7 +25,7 @@ import org.eclipse.lmos.runtime.properties.RuntimeProperties
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration
+import org.springframework.boot.cache.autoconfigure.CacheAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.ApplicationContext

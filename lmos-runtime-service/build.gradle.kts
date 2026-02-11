@@ -24,6 +24,8 @@ dependencies {
     testImplementation(testFixtures(project(":lmos-runtime-core")))
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("com.redis.testcontainers:testcontainers-redis")
+    testImplementation("org.springframework.boot:spring-boot-webtestclient")
+    testImplementation("org.springframework.boot:spring-boot-webflux-test")
 }
 
 tasks.named<BootBuildImage>("bootBuildImage") {
