@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.lang.System.getenv
 import java.net.URI
 
@@ -57,12 +58,13 @@ subprojects {
 
         kotlin {
             compilerOptions {
-                freeCompilerArgs.add("-Xcontext-receivers")
+                freeCompilerArgs = listOf("-Xjsr305=strict", "-Xcontext-receivers")
+                jvmTarget = JvmTarget.JVM_25
             }
         }
         java {
             toolchain {
-                languageVersion = JavaLanguageVersion.of(21)
+                languageVersion = JavaLanguageVersion.of(25)
             }
         }
 
