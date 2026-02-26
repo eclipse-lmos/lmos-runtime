@@ -16,7 +16,7 @@ dependencies {
     val springBootVersion = "4.0.3"
     val ktorVersion = "3.4.0"
     val kotlinxVersion = "1.10.0"
-    val lmosRouterVersion = "0.23.0"
+    val lmosRouterVersion = "0.24.0"
     val arcVersion = "0.210.0"
     val langChain4jVersion = "1.11.0"
     val kotlinCoroutines = "1.10.2"
