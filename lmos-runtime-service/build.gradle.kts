@@ -22,8 +22,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
     testImplementation(testFixtures(project(":lmos-runtime-core")))
-    testImplementation("org.testcontainers:junit-jupiter")
-    testImplementation("com.redis.testcontainers:testcontainers-redis")
+    testImplementation("org.testcontainers:testcontainers-junit-jupiter")
+    testImplementation("com.redis:testcontainers-redis")
     testImplementation("org.springframework.boot:spring-boot-webtestclient")
     testImplementation("org.springframework.boot:spring-boot-webflux-test")
 }
