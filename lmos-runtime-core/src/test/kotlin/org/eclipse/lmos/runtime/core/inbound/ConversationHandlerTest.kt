@@ -45,7 +45,6 @@ class ConversationHandlerTest {
     fun setUp() {
         agentClientService = mockk<AgentClientService>()
         agentRoutingService = ExplicitAgentRoutingService()
-        agentClassifierService = mockk<AgentClassifierService>()
         channelRoutingRepository = mockk<CachedChannelRoutingRepository>()
         lmosRuntimeConfig =
             RuntimeConfiguration(
@@ -64,7 +63,7 @@ class ConversationHandlerTest {
         conversationHandler =
             DefaultConversationHandler(
                 agentRoutingService,
-                agentClassifierService,
+                null,
                 channelRoutingRepository,
                 agentClientService,
                 disambiguationHandler,
@@ -218,10 +217,11 @@ class ConversationHandlerTest {
     fun `disambiguation is executed when disambiguation is activated`() =
         runTest {
             // given
+            initWithClassifier()
             val conversationId = "conv-124"
             val tenantId = "de"
             val turnId = "turn-1"
-            val conversation = conversation(listOf(KeyValuePair(ACTIVE_FEATURES_KEY, ACTIVE_FEATURE_KEY_CLASSIFIER)))
+            val conversation = conversation()
             val expectedDisambiguationResult =
                 DisambiguationResult(
                     topics = listOf("myTopics"),
@@ -254,10 +254,11 @@ class ConversationHandlerTest {
     fun `AgentNotFoundException is thrown when disambiguation is deactivated`() =
         runTest {
             // given
+            initWithClassifier()
             val conversationId = "conv-124"
             val tenantId = "de"
             val turnId = "turn-1"
-            val conversation = conversation(listOf(KeyValuePair(ACTIVE_FEATURES_KEY, ACTIVE_FEATURE_KEY_CLASSIFIER)))
+            val conversation = conversation()
 
             mockAgentClassifierService(
                 conversationId,
@@ -331,5 +332,17 @@ class ConversationHandlerTest {
         disambiguationResult: DisambiguationResult,
     ) {
         coEvery { disambiguationHandler.disambiguate(tenantId, conversation, candidateAgents) } returns disambiguationResult
+    }
+
+    private fun initWithClassifier() {
+        agentClassifierService = mockk<AgentClassifierService>()
+        conversationHandler =
+            DefaultConversationHandler(
+                agentRoutingService,
+                agentClassifierService,
+                channelRoutingRepository,
+                agentClientService,
+                disambiguationHandler,
+            )
     }
 }

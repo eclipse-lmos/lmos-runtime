@@ -20,10 +20,3 @@ lmos:
           display-name: Tenant 1
         - id: tenant2
           display-name: Tenant 2
-  router:
-    classifier:
-      llm:
-        enabled: true
-    llm:
-      provider: openai
-      model: dummy-model

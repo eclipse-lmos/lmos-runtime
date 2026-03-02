@@ -38,6 +38,7 @@ import org.eclipse.lmos.runtime.properties.Type
 import org.springframework.beans.factory.ObjectProvider
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -107,6 +108,11 @@ class RuntimeAutoConfiguration(
 
     @Bean
     @ConditionalOnMissingBean(AgentClassifierService::class)
+    @ConditionalOnExpression(
+        "'\${lmos.router.classifier.vector.enabled:false}' == 'true' || " +
+            "'\${lmos.router.classifier.llm.enabled:false}' == 'true' || " +
+            "'\${lmos.router.classifier.hybrid-fast-track.enabled:false}' == 'true'",
+    )
     fun agentClassifierService(classifier: AgentClassifier): AgentClassifierService = DefaultAgentClassifierService(classifier)
 
     @Bean
@@ -157,14 +163,14 @@ class RuntimeAutoConfiguration(
     @ConditionalOnMissingBean(ConversationHandler::class)
     fun conversationHandler(
         agentRoutingService: AgentRoutingService,
-        agentClassifierService: AgentClassifierService,
+        agentClassifierServiceProvider: ObjectProvider<AgentClassifierService>,
         cachedChannelRoutingRepository: CachedChannelRoutingRepository,
         agentClientService: AgentClientService,
         disambiguationHandlerProvider: ObjectProvider<DisambiguationHandler>,
     ): ConversationHandler =
         DefaultConversationHandler(
             agentRoutingService,
-            agentClassifierService,
+            agentClassifierServiceProvider.ifAvailable,
             cachedChannelRoutingRepository,
             agentClientService,
             disambiguationHandlerProvider.ifAvailable,

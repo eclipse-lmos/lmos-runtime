@@ -21,9 +21,6 @@ import org.eclipse.lmos.runtime.core.service.outbound.AgentClientService
 import org.eclipse.lmos.runtime.core.service.outbound.AgentRoutingService
 import org.slf4j.LoggerFactory
 
-const val ACTIVE_FEATURES_KEY = "activeFeatures"
-const val ACTIVE_FEATURE_KEY_CLASSIFIER = "classifier"
-
 interface ConversationHandler {
     suspend fun handleConversation(
         conversation: Conversation,
@@ -36,7 +33,7 @@ interface ConversationHandler {
 
 class DefaultConversationHandler(
     private val agentRoutingService: AgentRoutingService,
-    private val agentClassifierService: AgentClassifierService,
+    private val agentClassifierService: AgentClassifierService?,
     private val cachedChannelRoutingRepository: CachedChannelRoutingRepository,
     private val agentClientService: AgentClientService,
     private val disambiguationHandler: DisambiguationHandler?,
@@ -68,7 +65,7 @@ class DefaultConversationHandler(
             val agentName: String
             val agentAddress: Address
 
-            if (useClassifier(conversation)) {
+            if (agentClassifierService != null) {
                 log.info("Classifier feature is active, using new classifier for agent routing")
                 val classificationResult =
                     agentClassifierService.classify(
@@ -108,10 +105,4 @@ class DefaultConversationHandler(
                     routingInformation.subset,
                 )
         }
-
-    private fun useClassifier(conversation: Conversation): Boolean {
-        val activeFeatures = conversation.systemContext.contextParams.firstOrNull { it.key == ACTIVE_FEATURES_KEY }
-        val useClassifier = activeFeatures?.value?.contains(ACTIVE_FEATURE_KEY_CLASSIFIER) == true
-        return useClassifier
-    }
 }
