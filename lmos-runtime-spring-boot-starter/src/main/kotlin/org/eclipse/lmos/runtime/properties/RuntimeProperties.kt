@@ -13,7 +13,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 class RuntimeProperties(
     channelRoutingRepository: ChannelRoutingRepositoryConfig,
     openAi: OpenAI? = null,
-    disambiguation: Disambiguation,
+    disambiguation: Disambiguation? = null,
     val router: Router,
 ) : RuntimeConfiguration(channelRoutingRepository, openAi, disambiguation)
 

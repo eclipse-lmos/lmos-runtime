@@ -128,13 +128,13 @@ class RuntimeAutoConfiguration(
         // different models for disambiguation and agent classification.
         LangChainChatModelFactory.createClient(
             ChatModelClientProperties(
-                provider = runtimeProperties.disambiguation.llm.provider,
-                apiKey = runtimeProperties.disambiguation.llm.apiKey,
-                baseUrl = runtimeProperties.disambiguation.llm.baseUrl,
-                model = runtimeProperties.disambiguation.llm.model,
-                maxTokens = runtimeProperties.disambiguation.llm.maxTokens,
-                temperature = runtimeProperties.disambiguation.llm.temperature,
-                logRequestsAndResponses = runtimeProperties.disambiguation.llm.logRequestsAndResponses,
+                provider = runtimeProperties.disambiguation!!.llm.provider,
+                apiKey = runtimeProperties.disambiguation!!.llm.apiKey,
+                baseUrl = runtimeProperties.disambiguation!!.llm.baseUrl,
+                model = runtimeProperties.disambiguation!!.llm.model,
+                maxTokens = runtimeProperties.disambiguation!!.llm.maxTokens,
+                temperature = runtimeProperties.disambiguation!!.llm.temperature,
+                logRequestsAndResponses = runtimeProperties.disambiguation!!.llm.logRequestsAndResponses,
             ),
         )
 
@@ -153,8 +153,8 @@ class RuntimeAutoConfiguration(
     ): DisambiguationHandler =
         DefaultDisambiguationHandler(
             chatModel,
-            lmosRuntimeProperties.disambiguation.introductionPrompt(),
-            lmosRuntimeProperties.disambiguation.clarificationPrompt(),
+            lmosRuntimeProperties.disambiguation!!.introductionPrompt(),
+            lmosRuntimeProperties.disambiguation!!.clarificationPrompt(),
             MvelSystemPromptRenderer(),
             tracerProvider.getIfAvailable { NoopClassifierTracer() },
         )
