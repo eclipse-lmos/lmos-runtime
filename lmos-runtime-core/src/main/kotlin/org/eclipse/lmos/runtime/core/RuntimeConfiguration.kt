@@ -12,7 +12,7 @@ import org.eclipse.lmos.runtime.core.disambiguation.defaultDisambiguationIntrodu
 open class RuntimeConfiguration(
     val channelRoutingRepository: ChannelRoutingRepositoryConfig,
     val openAi: OpenAI? = null,
-    val disambiguation: Disambiguation,
+    val disambiguation: Disambiguation? = null,
 ) {
     data class ChannelRoutingRepositoryConfig(
         val baseUrl: String? = null, // Made nullable
