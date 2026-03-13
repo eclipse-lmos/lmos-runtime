@@ -23,7 +23,7 @@ pluginManagement {
     }
     plugins {
         id("org.springframework.boot") version "4.0.3"
-        id("org.jlleitschuh.gradle.ktlint") version "14.1.0"
+        id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
         id("io.spring.dependency-management") version "1.1.7"
         id("dev.yumi.gradle.licenser") version "2.2.2"
         id("io.github.build-extensions-oss.helm") version helmVersion
