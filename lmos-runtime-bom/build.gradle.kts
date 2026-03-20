@@ -42,7 +42,7 @@ dependencies {
         // Misc
         api("com.charleskorn.kaml:kaml:0.104.0")
         api("com.expediagroup:graphql-kotlin-spring-server:9.1.0")
-        api("org.mockito.kotlin:mockito-kotlin:6.2.3")
+        api("org.mockito.kotlin:mockito-kotlin:6.3.0")
         api("app.cash.turbine:turbine:1.2.1")
         api("com.marcinziolo:kotlin-wiremock:2.1.1")
         api("org.testcontainers:testcontainers-junit-jupiter")
