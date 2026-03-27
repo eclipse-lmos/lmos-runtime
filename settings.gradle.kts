@@ -35,7 +35,7 @@ pluginManagement {
         id("org.jetbrains.kotlin.plugin.serialization") version kotlinVersion
         id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
         id("org.jetbrains.kotlinx.kover") version "0.9.8"
-        id("org.jetbrains.dokka") version "2.1.0"
+        id("org.jetbrains.dokka") version "2.2.0"
     }
 }
 
