@@ -13,7 +13,7 @@ include("lmos-runtime-graphql-service")
 include("lmos-runtime-bom")
 
 pluginManagement {
-    val kotlinVersion = "2.3.10"
+    val kotlinVersion = "2.3.20"
     val helmVersion = "3.1.1"
 
     repositories {
