@@ -21,7 +21,7 @@ dependencies {
 
     implementation("io.ktor:ktor-client-cio")
     implementation("io.ktor:ktor-serialization-kotlinx-json")
-    implementation("io.ktor:ktor-serialization-jackson")
+    implementation("io.ktor:ktor-serialization-jackson3")
     implementation("io.ktor:ktor-client-content-negotiation")
     implementation("tools.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm")

@@ -6,16 +6,14 @@
 
 package org.eclipse.lmos.runtime.outbound
 
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.serialization.jackson.*
+import io.ktor.serialization.jackson3.*
+import tools.jackson.databind.DeserializationFeature
+import tools.jackson.databind.cfg.DateTimeFeature
 
 fun ContentNegotiationConfig.installDefaultJackson() {
     jackson {
-        registerModule(KotlinModule.Builder().build())
-        disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+        disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS)
         configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     }
 }
