@@ -18,7 +18,7 @@ dependencies {
     val kotlinxVersion = "1.11.0"
     val lmosRouterVersion = "0.28.0"
     val arcVersion = "0.225.0"
-    val langChain4jVersion = "1.13.1"
+    val langChain4jVersion = "1.14.0"
     val kotlinCoroutines = "1.10.2"
 
     api(platform("org.springframework.boot:spring-boot-dependencies:$springBootVersion"))
