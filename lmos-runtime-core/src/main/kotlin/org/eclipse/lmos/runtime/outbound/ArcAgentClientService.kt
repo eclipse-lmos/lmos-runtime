@@ -77,8 +77,8 @@ class ArcAgentClientService : AgentClientService {
                             }
                         }
                 } catch (e: Exception) {
-                    log.error("Error response from ArcAgentClient", e)
-                    throw AgentClientException(e.message)
+                    log.debug("Error response from ArcAgentClient", e)
+                    throw AgentClientException(e.message, e)
                 }
             }
         }.flowOn(Dispatchers.IO)

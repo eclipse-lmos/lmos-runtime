@@ -13,6 +13,7 @@ import kotlinx.coroutines.runBlocking
 import org.eclipse.lmos.arc.agent.client.graphql.GraphQlAgentClient
 import org.eclipse.lmos.arc.api.AgentResult
 import org.eclipse.lmos.arc.api.Message
+import org.eclipse.lmos.runtime.core.exception.AgentClientException
 import org.eclipse.lmos.runtime.core.model.Address
 import org.eclipse.lmos.runtime.core.model.AssistantMessage
 import org.eclipse.lmos.runtime.core.model.Conversation
@@ -22,6 +23,8 @@ import org.eclipse.lmos.runtime.core.model.UserContext
 import org.eclipse.lmos.runtime.outbound.ArcAgentClientService
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertSame
 
 class ArcAgentClientServiceTest {
     @Test
@@ -63,5 +66,41 @@ class ArcAgentClientServiceTest {
                     ).first()
 
             assertEquals("Response from agent", result.content)
+        }
+
+    @Test
+    fun test_ask_agent_throws_agent_client_exception_and_preserves_cause_on_failure() =
+        runBlocking {
+            val mockGraphQlAgentClient = mockk<GraphQlAgentClient>()
+            val service = spyk<ArcAgentClientService>()
+            val conversation =
+                Conversation(
+                    inputContext = InputContext(messages = listOf(Message("user", "Hello"))),
+                    systemContext = SystemContext(channelId = "testChannel"),
+                    userContext = UserContext(userId = "user123", userToken = "token123"),
+                )
+            val address = Address(uri = "localhost")
+            val cause = RuntimeException("Unexpected error!")
+
+            coEvery { service.createGraphQlAgentClient(address) } returns mockGraphQlAgentClient
+            coEvery { mockGraphQlAgentClient.close() } just runs
+            coEvery { mockGraphQlAgentClient.callAgent(any()) } returns
+                flow<AgentResult> { throw cause }
+
+            val exception =
+                assertFailsWith<AgentClientException> {
+                    service
+                        .askAgent(
+                            conversation,
+                            "conversationId",
+                            "turnId",
+                            "agentName",
+                            address,
+                            null,
+                        ).first()
+                }
+
+            assertEquals("Unexpected error!", exception.message)
+            assertSame(cause, exception.cause)
         }
 }
