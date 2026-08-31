@@ -46,6 +46,6 @@ dependencies {
         api("app.cash.turbine:turbine:1.2.1")
         api("com.marcinziolo:kotlin-wiremock:2.1.1")
         api("org.testcontainers:testcontainers-junit-jupiter")
-        api("org.mvel:mvel2:2.5.2.Final")
+        api("org.mvel:mvel2:2.5.3.Final")
     }
 }
