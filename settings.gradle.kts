@@ -28,7 +28,7 @@ pluginManagement {
         id("dev.yumi.gradle.licenser") version "3.0.1"
         id("io.github.build-extensions-oss.helm") version helmVersion
         id("io.github.build-extensions-oss.helm-publish") version helmVersion
-        id("net.researchgate.release") version "3.1.0"
+        id("net.researchgate.release") version "3.2.0"
         id("com.vanniktech.maven.publish") version "0.37.0"
         id("org.jetbrains.kotlin.jvm") version kotlinVersion
         id("org.jetbrains.kotlin.kapt") version kotlinVersion
