@@ -14,7 +14,7 @@ include("lmos-runtime-bom")
 
 pluginManagement {
     val kotlinVersion = "2.4.10"
-    val helmVersion = "3.2.0"
+    val helmVersion = "3.3.0"
 
     repositories {
         gradlePluginPortal()
