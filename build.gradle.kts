@@ -75,7 +75,7 @@ subprojects {
         dependencies {
             testImplementation(kotlin("test"))
             testImplementation(kotlin("test-junit5"))
-            testImplementation("io.mockk:mockk:1.14.11")
+            testImplementation("io.mockk:mockk:1.14.12")
             testImplementation("com.marcinziolo:kotlin-wiremock")
             testImplementation("org.springframework.boot:spring-boot-starter-test")
             testImplementation("org.junit.jupiter:junit-jupiter")
